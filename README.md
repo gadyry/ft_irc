@@ -1,4 +1,16 @@
 ## FT_IRC
+
+```cpp
+/*
+    ✔ How a socket is created inside the kernel
+    ✔ What memory structures are allocated
+    ✔ How ports are chosen
+    ✔ How TCP performs the 3-Way Handshake
+    ✔ How accept() creates a new socket
+    ✔ How the kernel handles buffers, queues, backlog
+    ✔ How data moves between kernel ↔ user space
+*/
+```
 # Unix Sockets – Deep Dive for Low-Level Developers
 
 This document breaks down the concepts from a classic Unix sockets explanation, but with deep technical detail suitable for anyone who wants to truly understand what happens under the hood.
@@ -118,3 +130,651 @@ This is the essence of the Unix philosophy:
 * Specialized subsystems add specialized calls when needed.
 
 ---
+
+## 🔥 6. Want to Go Deeper?
+
+If needed, you can explore topics such as:
+
+* Kernel internals of `socket()`
+* How file descriptor tables work
+* TCP state machines and how they attach to sockets
+* How `read()` maps to kernel TCP receive paths
+* How user-space messages travel to the NIC
+* Event loops with `select`, `poll`, `epoll`
+
+Just ask if you want this extended in the next section!
+
+## How `socket()` Works Internally (Deep Dive)
+
+When you call:
+
+```c
+int fd = socket(AF_INET, SOCK_STREAM, 0);
+```
+
+you’re triggering a *system call* that makes the kernel create a new socket. Here’s the deep breakdown:
+
+### 1. User Space → Kernel Space Transition
+
+Calling `socket()` switches the CPU from **user mode (Ring 3)** to **kernel mode (Ring 0)**. Execution goes to the kernel function chain:
+
+```
+sys_socket → __sys_socket → __sock_create
+```
+
+### 2. Kernel Allocates `struct socket`
+
+The kernel first creates a high-level socket structure:
+
+```c
+struct socket {
+    socket_state state;
+    struct proto_ops *ops;
+    struct sock *sk;
+};
+```
+
+It stores:
+
+* the socket type (STREAM or DGRAM)
+* the domain (AF_INET, AF_UNIX…)
+* a table of operations (`send`, `recv`, `bind`, `connect`…)
+* a pointer to the low-level TCP/UDP implementation (`struct sock`)
+
+At this stage, the socket exists but has no IP, no port, no connection.
+
+### 3. Kernel Creates the TCP/UDP Object: `struct sock`
+
+This structure contains the full TCP state machine:
+
+```c
+struct sock {
+    struct proto *protocol;
+    struct sk_buff_head receive_queue;
+    struct sk_buff_head write_queue;
+    __u32 state;
+};
+```
+
+It stores:
+
+* connection state (CLOSED, LISTEN, ESTABLISHED…)
+* send & receive buffers
+* timers (retransmission, keepalive)
+* congestion control
+* sequence numbers
+* retransmission logic
+
+This is the **true network object**.
+
+### 4. Kernel Assigns a File Descriptor (FD)
+
+The kernel adds an entry to your process’s FD table:
+
+```
+fd → struct file → struct socket → struct sock
+```
+
+This is why:
+
+* sockets appear in `/proc/<pid>/fd/`
+* you can use `read()` and `write()` on them
+* epoll/select works on sockets
+
+### 5. No Port or IP Yet
+
+After `socket()` returns:
+
+* no port is assigned
+* no IP is associated
+* no connection exists
+
+The socket is created but passive.
+
+Ports and addresses come from:
+
+* `bind()` → assigns a local address/port
+* `connect()` → initiates 3-way handshake
+* `listen()` → marks socket as listening
+* `accept()` → creates a *new* socket for each client
+
+## The `bind()`, `listen()`, `accept()` Sequence (Deep Internal Breakdown)
+
+Now that you know what happens inside `socket()`, here is what happens next in the lifecycle of a server socket.
+
+---
+
+# 3. What `bind()` Really Does Internally
+
+When you call:
+
+```c
+bind(fd, (struct sockaddr*)&addr, sizeof(addr));
+```
+
+you ask the kernel to attach your socket to a specific local IP and port.
+
+### 🔥 Inside the Kernel:
+
+* The kernel first checks if the port is available.
+* It checks socket rules: reserved ports (<1024), `SO_REUSEADDR`, conflicts, etc.
+* Then it assigns:
+
+  * **local IP** → stored in `sk->sk_rcv_saddr`
+  * **local port** → stored in `sk->sk_num`
+
+### 🧠 Important:
+
+`bind()` does *not* make the socket listen.
+`bind()` does *not* create a connection.
+`bind()` only reserves an address + port pair.
+
+If you skip `bind()`, the kernel will auto-assign:
+
+* an ephemeral port
+* local IP based on routing
+
+This happens during `connect()`, not before.
+
+---
+
+# 4. What `listen()` Does in the Kernel
+
+When you call:
+
+```c
+listen(fd, backlog);
+```
+
+the kernel marks your socket as a **listening socket**.
+
+### It changes the internal TCP state:
+
+```
+CLOSED → LISTEN
+```
+
+### And allocates two queues:
+
+#### 1. **SYN Queue (Pending Queue)**
+
+Stores half-open connections:
+
+* after kernel receives SYN
+* before the final ACK is sent
+
+#### 2. **Accept Queue (Completed Queue)**
+
+Stores fully established connections *ready* for `accept()`.
+
+### `backlog` controls the size of the accept queue.
+
+If both queues fill up:
+
+* new clients get dropped or refused
+* you see `ECONNREFUSED` or `ETIMEDOUT`
+
+This is how Linux protects your server from overload.
+
+---
+
+# 5. The TCP 3-Way Handshake (Real Internal Flow)
+
+This happens **only when a client calls `connect()`**.
+
+### Step-by-step:
+
+#### 🟦 1. Client → Server: **SYN**
+
+Client wants to start a TCP session.
+
+* kernel allocates a **request_sock**
+* entry is put into the **SYN queue**
+
+#### 🟩 2. Server → Client: **SYN + ACK**
+
+Server accepts the request.
+
+* sends SYN/ACK
+* allocates full `struct sock`
+
+#### 🟨 3. Client → Server: **ACK**
+
+Client confirms.
+
+### 🔥 Now kernel moves connection:
+
+```
+SYN queue → Accept queue
+```
+
+The connection is now **fully established**.
+Waiting for your program to call:
+
+```c
+accept(fd, ...)
+```
+
+---
+
+# 6. What `accept()` Does (Very Important!)
+
+When you call:
+
+```c
+int client_fd = accept(server_fd, ...);
+```
+
+you are **not** reading anything.
+You are **not** creating a new connection.
+
+### ✔ `accept()` removes 1 connection from the *accept queue*.
+
+### ✔ `accept()` creates a **new file descriptor**.
+
+### ✔ This FD represents a unique TCP session.
+
+The server now has two FDs:
+
+* `server_fd` → the listening socket (never used to send/recv)
+* `client_fd` → real connection with the client
+
+### Internally:
+
+* the kernel duplicates pointers to `struct sock`
+* adds a new FD entry in your process table
+* marks this new socket as `ESTABLISHED`
+
+This is the socket you use for:
+
+* send()
+* recv()
+* read()
+* write()
+
+---
+
+# Summary Diagram
+
+```
+           socket()
+              ↓
+      +--------------------+
+      |   Unbound Socket   |
+      +--------------------+
+              ↓ bind()
+      +--------------------+
+      | IP:PORT Assigned   |
+      +--------------------+
+              ↓ listen()
+      +-------------------------------+
+      |  LISTEN Socket + 2 Queues     |
+      |  SYN Queue + Accept Queue     |
+      +-------------------------------+
+                     ↓ 3-Way Handshake
+             (Kernel moves connection)
+                     ↓ accept()
+      +-------------------------------+
+      |  New FD = Established Socket  |
+      +-------------------------------+
+```
+
+If you want, next we can add:
+
+* **How send/recv move data between user space and kernel buffers**
+* **How epoll/select handle readiness and avoid blocking**
+* **How Linux handles disconnects, FIN/ACK, TIME_WAIT**
+
+## Deep Dive: Memory Structures Allocated by the Kernel for a Socket
+
+When a socket is created, Linux allocates several core data structures. These structures live **in kernel space**, not in your process memory. Understanding them is essential for low-level networking.
+
+---
+
+# 1. `struct file` — The User-Space Handle (FD Table Entry)
+
+Every socket you create becomes a file descriptor. The kernel allocates a `struct file`:
+
+```c
+struct file {
+    struct file_operations *f_op;
+    void *private_data;   // points to struct socket
+    ...
+};
+```
+
+### Purpose:
+
+* Represents the socket in your process FD table
+* Allows `read()`, `write()`, `poll()`, etc.
+
+---
+
+# 2. `struct socket` — The High-Level Socket Object
+
+Allocated inside the kernel during `socket()` creation:
+
+```c
+struct socket {
+    socket_state state;
+    struct proto_ops *ops;
+    struct sock *sk;       // pointer to the low-level TCP/UDP stack
+};
+```
+
+### Purpose:
+
+* Links your file descriptor to the networking stack
+* Stores high-level operations (send, recv, accept)
+* Not protocol-specific
+
+---
+
+# 3. `struct sock` — The Core TCP/UDP Endpoint
+
+This is the **heart** of a network connection. Allocated when the kernel builds a full network endpoint.
+
+```c
+struct sock {
+    int sk_state;              // TCP state machine
+    struct sk_buff_head sk_receive_queue;
+    struct sk_buff_head sk_write_queue;
+    struct proto *sk_prot;     // TCP or UDP implementation
+    __be32 sk_rcv_saddr;       // local IP
+    __be16 sk_num;             // local port
+    ...
+};
+```
+
+### Purpose:
+
+* Manages TCP state transitions (SYN_SENT, ESTABLISHED, etc.)
+* Manages send/receive queues
+* Stores IP/port
+* Holds congestion control, timers, retransmission logic
+
+This structure is large and complex; it represents **one endpoint** of a TCP connection.
+
+---
+
+# 4. `struct request_sock` — For Half-Open Connections (SYN Queue)
+
+During the TCP 3-way handshake, before `accept()` happens, the kernel creates a lightweight structure:
+
+```c
+struct request_sock {
+    struct sock_common *skc;   // partial connection info
+    u32 rcv_isn;               // initial sequence number
+    u32 snd_isn;
+    ...
+};
+```
+
+### Purpose:
+
+* Exists only during handshake
+* Lives in the **SYN queue**
+* Promoted to a full `struct sock` when connection is established
+
+---
+
+# 5. `struct sk_buff` — The Packet Buffer (Critical!)
+
+Every network packet is stored in a structure called the **socket buffer**:
+
+```c
+struct sk_buff {
+    struct sk_buff *next;
+    struct sk_buff *prev;
+    unsigned char *head;
+    unsigned char *data;
+    unsigned char *tail;
+    unsigned char *end;
+    struct net_device *dev;
+    struct sock *sk;
+    ...
+};
+```
+
+### Purpose:
+
+* Stores actual packet data
+* Used in both RX (receive) and TX (send) path
+* Chained into queues:
+
+  * `sk_receive_queue`
+  * `sk_write_queue`
+
+This is **where your data lives** before `recv()` or after `send()`.
+
+---
+
+# 6. Queues Allocated for TCP
+
+A TCP socket allocates multiple internal queues:
+
+### ✔ Receive Queue (`sk_receive_queue`)
+
+* Filled by NIC/driver → network stack
+* Drained by `recv()`
+
+### ✔ Write Queue (`sk_write_queue`)
+
+* Filled by `send()`
+* Drained by TCP retransmission engine
+
+### ✔ Out-of-order queue
+
+* Holds packets that arrived early (reordering)
+
+### ✔ SYN queue
+
+* Holds half-open connections
+
+### ✔ Accept queue
+
+* Holds fully established connections waiting for `accept()`
+
+---
+
+# 7. Timer Structures
+
+TCP allocates timers for:
+
+* retransmission
+* delayed ACK
+* keepalive
+* time-wait expiry
+
+Each timer allocates a `timer_list` structure.
+
+---
+
+# 8. Memory for Routing and Neighbor Discovery
+
+When a socket connects, kernel may allocate:
+
+* route cache entries
+* ARP/ND entries
+* per-connection path MTU info
+
+---
+
+# Summary of All Kernel Allocations
+
+```
+socket() → allocates:
+    struct file
+    struct socket
+    struct sock
+
+listen() → allocates:
+    SYN queue
+    accept queue
+
+Handshake → allocates:
+    struct request_sock
+    then full struct sock for new client
+
+Data transfer → allocates:
+    struct sk_buff (packet buffers)
+    queue entries (RX/TX queues)
+```
+# Deep Networking Internals — Part 2: How `send()` and `recv()` Actually Work
+
+This article continues the low-level journey, following the natural sequence after understanding socket creation, bind/listen/accept, and kernel memory structures.
+
+We now dive into **what happens when your program calls `send()` and `recv()`** — step by step, from user space all the way to the NIC and back.
+
+---
+
+# 1. The Moment You Call `send()`
+
+When you call:
+
+```c
+send(fd, buffer, len, flags);
+```
+
+your data does NOT go directly to the network.
+
+### What actually happens:
+
+1. **Copy From User Space → Kernel Space**
+   Linux copies your bytes from your buffer into a freshly allocated `struct sk_buff`.
+
+2. **Append to `sk_write_queue`**
+   The packet buffer (skb) is added to the socket's write queue.
+
+3. **TCP Transmission Logic Starts**
+   The TCP stack takes over:
+
+   * segmentation (split into MSS size)
+   * sequence number assignment
+   * congestion control
+   * retransmission timer setup
+
+4. **NIC Driver Takes the Packet**
+   The packet is passed to the NIC driver and then DMA-transferred to hardware.
+
+5. **Packet Goes on the Wire**
+   The NIC sends the Ethernet frame.
+
+### Key Insight:
+
+`send()` returns **before the packet is delivered**.
+It only confirms the data is now inside the kernel.
+
+---
+
+# 2. The NIC Sends the Packet (Hardware Path)
+
+Once the skb is handed to the NIC driver:
+
+* data is copied into a hardware ring buffer
+* NIC uses DMA to read from kernel memory
+* NIC creates the Ethernet frame
+* NIC transmits it physically using electrical/optical signals
+
+If the NIC is busy, packets are queued.
+
+---
+
+# 3. The Remote Host Receives the Packet
+
+Once the packet reaches the destination machine:
+
+* the NIC receives it and stores it into its RX ring
+* raises an interrupt (or uses NAPI polling)
+* kernel network stack processes the packet
+* IP layer checks routing
+* TCP layer validates sequence numbers
+* payload is stored into `sk_receive_queue` of the destination socket
+
+No user code is run at this stage.
+
+---
+
+# 4. The Moment You Call `recv()`
+
+When you call:
+
+```c
+recv(fd, buffer, len, flags);
+```
+
+the kernel behaves depending on queue state.
+
+### Case 1: Data available
+
+If `sk_receive_queue` has sk_buffs:
+
+* kernel copies data → user buffer
+* dequeues the skb or adjusts its offset
+* returns number of bytes copied
+
+### Case 2: No data available
+
+If blocking mode (default):
+
+* the calling thread sleeps
+* kernel wakes it when new data arrives
+
+If non-blocking mode:
+
+* `recv()` immediately returns `-1` with `errno = EAGAIN`
+
+If socket is closed:
+
+* returns `0` (EOF)
+
+---
+
+# 5. What Happens Inside the Kernel During `recv()`
+
+The kernel performs:
+
+1. dequeue head of `sk_receive_queue`
+2. copy skb->data to your user buffer
+3. free skb if fully consumed
+4. update socket state (ACK handling, window updates)
+
+TCP may also send **ACK packets** as a result of you calling `recv()`.
+
+---
+
+# 6. Zero-Copy Optimization (Advanced Concept)
+
+For large sends/receives, Linux can avoid copying data using:
+
+* `sendfile()`
+* `splice()`
+* `MSG_ZEROCOPY`
+
+These allow the kernel to use page references instead of copying bytes.
+
+But normal `send()`/`recv()` always copy.
+
+---
+
+# 7. Interaction With `epoll` / `select`
+
+* `epoll` checks if queues are empty or full
+* writable if `sk_write_queue` can accept more data
+* readable if `sk_receive_queue` has at least one skb
+
+`epoll` never reads or writes packets.
+It only checks readiness.
+
+---
+
+# 8. Summary Diagram
+
+```
+User Buffer → send() → skb → write queue → TCP engine → NIC → Wire → NIC
+→ kernel → skb → receive queue → recv() → User Buffer
+```
+
+---
+
+If you want, next articles can cover:
