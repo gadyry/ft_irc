@@ -30,7 +30,7 @@
 | bool             registered
 | std::string      buffer        // accumulate partial lines
 +----------------+
-| void send(const std::string& msg)
+| + void send(const std::string& msg)
 +----------------+
 
 ```
