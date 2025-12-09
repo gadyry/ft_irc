@@ -11,6 +11,8 @@ private :
     std::string nickname;
     std::string username;
     std::string host;
+    std::string inputBuffer;
+    bool        reg_stat;
     // ...
 public :
     void send(const std::string& msg);
