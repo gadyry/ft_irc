@@ -10,7 +10,7 @@
 | std::map<int, Client*> clients   // fd → Client
 | std::map<std::string, Channel*> channels
 +----------------+
-| void start() 
+| void start()
 | void initSocket()
 | void eventLoop()
 | void acceptClient()

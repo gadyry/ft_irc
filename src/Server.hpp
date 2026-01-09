@@ -8,16 +8,19 @@
 class Server
 {
 private :
-    int port;
+    u_short port;
     std::string password;
     int serv_fd;
-    std::map<int fd, Client* cl> clients;
+    // std::map<int fd, Client* cl> clients;
+    
 public :
     Server();
-    Server(int port, std::string password);
+    Server(u_short port, std::string password);
     ~Server();
 
-    
+    // methods :
+    void    intializeServ();
+    void    createServShocket();
 };
 
 #endif
