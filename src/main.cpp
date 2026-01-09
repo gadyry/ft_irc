@@ -12,15 +12,15 @@
 
 bool validPort(char* str)
 {
-    int i = 0;
-    while (str[i])
-    {
+    if (!str || !str[0])
+        return (false);
+
+    for (int i = 0; str[i]; i++)
         if (!std::isdigit(str[i]))
             return (false);
-        i++;
-    }
 
-    return (true);
+    u_short port = std::atoi(str);
+    return (port > 0 && port <= 65535); // 16 bits → 2^16=65536 possible values
 }
 
 int main(int ac, char** av)
@@ -33,13 +33,11 @@ int main(int ac, char** av)
 
     if (!validPort(av[1]))
     {
-        std::cerr << "Invlaid port, try again: ./ircserv <port> <password>\n";
+        std::cerr << "Error: invalid port, "
+                  << "try again: ./ircserv <port> <password>\n";
         return (1);
     }
 
-    // Server serv;
-    // serv.port = std::atoi(av[1]);
-    // serv.password = av[2];
-
+    Server serv(std::atoi(av[1]), av[2]);
     return (0);
 }
