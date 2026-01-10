@@ -10,7 +10,7 @@ int main()
 {
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if  (serverSocket < 0)
-        throw std::runtime_error("socket() failed");
+        std::cerr << "socket() failed." << std::endl;
 
     // specifying the address
     sockaddr_in serverAddress;
