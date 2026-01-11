@@ -283,8 +283,20 @@ This happens during `connect()`, not before.
 When you call:
 
 ```c
-listen(fd, backlog);
+int listen(fd, backlog);
 ```
+    DESCRIPTION
+     Creation of socket-based connections requires several operations.  First, a socket is created with socket(2).  Next, a willingness
+     to accept incoming connections and a queue limit for incoming connections are specified with listen().  Finally, the connections
+     are accepted with accept(2).  The listen() call applies only to sockets of type SOCK_STREAM.
+
+     The backlog parameter defines the maximum length for the queue of pending connections.  If a connection request arrives with the
+     queue full, the client may receive an error with an indication of ECONNREFUSED.  Alternatively, if the underlying protocol sup-
+     ports retransmission, the request may be ignored so that retries may succeed.
+
+RETURN VALUES
+     The listen() function returns the value 0 if successful; otherwise the value -1 is returned and the global variable errno is set
+     to indicate the error.
 
 the kernel marks your socket as a **listening socket**.
 
