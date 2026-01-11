@@ -285,7 +285,7 @@ When you call:
 ```c
 int listen(fd, backlog);
 ```
-# * DESCRIPTION
+### * DESCRIPTION
     Creation of socket-based connections requires several operations.  First, a socket is created with socket(2).  Next, a willingness
     to accept incoming connections and a queue limit for incoming connections are specified with listen().  Finally, the connections
     are accepted with accept(2).  The listen() call applies only to sockets of type SOCK_STREAM.
@@ -293,7 +293,7 @@ int listen(fd, backlog);
     The backlog parameter defines the maximum length for the queue of pending connections.  If a connection request arrives with the
     queue full, the client may receive an error with an indication of ECONNREFUSED.  Alternatively, if the underlying protocol sup-
     ports retransmission, the request may be ignored so that retries may succeed.
-# * RETURN VALUES
+### * RETURN VALUES
     The listen() function returns the value 0 if successful; otherwise the value -1 is returned and the global variable errno is set
     to indicate the error.
 
