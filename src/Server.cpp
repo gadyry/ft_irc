@@ -17,7 +17,7 @@ void    Server::createServShocket()
 {
     this->serv_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (this->serv_fd < 0)
-        throw std::runtime_error("socket() failed");
+        
 }
 
 void    Server::initializeserv()
