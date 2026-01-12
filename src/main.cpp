@@ -30,10 +30,9 @@ int main(int ac, char** av)
         std::cerr << "Usage: ./ircserv <port> <password>" << std::endl;
         return (1);
     }
-
-    if (!validPort(av[1]))
+    if (!validPort(av[1]) || !av[2][0])
     {
-        std::cerr << "Error: invalid port, "
+        std::cerr << "Error: "
                   << "try again: ./ircserv <port> <password>\n";
         return (1);
     }
