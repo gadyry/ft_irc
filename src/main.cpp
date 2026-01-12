@@ -37,6 +37,15 @@ int main(int ac, char** av)
         return (1);
     }
 
-    Server serv(std::atoi(av[1]), av[2]);
+    try
+    {
+        Server serv(std::atoi(av[1]), av[2]);
+        server.executionServ(); // TODO!
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return (1);
+    }
     return (0);
 }
