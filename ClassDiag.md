@@ -1,36 +1,38 @@
 ```
 
-+----------------+
-|    Server      |
-+----------------+
-| int             port
-| std::string     password
-| int             server_fd
-| std::vector<pollfd> poll_fds
-| std::map<int, Client*> clients   // fd → Client
-| std::map<std::string, Channel*> channels
-+----------------+
-| void start()
-| void initSocket()
-| void eventLoop()
-| void acceptClient()
-| void disconnectClient(int fd)
-| void handleMessage(int fd)
-| void sendToClient(int fd, const std::string &msg)
-+----------------+
+                ┌──────────────┐
+                │    Server    │
+                │──────────────│
+                │ - serv_fd    │
+                │ - port       │
+                │ - password   │
+                │              │
+                │ owns         │
+                │              │
+                │ clients map  │──────┐
+                │ channels map │───┐  │
+                └──────────────┘   │  │
+                                   │  │
+                                   ▼  ▼
+                          ┌──────────┐   ┌──────────┐
+                          │  Client  │   │  Client  │
+                          │──────────│   │──────────│
+                          │ fd       │   │ fd       │
+                          │ nick     │   │ nick     │
+                          │ user     │   │ user     │
+                          │ buffer   │   │ buffer   │
+                          └──────────┘   └──────────┘
+                                ▲             ▲
+                                │ references  │
+                                │ (NO OWNERS) │
+                         ┌──────────────────────────┐
+                         │         Channel          │
+                         │──────────────────────────│
+                         │ name (#general)          │
+                         │ topic                    │
+                         │ members: Client*         │
+                         │ operators: Client*       │
+                         └──────────────────────────┘
 
-
-+----------------+
-|    Client      |
-+----------------+
-| int              fd
-| std::string      nick
-| std::string      user
-| std::string      host
-| bool             registered
-| std::string      buffer        // accumulate partial lines
-+----------------+
-| + void send(const std::string& msg)
-+----------------+
 
 ```
