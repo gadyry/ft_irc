@@ -43,6 +43,207 @@ To create a network communication endpoint, you call:
 ```c
 int fd = socket(AF_INET, SOCK_STREAM, 0);
 ```
+Excellent question.
+This parameter is often misunderstood, so let’s explain it **precisely, step by step**, with **no hand-waving**.
+
+---
+
+## The function again
+
+```c
+int socket(int domain, int type, int protocol);
+```
+
+You asked specifically about:
+
+```c
+int protocol
+```
+
+---
+
+## 1️⃣ What the `protocol` parameter REALLY means
+
+> The `protocol` parameter specifies **which concrete protocol implementation** to use **inside the selected domain and type**.
+
+In other words:
+
+* `domain` → *protocol family* (IPv4, IPv6, Unix, …)
+* `type` → *communication semantics* (stream, datagram, raw)
+* `protocol` → *exact protocol number* inside that family
+
+---
+
+## 2️⃣ Why this parameter exists at all (historical reason)
+
+A single `(domain, type)` pair **can theoretically support multiple protocols**.
+
+Example (conceptual):
+
+```
+AF_INET + SOCK_STREAM
+    ├── TCP
+    ├── SCTP
+    └── some future protocol
+```
+
+So the OS designers added `protocol` to let you **explicitly choose**.
+
+---
+
+## 3️⃣ Why we almost always pass `0`
+
+### Rule defined by POSIX
+
+> If `protocol` is `0`, the system selects the **default protocol** for the given `(domain, type)`.
+
+Examples:
+
+| domain   | type        | protocol=0 resolves to |
+| -------- | ----------- | ---------------------- |
+| AF_INET  | SOCK_STREAM | TCP                    |
+| AF_INET  | SOCK_DGRAM  | UDP                    |
+| AF_INET6 | SOCK_STREAM | TCP                    |
+| AF_UNIX  | SOCK_STREAM | Unix stream            |
+
+So this:
+
+```c
+socket(AF_INET, SOCK_STREAM, 0);
+```
+
+means:
+
+> “Give me the default stream protocol for IPv4 → TCP”
+
+---
+
+## 4️⃣ Why passing `0` is the CORRECT choice in ft_irc
+
+For **ft_irc**:
+
+* You want **IPv4**
+* You want **reliable stream**
+* There is **exactly one correct default** → TCP
+
+So:
+
+```cpp
+socket(AF_INET, SOCK_STREAM, 0);
+```
+
+is:
+
+* portable
+* clean
+* POSIX-compliant
+* expected by evaluators
+
+Passing anything else gives **no benefit**.
+
+---
+
+## 5️⃣ When would `protocol` NOT be zero? (advanced cases)
+
+These are **NOT for ft_irc**, but good to understand.
+
+### Example 1: Explicit TCP (rare)
+
+```c
+socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+```
+
+Equivalent to protocol `0`, but:
+
+* less portable
+* more verbose
+* unnecessary
+
+---
+
+### Example 2: Raw sockets (NOT allowed in 42)
+
+```c
+socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+```
+
+Used for:
+
+* `ping`
+* network diagnostics
+* packet crafting
+
+❌ Requires root privileges
+❌ Not relevant for IRC
+
+---
+
+### Example 3: Multiple protocols for same type (rare)
+
+Some systems support:
+
+* SCTP (`IPPROTO_SCTP`)
+* DCCP
+
+You would specify protocol explicitly.
+
+---
+
+## 6️⃣ What happens if you pass a WRONG protocol?
+
+Example:
+
+```c
+socket(AF_INET, SOCK_STREAM, IPPROTO_UDP);
+```
+
+Result:
+
+* ❌ `socket()` fails
+* ❌ returns `-1`
+* ❌ `errno = EPROTONOSUPPORT`
+
+Because:
+
+* UDP does NOT support stream semantics
+
+---
+
+## 7️⃣ Mental model (very important)
+
+Memorize this mapping:
+
+```
+domain   = where (IPv4, IPv6, local)
+type     = how (stream, datagram)
+protocol = which exact implementation
+```
+
+And remember:
+
+> **protocol = 0 means “choose the obvious one”**
+
+---
+
+## 8️⃣ One-sentence exam answer (memorize)
+
+> The `protocol` parameter selects the specific protocol within a given domain and socket type, and passing `0` lets the system choose the default protocol, such as TCP for `AF_INET` and `SOCK_STREAM`.
+
+---
+
+## 9️⃣ Final rule for ft_irc (DO NOT DEVIATE)
+
+```cpp
+socket(AF_INET, SOCK_STREAM, 0);
+```
+
+Anything else:
+
+* adds complexity
+* gives no advantage
+* may be considered wrong
+
+---
 
 Behind the scenes, the kernel:
 
