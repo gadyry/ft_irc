@@ -18,9 +18,8 @@ public :
     Server(u_short port, std::string password);
     ~Server();
 
-    // methods :
-    void    intializeServ();
-    void    createServShocket();
+    // methods :(
+    void    executeServ();
 };
 
 #endif
