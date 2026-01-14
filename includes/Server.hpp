@@ -4,6 +4,11 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include <sys/socket.h>
+# include <sys/types.h>
+
+# define    PF_INET IPV4
+# define    SOCK_STREAM TCP_SOCK
 
 class Server
 {
@@ -18,7 +23,7 @@ public :
     Server(u_short port, std::string password);
     ~Server();
 
-    // methods :(
+    // methods :
     void    executeServ();
 };
 
