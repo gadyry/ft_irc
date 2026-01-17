@@ -446,7 +446,6 @@ For IPv4, that format is:
 struct sockaddr_in
 
 ````
-
 ---
 
 ## What Is `sockaddr_in`?
