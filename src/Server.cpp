@@ -1,9 +1,9 @@
 
-#include "Server.cpp"
+#include "../includes/Server.hpp"
 
 Server::Server() {}
 
-Server::Server(u_short port, std::string password) : port(port), password(password), serv_fd(-1)
+Server::Server(short port, std::string password) : port(port), password(password), serv_fd(-1)
 {
     sockaddr_in addr_serv;
 

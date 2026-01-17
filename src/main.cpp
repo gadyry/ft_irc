@@ -6,7 +6,7 @@
 */
 #include <iostream>
 #include "../includes/Server.hpp"
-// #include "Client.hpp"
+#include "../includes/Client.hpp"
 #include <cstdlib>
 #include <cstdio>
 
@@ -36,16 +36,15 @@ int main(int ac, char** av)
                   << "try again: ./ircserv <port> <password>\n";
         return (1);
     }
-    std::cout << "Server connected!" << std::endl;
-    // try
-    // {
-    //     Server serv(std::atoi(av[1]), av[2]);
-    //     server.executionServ(); // TODO!
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     std::cerr << e.what() << std::endl;
-    //     return (1);
-    // }
+    try
+    {
+        Server serv(std::atoi(av[1]), av[2]);
+        // server.executionServ();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return (1);
+    }
     return (0);
 }
