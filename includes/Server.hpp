@@ -7,20 +7,20 @@
 # include <sys/socket.h>
 # include <sys/types.h>
 
-# define    PF_INET IPV4
-# define    SOCK_STREAM TCP_SOCK
+// # define    PF_INET IPV4
+// # define    SOCK_STREAM TCP_SOCK
 
 class Server
 {
 private :
-    u_short port;
+    short port;
     std::string password;
     int serv_fd;
     // std::map<int fd, Client* cl> clients;
     
 public :
     Server();
-    Server(u_short port, std::string password);
+    Server(short port, std::string password);
     ~Server();
 
     // methods :
