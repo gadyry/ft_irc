@@ -49,6 +49,12 @@ Server::Server(short port, std::string password) : port(port), password(password
 void    Server::executeServ()
 {
     // TODO
+    int turn_up = 1;
+    while (turn_up)
+    {
+        // check if the serv_fd == to fd_pull
+        /*     accpet     */
+    }
 }
 
 Server::~Server()
