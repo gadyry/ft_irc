@@ -39,7 +39,7 @@ int main(int ac, char** av)
     try
     {
         Server serv(std::atoi(av[1]), av[2]);
-        // server.executionServ();
+        server.executionServ();
     }
     catch (const std::exception &e)
     {

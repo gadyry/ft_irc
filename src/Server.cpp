@@ -5,7 +5,8 @@ Server::Server() {}
 
 Server::Server(short port, std::string password) : port(port), password(password), serv_fd(-1)
 {
-    sockaddr_in addr_serv;
+    struct sockaddr_in addr_serv;
+    int camus = 1;
 
     this->serv_fd = socket(PF_INET, SOCK_STREAM, 0);
     if (serv_fd < 0)
@@ -24,7 +25,10 @@ Server::Server(short port, std::string password) : port(port), password(password
     addr_serv.sin_port = htons(this->port); // Host TO Network Short
     addr_serv.sin_addr.s_addr = INADDR_ANY; // Bind to all interfaces (0.0.0.0)
 
-    if (bind(serv_fd, (sockaddr_in*)&addr_serv, sizeof(addr_serv)) < 0)
+	if(setsockopt(this->serv_fd, SOL_SOCKET, SO_REUSEADDR, &camus, sizeof(camus)) < 0)
+		throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
+
+    if (bind(serv_fd, (sockaddr*)&addr_serv, sizeof(addr_serv)) < 0)
         throw std::runtime_error("bind() failed");
 
     if (listen(serv_fd, 128) < 0) // int listen(int socket, int backlog); try to set it to 0
@@ -32,10 +36,23 @@ Server::Server(short port, std::string password) : port(port), password(password
 
     std::cout << "Server connected\n";
     std::cout << "Waiting for connection" << std::endl;
+
+    // accepting connection request
+    int clientSocket = accept(serv_fd, NULL, NULL);
+    // recieving data
+    char buffer[1024] = { 0 };
+    recv(clientSocket, buffer, sizeof(buffer), 0);
+    std::cout << "Message from client: " << buffer
+              << std::endl;
+}
+
+void    Server::executeServ()
+{
+    // TODO
 }
 
 Server::~Server()
 {
-   close(serv_fd);
+   close(this->serv_fd);
    // manage the resources!
 }
