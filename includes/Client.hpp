@@ -2,20 +2,22 @@
 #define CLIENT_HPP
 
 # include <iostream>
-# include <map>
+# include <sys/socket.h>
+# include <sys/types.h>
 
 class Client
 {
 private :
-    int         fd;
+    int         fd_client;
     std::string nickname;
     std::string username;
     std::string host;
     std::string inputBuffer;
-    bool        reg_stat;
+    // bool        reg_stat;
     // ...
 public :
-    void send(const std::string& msg);
+    Client();
+    ~Client();
     // ...
 };
 
