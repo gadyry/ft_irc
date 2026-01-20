@@ -1162,4 +1162,198 @@ User Buffer → send() → skb → write queue → TCP engine → NIC → Wire �
 
 ---
 
-If you want, next articles can cover:
+To understand `fcntl(fd, F_SETFL, O_NONBLOCK)`, you have to realize that every **File Descriptor (fd)** in Unix has a set of "flags" stored in the kernel. These flags act like a settings menu for that specific connection.
+
+Here is the deep dive into how this specific call works and what the parameters mean.
+
+---
+
+### 1. Breakdown of the Parameters
+
+The function signature is: `int fcntl(int fd, int cmd, ... /* arg */ );`
+
+| Parameter | Name | Meaning |
+| --- | --- | --- |
+| **`fd`** | File Descriptor | The "ID number" of the socket you want to modify (either your listener or a specific client). |
+| **`F_SETFL`** | Set File Status Flags | This is the **command**. It tells `fcntl`: "I want to overwrite the status flags for this fd." |
+| **`O_NONBLOCK`** | Open Non-Blocking | This is the **value**. It tells the kernel: "From now on, do not make this fd wait for data." |
+
+### 2. How it works inside the Kernel
+
+Normally, when you call `recv()`, the kernel puts your process into a "Sleep" state. It removes your process from the CPU's "Ready" queue and only wakes it up when data arrives from the network card.
+
+When you set `O_NONBLOCK`:
+
+1. The kernel updates the entry for your `fd` in the **File Table**.
+2. Now, when you call `recv()`, the kernel immediately checks the socket's receive buffer.
+3. **If empty:** Instead of putting your process to sleep, it returns `-1` immediately.
+4. **Crucial Part:** It sets the global variable `errno` to `EAGAIN` or `EWOULDBLOCK`. This is the kernel saying: *"I have no data for you right now, try again later."*
+
+---
+
+### 3. Why we use it (The "Double Check")
+
+Even though `poll()` tells you a socket is "ready," there are rare edge cases (like a packet checksum error) where `poll()` says data is there, but by the time you call `recv()`, the data is gone.
+
+If your socket were **blocking**, your whole IRC server would freeze on that `recv()` call. By using `O_NONBLOCK`, you ensure that even if `poll()` makes a mistake, your server just gets an error and keeps moving to the next client.
+
+### 4. The Correct Way to Implement It
+
+In `ft_irc`, you shouldn't just set the flag; you should get the existing flags first so you don't accidentally erase other important settings.
+
+**The "Best Practice" Code:**
+
+```cpp
+// 1. Get the current flags
+int flags = fcntl(fd, F_GETFL, 0);
+if (flags == -1) {
+    /* Handle error */
+}
+
+// 2. Add the O_NONBLOCK flag to the existing ones using bitwise OR (|)
+if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+    /* Handle error */
+}
+
+```
+
+---
+
+### 5. What changes in your `recv()` logic?
+
+Once you apply this, your `recv()` call needs to be wrapped in an `if` statement to handle the "non-block" return:
+
+```cpp
+char buffer[1024];
+int bytes_read = recv(client_fd, buffer, sizeof(buffer), 0);
+
+if (bytes_read < 0) {
+    if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        // This is NOT an error. It just means there's nothing to read yet.
+        return; 
+    }
+    // This IS a real error (connection lost, etc.)
+}
+
+```
+To understand what happens in the kernel when a file descriptor is created, you have to look at the **three-tier architecture** Unix uses to manage files. The kernel doesn't just store a simple "list"; it uses a series of linked structures to allow for features like process isolation and shared file offsets.
+
+### The Three Layers of File Management
+
+When you call `open()` or `socket()`, the kernel sets up connections across these three structures:
+
+1. **The Process File Descriptor Table (Per-Process):**
+* **What it is:** A private array inside each process's kernel data (`task_struct`).
+* **The Content:** It maps the integer (the `fd`) to a pointer in the next table.
+* **Key Flag:** This is where the **Close-on-Exec** (`FD_CLOEXEC`) flag lives. If this is set, the FD is closed automatically if the process runs a new program.
+
+
+2. **The Open File Table (System-Wide):**
+* **What it is:** A global table (often called the "Open File Description" table) that tracks every *instance* of an open file.
+* **The Content:** This is where the **"Settings Menu"** from your previous question lives.
+* **Key Data:** It stores the **Current File Offset** (where you are in the file) and the **Status Flags** (like `O_NONBLOCK`, `O_APPEND`, or `O_RDONLY`).
+* *Note: If two different processes share an entry here (e.g., via `fork()`), they share the same read/write pointer.*
+
+
+3. **The Inode Table (V-node Table):**
+* **What it is:** A system-wide table representing the actual physical file on the disk.
+* **The Content:** This contains the file's metadata: size, owner, permissions, and the physical disk blocks where the data is stored.
+
+
+
+---
+
+### The Kernel "Structs" (C Language Level)
+
+If you were to look at the Linux Kernel source code, here are the actual structures being used:
+
+| Layer | Kernel Structure | Role |
+| --- | --- | --- |
+| **FD Table** | `struct files_struct` | Holds the array of pointers for a specific process. |
+| **Open File** | `struct file` | The "Settings Menu." Stores `f_flags` (status) and `f_pos` (offset). |
+| **Inode** | `struct inode` | The "Identity Card." Stores file type, permissions, and disk location. |
+
+### Why this structure matters for `fcntl()`
+
+When you run `fcntl(fd, F_SETFL, O_NONBLOCK)`, the kernel:
+
+1. Looks at your **Process FD Table** to find the pointer for that `fd`.
+2. Follows that pointer to the **Open File Table** (`struct file`).
+3. Modifies the `f_flags` field in that structure.
+
+This design is why setting a flag in one process can sometimes affect another. If you `fork()` a child process, the child's FD table points to the **same** entry in the Open File Table. If the child sets `O_NONBLOCK`, the parent's connection also becomes non-blocking because they are looking at the same "Settings Menu."
+
+---
+In the Linux kernel source code, the "fd" (file descriptor) is not a single variable, but an **index** into an array of pointers.
+
+To find it, you need to look at three specific files in the kernel source. Here is the path from the process down to the actual file pointer.
+
+### 1. The Entry Point: `task_struct`
+
+**File:** `include/linux/sched.h`
+Every process is a `task_struct`. It doesn't hold the files directly; it holds a pointer to a specialized "files" structure.
+
+```c
+struct task_struct {
+    // ...
+    /* Open file information: */
+    struct files_struct *files;
+    // ...
+};
+
+```
+
+---
+
+### 2. The Container: `files_struct`
+
+**File:** `include/linux/fdtable.h`
+This structure manages the "Settings Menu" for the process. Its most important member is `fdt` (the File Descriptor Table).
+
+```c
+struct files_struct {
+    // ...
+    struct fdtable __rcu *fdt;     /* Points to the current fdtable */
+    struct fdtable fdtab;          /* The initial, small fdtable */
+    // ...
+    int next_fd;                   /* The next FD number to be assigned */
+};
+
+```
+
+---
+
+### 3. The Actual "Array": `fdtable`
+
+**File:** `include/linux/fdtable.h`
+This is where the actual mapping happens. Your integer `fd` is used as an index into the `fd` array below.
+
+```c
+struct fdtable {
+    unsigned int max_fds;
+    struct file __rcu **fd;      /* <--- THIS IS IT. The array of pointers. */
+    unsigned long *close_on_exec;
+    unsigned long *open_fds;
+    // ...
+};
+
+```
+
+### How the Kernel finds your file
+
+When you call `read(3, buf, 10)`, the kernel does this internally:
+
+1. It grabs the `current` task (`task_struct`).
+2. It goes to `current->files->fdt`.
+3. It looks at the array entry: `fdt->fd[3]`.
+4. That entry is a pointer to a **`struct file`**, which contains the actual file data, the current position (offset), and the status flags like `O_NONBLOCK`.
+
+### Why is there a `close_on_exec` bitmap here?
+
+Notice that in `struct fdtable`, there is a pointer called `unsigned long *close_on_exec`.
+
+* This is a **bitmask**.
+* If you set the `FD_CLOEXEC` flag on a file descriptor, the kernel simply flips a bit in this mask at the same index as your FD.
+* This is why `FD_CLOEXEC` is a "Descriptor Flag" (stored in the table) while `O_NONBLOCK` is a "Status Flag" (stored in the `struct file` itself).
+
+---
