@@ -6,7 +6,6 @@
 # include <map>
 # include <sys/socket.h>
 # include <sys/types.h>
-# include <poll.h>
 # include <fcntl.h>        // fcntl
 # include <poll.h>         // struct pollfd, poll()
 # include <netinet/in.h>   // sockaddr_in, INADDR_ANY
@@ -22,7 +21,7 @@ private :
     short       port;
     std::string password;
     int         serv_fd;
-    std::vector<struct pollfd> fds_sentinels;
+    std::vector<structpollfd> fds_sentinels;
     // std::map<int fd, Client* cl> clients;
 
 public :

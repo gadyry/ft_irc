@@ -1357,3 +1357,229 @@ Notice that in `struct fdtable`, there is a pointer called `unsigned long *close
 * This is why `FD_CLOEXEC` is a "Descriptor Flag" (stored in the table) while `O_NONBLOCK` is a "Status Flag" (stored in the `struct file` itself).
 
 ---
+this is the **right moment** to understand `poll()` properly.
+I’ll explain it **from a programmer’s perspective**, clean and structured
+---
+
+# 1️⃣ What `poll()` really is (simple definition)
+
+`poll()` is a **system call** that lets your program:
+
+> **Sleep until one or more file descriptors need attention.**
+
+It prevents:
+
+* Blocking on one client
+* Busy looping
+* Freezing the server
+
+---
+
+# 2️⃣ The problem `poll()` solves
+
+Without `poll()`:
+
+* `accept()` blocks
+* `recv()` blocks
+* One client freezes everyone
+
+With `poll()`:
+
+* The OS watches sockets for you
+* Your code reacts only when needed
+
+---
+
+# 3️⃣ `poll()` function prototype
+
+```c
+int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+```
+
+Let’s decode this **line by line**.
+
+---
+
+# 4️⃣ `struct pollfd` (VERY IMPORTANT)
+
+This structure describes **one file descriptor** and **what you want to watch**.
+
+```c
+struct pollfd {
+    int   fd;       // File descriptor to monitor
+    short events;   // What you want to watch
+    short revents;  // What actually happened
+};
+```
+
+Think of it as a **contract** between your program and the kernel.
+
+---
+
+## 4.1 `fd`
+
+```c
+p.fd = serv_fd;
+```
+
+This is:
+
+* a socket fd
+* could be server socket or client socket
+
+---
+
+## 4.2 `events` (what YOU ask for)
+
+This field tells the kernel:
+
+> “Wake me up when this happens.”
+
+Common values:
+
+| Event     | Meaning (Programmer view)                     |
+| --------- | --------------------------------------------- |
+| `POLLIN`  | Data available to read OR incoming connection |
+| `POLLOUT` | Socket ready to send data                     |
+| `POLLERR` | Error occurred                                |
+| `POLLHUP` | Connection closed                             |
+
+For an IRC server, **99% of the time**:
+
+```c
+events = POLLIN;
+```
+
+---
+
+## 4.3 `revents` (what KERNEL tells you)
+
+After `poll()` returns:
+
+* `revents` contains **what actually happened**
+* You must **read this field**, not `events`
+
+Example:
+
+```c
+if (p.revents & POLLIN) {
+    // fd is readable
+}
+```
+
+---
+
+# 5️⃣ How `poll()` works (step-by-step)
+
+### Step 1: You prepare a list
+
+```text
+fds[0] = listening socket
+fds[1] = client 1
+fds[2] = client 2
+...
+```
+
+Each entry:
+
+* fd
+* events you want
+
+---
+
+### Step 2: Call `poll()`
+
+```c
+poll(fds, number_of_fds, timeout);
+```
+
+Your program:
+
+* Sleeps
+* Uses **0% CPU**
+
+---
+
+### Step 3: Kernel wakes you up
+
+When:
+
+* A client connects
+* A client sends data
+* A client disconnects
+* Timeout expires
+
+---
+
+### Step 4: You inspect `revents`
+
+You loop over `fds`:
+
+```text
+If fd == serv_fd AND revents has POLLIN → accept()
+If fd is client AND revents has POLLIN → recv()
+If revents has POLLHUP or POLLERR → disconnect
+```
+
+---
+
+# 6️⃣ What `poll()` does NOT do
+
+🚫 `poll()` does NOT:
+
+* accept connections
+* read data
+* send data
+* parse messages
+
+It only **signals**.
+
+---
+
+# 7️⃣ Why `poll()` fits your IRC server perfectly
+
+* One thread
+* Many clients
+* Mostly idle connections
+* Real-time responsiveness
+
+IRC servers are **event-driven**, and `poll()` is an event dispatcher.
+
+---
+
+# 8️⃣ Common beginner mistakes (IMPORTANT)
+
+❌ Checking `events` instead of `revents`
+❌ Forgetting to remove disconnected fds
+❌ Blocking inside the loop after `poll()`
+❌ Not handling `POLLHUP`
+❌ Assuming `POLLIN` always means data (could mean close)
+
+---
+
+# 9️⃣ Typical IRC server logic with `poll()` (mental model)
+
+```
+while (server_running) {
+    poll(fds)
+
+    for each fd:
+        if fd == serv_fd and POLLIN:
+            accept client
+
+        else if client fd and POLLIN:
+            recv data
+
+        if POLLHUP or POLLERR:
+            disconnect client
+}
+```
+
+---
+
+# 🔑 Core rule (memorize this)
+
+> **`poll()` tells you WHERE to act,
+> not WHAT to do.**
+
+---
