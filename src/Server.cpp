@@ -28,6 +28,9 @@ Server::Server(short port, std::string password) : port(port), password(password
 	if(setsockopt(this->serv_fd, SOL_SOCKET, SO_REUSEADDR, &camus, sizeof(camus)) < 0)
 		throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
 
+	if (fcntl(fdsocket, F_SETFL, O_NONBLOCK) == -1)
+		throw(std::runtime_error("fcntl() failed"));
+
     if (bind(serv_fd, (sockaddr*)&addr_serv, sizeof(addr_serv)) < 0)
         throw std::runtime_error("bind() failed");
 
@@ -49,11 +52,11 @@ Server::Server(short port, std::string password) : port(port), password(password
 void    Server::executeServ()
 {
     // TODO
-    int turn_up = 1;
-    while (turn_up)
+    while (69)
     {
         // check if the serv_fd == to fd_pull
-        /*     accpet     */
+            /*    -> add a new client     */
+            /*    -> recieve a new Data   */
     }
 }
 
