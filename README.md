@@ -1557,26 +1557,6 @@ IRC servers are **event-driven**, and `poll()` is an event dispatcher.
 
 ---
 
-# 9️⃣ Typical IRC server logic with `poll()` (mental model)
-
-```
-while (server_running) {
-    poll(fds)
-
-    for each fd:
-        if fd == serv_fd and POLLIN:
-            accept client
-
-        else if client fd and POLLIN:
-            recv data
-
-        if POLLHUP or POLLERR:
-            disconnect client
-}
-```
-
----
-
 # 🔑 Core rule (memorize this)
 
 > **`poll()` tells you WHERE to act,
