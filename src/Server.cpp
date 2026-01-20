@@ -1,12 +1,29 @@
 
 #include "../includes/Server.hpp"
+#include <map>
+#include <iostream>
+#include <vector>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <fcntl.h>
+#include <unistd.h> 
+#include <arpa/inet.h>
+#include <poll.h>
+#include <csignal>
+#include "client.hpp"
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <libc.h>
 
 Server::Server() {}
 
 Server::Server(short port, std::string password) : port(port), password(password), serv_fd(-1)
 {
-    struct sockaddr_in addr_serv;
-    int camus = 1;
+    struct sockaddr_in  addr_serv;
+    int                 camus = 1;
+    struct pollfd       newPollFd;
 
     this->serv_fd = socket(PF_INET, SOCK_STREAM, 0);
     if (serv_fd < 0)
@@ -28,7 +45,7 @@ Server::Server(short port, std::string password) : port(port), password(password
 	if(setsockopt(this->serv_fd, SOL_SOCKET, SO_REUSEADDR, &camus, sizeof(camus)) < 0)
 		throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
 
-	if (fcntl(fdsocket, F_SETFL, O_NONBLOCK) == -1)
+	if (fcntl(serv_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw(std::runtime_error("fcntl() failed"));
 
     if (bind(serv_fd, (sockaddr*)&addr_serv, sizeof(addr_serv)) < 0)
@@ -39,6 +56,14 @@ Server::Server(short port, std::string password) : port(port), password(password
 
     std::cout << "Server connected\n";
     std::cout << "Waiting for connection" << std::endl;
+
+    newPollFd.fd = serv_fd; // WHO to watch: which socket!
+    newPollFd.events = POLLIN; // WHAT I want to watch: who care about !
+    newPollFd.revents = 0; // WHAT actually happened (kernel writes this) disappears, I can leave it without assign it!
+
+    fds_sentinels.push_back(newPollFd);
+
+    /********* This next step just for testing: ********/
 
     // accepting connection request
     int clientSocket = accept(serv_fd, NULL, NULL);
@@ -55,8 +80,12 @@ void    Server::executeServ()
     while (69)
     {
         // check if the serv_fd == to fd_pull
+        if (poll(&fds_sentinels[0], ))
+        for (size_t i = 0; i < fds_sentinels.size(); i++)
+        {
             /*    -> add a new client     */
             /*    -> recieve a new Data   */
+        }
     }
 }
 
