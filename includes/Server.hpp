@@ -21,7 +21,7 @@ private :
     short       port;
     std::string password;
     int         serv_fd;
-    std::vector<structpollfd> fds_sentinels;
+    std::vector<struct pollfd> fds_sentinels;
     // std::map<int fd, Client* cl> clients;
 
 public :
