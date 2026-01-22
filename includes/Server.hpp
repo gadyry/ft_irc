@@ -12,8 +12,7 @@
 # include <arpa/inet.h>    // htons, htonl
 # include <unistd.h>       // close
 
-// # define    PF_INET IPV4
-// # define    SOCK_STREAM TCP_SOCK
+class client;
 
 class Server
 {
