@@ -61,7 +61,7 @@ Server::Server(short port, std::string password) : port(port), password(password
 
 void    Server::executeServ()
 {
-    // TODO
+    // TODO 8=> I should handle the signal after building the serv
     while (69)
     {
         /*
