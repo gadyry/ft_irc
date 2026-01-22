@@ -225,8 +225,8 @@ These diagrams represent the **ft_irc** project use case model, showing:
 - The inheritance relationship where Operator extends Client functionality
 - All interactions contained within the IRC Server System boundary
 ```
+---
 
-```
 # FT_IRC Sequence Diagrams
 
 ## 1. Client Connection and Authentication Flow
@@ -486,5 +486,3 @@ RPL_XXX     = Server reply code
 | `INVITE` | Invite user (op) | `INVITE john #private` |
 | `QUIT` | Disconnect | `QUIT :Goodbye!` |
 ---
-
-```
