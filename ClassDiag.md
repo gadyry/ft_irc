@@ -36,7 +36,7 @@
 ```
 
 ---
-```
+
 # FT_IRC Use Case Diagrams
 
 ## Diagram 1: Vertical Layout
