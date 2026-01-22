@@ -1,6 +1,6 @@
 
-#include "../includes/Server.hpp"
-
+# include "../includes/Server.hpp"
+# include "../includes/Client.hpp"
 
 Server::Server() {}
 
@@ -61,7 +61,28 @@ Server::Server(short port, std::string password) : port(port), password(password
 
 void    Server::addClient()
 {
-    // TODO
+    struct pollfd       newPoll;
+    Client              client;
+    struct sockaddr_in  addr_client;
+    socklen_t           address_len = sizeof(addr_client);
+
+
+    int acpt = accept(this->serv_fd, (struct sockaddr*)&addr_client, address_len);
+    if (acpt == -1)
+        throw std::runtime_error("accept() failed");
+
+    newPoll.fd = acpt;
+    newPoll.events = POLLIN;
+    newPoll.revents = 0;
+
+    fds_sentinels.push_back(newPoll);
+
+    std::cout << "New client: " << acpt << "connected" << std::endl;
+}
+
+void    Server::recieveData()
+{
+    
 }
 
 void    Server::executeServ()

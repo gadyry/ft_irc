@@ -19,7 +19,7 @@ bool validPort(char* str)
         if (!std::isdigit(str[i]))
             return (false);
 
-    u_short port = std::atoi(str);
+    short port = std::atoi(str);
     return (port >= 1024 && port <= 65535); // 16 bits → 2^16=65536 possible values
 }
 
