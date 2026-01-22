@@ -77,7 +77,11 @@ void    Server::executeServ()
             if (fds_sentinels[i].revents && POLLIN)
             {
                 /*    -> add a new client     */
+                if (fds_sentinels[i].fd == serv_fd)
+                    addClient(); // TODO
                 /*    -> recieve a new Data   */
+                else
+                    recieveData(); // TODO
             }
         }
     }
