@@ -1,21 +1,6 @@
 
 #include "../includes/Server.hpp"
-#include <map>
-#include <iostream>
-#include <vector>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <unistd.h> 
-#include <arpa/inet.h>
-#include <poll.h>
-#include <csignal>
-#include "client.hpp"
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <libc.h>
+
 
 Server::Server() {}
 
@@ -60,7 +45,7 @@ Server::Server(short port, std::string password) : port(port), password(password
     newPollFd.fd = serv_fd; // WHO to watch: which socket!
     newPollFd.events = POLLIN; // WHAT I want to watch: who care about !
     newPollFd.revents = 0; // WHAT actually happened (kernel writes this) disappears, I can leave it without assign it!
-
+    // fds_sentinels.push_back(newPollFd);
     fds_sentinels.push_back(newPollFd);
 
     /********* This next step just for testing: ********/
@@ -79,18 +64,27 @@ void    Server::executeServ()
     // TODO
     while (69)
     {
-        // check if the serv_fd == to fd_pull
-        if (poll(&fds_sentinels[0], ))
+        /*
+            timeout = -1   // wait forever
+            timeout = 0    // do not wait (non-blocking check)
+            timeout > 0    // wait N milliseconds
+        */
+        if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
+            throw runtime_error("poll() failed");
+
         for (size_t i = 0; i < fds_sentinels.size(); i++)
         {
-            /*    -> add a new client     */
-            /*    -> recieve a new Data   */
+            if (fds_sentinels[i].revents && POLLIN)
+            {
+                /*    -> add a new client     */
+                /*    -> recieve a new Data   */
+            }
         }
     }
 }
 
 Server::~Server()
 {
-   close(this->serv_fd);
+   close(this->serv_fd); // sakata zook dyal file descriptor
    // manage the resources!
 }
