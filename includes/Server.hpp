@@ -24,6 +24,10 @@ private :
     std::vector<struct pollfd> fds_sentinels;
     // std::map<int fd, Client* cl> clients;
 
+    // methods: 
+    void    addClient();
+    void    recieveData();
+
 public :
     Server();
     Server(short port, std::string password);
