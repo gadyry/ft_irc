@@ -224,7 +224,7 @@ These diagrams represent the **ft_irc** project use case model, showing:
 - Twelve use cases total (7 for Client, 5 additional for Operator)
 - The inheritance relationship where Operator extends Client functionality
 - All interactions contained within the IRC Server System boundary
-```
+
 ---
 
 # FT_IRC Sequence Diagrams
@@ -450,7 +450,6 @@ RPL_XXX     = Server reply code
 
 ---
 
----
 ## Notes
 
 ### Authentication Process
@@ -469,7 +468,6 @@ RPL_XXX     = Server reply code
 - Permission denied for unauthorized operations
 - Non-existent users/channels return appropriate errors
 
----
 ---
 ## Common IRC Commands (ft_irc)
 
