@@ -450,6 +450,7 @@ RPL_XXX     = Server reply code
 
 ---
 
+---
 ## Notes
 
 ### Authentication Process
@@ -469,7 +470,7 @@ RPL_XXX     = Server reply code
 - Non-existent users/channels return appropriate errors
 
 ---
-
+---
 ## Common IRC Commands (ft_irc)
 
 | Command | Description | Example |
