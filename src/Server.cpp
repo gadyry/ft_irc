@@ -59,6 +59,11 @@ Server::Server(short port, std::string password) : port(port), password(password
               << std::endl;
 }
 
+void    Server::addClient()
+{
+    // TODO
+}
+
 void    Server::executeServ()
 {
     // TODO 8=> I should handle the signal after building the serv
