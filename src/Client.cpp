@@ -1,6 +1,5 @@
 # include "../includes/Client.hpp"
 
-
 // Constructor
 Client::Client()
     : fd_client(-1), nickname(""), username(""), host(""), inputBuffer(""), reg_stat(false) {}
