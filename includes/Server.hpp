@@ -21,11 +21,11 @@ private :
     std::string password;
     int         serv_fd;
     std::vector<struct pollfd> fds_sentinels;
-    // std::map<int fd, Client* cl> clients;
+    std::map<int fd, Client* cl> clients;
 
     // methods: 
     void    addClient();
-    void    recieveData();
+    void    recieveData(int fdClient);
 
 public :
     Server();
