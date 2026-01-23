@@ -66,7 +66,6 @@ void    Server::addClient()
     struct sockaddr_in  addr_client;
     socklen_t           address_len = sizeof(addr_client);
 
-
     int acpt = accept(this->serv_fd, (struct sockaddr*)&addr_client, address_len);
     if (acpt == -1)
         throw std::runtime_error("accept() failed");
@@ -80,9 +79,19 @@ void    Server::addClient()
     std::cout << "New client: " << acpt << "connected" << std::endl;
 }
 
-void    Server::recieveData()
+void    Server::recieveData(int fdClient)
 {
-    
+    char buffer[1024] = {0};
+
+    ssize_t bytes = recv(fdClient, sizeof(buffer), 0);
+    if (bytes < 0)
+    {
+        // TODO
+    }
+    else
+    {
+        // TODO
+    }
 }
 
 void    Server::executeServ()
@@ -104,10 +113,10 @@ void    Server::executeServ()
             {
                 /*    -> add a new client     */
                 if (fds_sentinels[i].fd == serv_fd)
-                    addClient(); // TODO
+                    addClient();
                 /*    -> recieve a new Data   */
                 else
-                    recieveData(); // TODO
+                    recieveData(fds_sentinels[i].fd); // TODO
             }
         }
     }
@@ -115,6 +124,7 @@ void    Server::executeServ()
 
 Server::~Server()
 {
-   close(this->serv_fd); // sakata zook dyal file descriptor
+    if (this->serv_fd != -1)
+        close(this->serv_fd); // sakata zook dyal file descriptor
    // manage the resources!
 }
