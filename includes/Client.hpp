@@ -1,8 +1,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+# include "Server.hpp"
 
 # include <string>
 # include <iostream>
