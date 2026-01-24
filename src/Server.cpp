@@ -49,10 +49,8 @@ Server::Server(short port, std::string password) : port(port), password(password
     fds_sentinels.push_back(newPollFd);
 
     /********* This next step just for testing: ********/
-
-    // accepting connection request
     int clientSocket = accept(serv_fd, NULL, NULL);
-    // recieving data
+
     char buffer[1024] = { 0 };
     recv(clientSocket, buffer, sizeof(buffer), 0);
     std::cout << "Message from client: " << buffer
