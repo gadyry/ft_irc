@@ -85,6 +85,23 @@ void    Server::recieveData(int fdClient)
     char buffer[1024] = {0};
 
     ssize_t bytes = recv(fdClient, buffer, sizeof(buffer), 0);
+    /*
+            recv()
+        │
+        ├── bytes > 0
+        │     └── append data to Client buffer
+        │
+        ├── bytes == 0
+        │     └── client disconnected → cleanup
+        │
+        └── bytes < 0
+            ├── errno == EAGAIN / EWOULDBLOCK
+            │     └── ignore
+            │
+            └── else
+                    └── error → cleanup
+
+    */
     if (bytes > 0)
     {
         // TODO
