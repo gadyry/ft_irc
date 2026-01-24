@@ -93,6 +93,11 @@ void    Server::removeClient(int fd)
     close(fd);
 }
 
+void    processCmds(int fd)
+{
+    // TODO
+}
+
 void    Server::recieveData(int fdClient)
 {
     char buffer[BUFFER_SIZE] = {0};
@@ -114,6 +119,7 @@ void    Server::recieveData(int fdClient)
 
     // comp cmd => (IRC commands end with \r\n)
         // =>TODO
+    processCmds(clientFd);
 }
 
 void    Server::executeServ()

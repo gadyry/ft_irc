@@ -14,6 +14,8 @@
 
 # include "Client.hpp"
 
+# define BUFFER_SIZE 1024
+
 class Client;
 
 class Server
@@ -27,6 +29,9 @@ private :
 
     // methods: 
     void    addClient();
+
+    void    removeClient(int fd);
+    void    processCmds(int fd);
     void    recieveData(int fdClient);
 
 public :

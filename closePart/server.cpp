@@ -101,7 +101,7 @@ public:
     void processCommands(int client_fd) {
         std::string& buffer = client_buffers[client_fd];
         size_t pos;
-        
+
         // Find complete commands (ending with \r\n)
         while ((pos = buffer.find("\r\n")) != std::string::npos) {
             std::string command = buffer.substr(0, pos);
