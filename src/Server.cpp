@@ -28,7 +28,7 @@ Server::Server(short port, std::string password) : port(port), password(password
     addr_serv.sin_addr.s_addr = INADDR_ANY; // Bind to all interfaces (0.0.0.0)
 
 	if(setsockopt(this->serv_fd, SOL_SOCKET, SO_REUSEADDR, &camus, sizeof(camus)) < 0)
-		throw(std::runtime_error("failed to set option (SO_REUSEADDR) on socket"));
+		throw std::runtime_error("failed to set option (SO_REUSEADDR) on socket");
 
 	if (fcntl(serv_fd, F_SETFL, O_NONBLOCK) == -1)
 		throw(std::runtime_error("fcntl() failed"));
@@ -45,7 +45,7 @@ Server::Server(short port, std::string password) : port(port), password(password
     newPollFd.fd = serv_fd; // WHO to watch: which socket!
     newPollFd.events = POLLIN; // WHAT I want to watch: who care about !
     newPollFd.revents = 0; // WHAT actually happened (kernel writes this) disappears, I can leave it without assign it!
-    // fds_sentinels.push_back(newPollFd);
+
     fds_sentinels.push_back(newPollFd);
 
     /********* This next step just for testing: ********/
@@ -66,7 +66,7 @@ void    Server::addClient()
     struct sockaddr_in  addr_client;
     socklen_t           address_len = sizeof(addr_client);
 
-    int acpt = accept(this->serv_fd, (struct sockaddr*)&addr_client, address_len);
+    int acpt = accept(this->serv_fd, (struct sockaddr*)&addr_client, &address_len);
     if (acpt == -1)
         throw std::runtime_error("accept() failed");
 
@@ -75,6 +75,7 @@ void    Server::addClient()
     newPoll.revents = 0;
 
     fds_sentinels.push_back(newPoll);
+    clients[acpt] = "";
 
     std::cout << "New client: " << acpt << "connected" << std::endl;
 }
@@ -83,8 +84,8 @@ void    Server::recieveData(int fdClient)
 {
     char buffer[1024] = {0};
 
-    ssize_t bytes = recv(fdClient, sizeof(buffer), 0);
-    if (bytes < 0)
+    ssize_t bytes = recv(fdClient, buffer, sizeof(buffer), 0);
+    if (bytes > 0)
     {
         // TODO
     }
@@ -105,7 +106,7 @@ void    Server::executeServ()
             timeout > 0    // wait N milliseconds
         */
         if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
-            throw runtime_error("poll() failed");
+            throw std::runtime_error("poll() failed");
 
         for (size_t i = 0; i < fds_sentinels.size(); i++)
         {
@@ -124,7 +125,13 @@ void    Server::executeServ()
 
 Server::~Server()
 {
+   // manage the resources!
+    // for (size_t i = 1; i < clients.size(); i++)
+    // {
+    //     std::cout << "Client: " << this->clients[i].getFdClient() << "disconnected!" << std::endl;
+    //     close(this->clients[i].getFdClient());
+    // }
+
     if (this->serv_fd != -1)
         close(this->serv_fd); // sakata zook dyal file descriptor
-   // manage the resources!
 }

@@ -12,7 +12,9 @@
 # include <arpa/inet.h>    // htons, htonl
 # include <unistd.h>       // close
 
-class client;
+# include "Client.hpp"
+
+class Client;
 
 class Server
 {
@@ -21,7 +23,7 @@ private :
     std::string password;
     int         serv_fd;
     std::vector<struct pollfd> fds_sentinels;
-    std::map<int fd, Client* cl> clients;
+    std::map<int, std::string> clients;
 
     // methods: 
     void    addClient();
