@@ -80,36 +80,42 @@ void    Server::addClient()
     std::cout << "New client: " << acpt << "connected" << std::endl;
 }
 
+void    Server::removeClient(int fd)
+{
+    clients.erase(fd);
+
+    for(size_t i = 0; i <fds_sentinels.size(); i++)
+    {
+        if (fds_sentinels[i].fd == fd)
+        {
+            fds_sentinels.erase(fds_sentinels.begin() + i);
+            break;
+        }
+    }
+    close(fd);
+}
+
 void    Server::recieveData(int fdClient)
 {
-    char buffer[1024] = {0};
+    char buffer[BUFFER_SIZE] = {0};
 
-    ssize_t bytes = recv(fdClient, buffer, sizeof(buffer), 0);
-    /*
-            recv()
-        │
-        ├── bytes > 0
-        │     └── append data to Client buffer
-        │
-        ├── bytes == 0
-        │     └── client disconnected → cleanup
-        │
-        └── bytes < 0
-            ├── errno == EAGAIN / EWOULDBLOCK
-            │     └── ignore
-            │
-            └── else
-                    └── error → cleanup
+    ssize_t bytes = recv(fdClient, buffer, sizeof(buffer) - 1, 0);
 
-    */
-    if (bytes > 0)
+    if (bytes <= 0)
     {
         // TODO
+        if (bytes == 0) // cleanup!!!!!!!!!!!!!!!
+            std::cout << "Client disconnected: fd=" << fdClient << std::endl;
+        else
+            std::cerr << "recv() error on fd=" << fdClient << std::endl;
+        removeClient(clientFd) // TODO !
+        return;
     }
-    else
-    {
-        // TODO
-    }
+
+    clients[fdClient] += std::string(buffer, bytes);
+
+    // comp cmd => (IRC commands end with \r\n)
+        // =>TODO
 }
 
 void    Server::executeServ()
@@ -143,11 +149,6 @@ void    Server::executeServ()
 Server::~Server()
 {
    // manage the resources!
-    // for (size_t i = 1; i < clients.size(); i++)
-    // {
-    //     std::cout << "Client: " << this->clients[i].getFdClient() << "disconnected!" << std::endl;
-    //     close(this->clients[i].getFdClient());
-    // }
 
     if (this->serv_fd != -1)
         close(this->serv_fd); // sakata zook dyal file descriptor
