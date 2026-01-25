@@ -67,28 +67,28 @@ public:
         sendCommand("NICK testuser");
         receiveResponse();
         
-        sleep(1);
+        sleep(10);
         
         // Test 2: USER command
         std::cout << "\nTest 2: User registration" << std::endl;
-        sendCommand("USER testuser 0 * :Test User");
+        sendCommand("USER testuser 0 * :Test User leeeeeeeeehwak");
         receiveResponse();
         
-        sleep(1);
+        sleep(10);
         
         // Test 3: PING/PONG
         std::cout << "\nTest 3: PING/PONG" << std::endl;
         sendCommand("PING :test123");
         receiveResponse();
         
-        sleep(1);
+        sleep(10);
         
         // Test 4: PRIVMSG
         std::cout << "\nTest 4: Private message" << std::endl;
         sendCommand("PRIVMSG #channel :Hello, World!");
         receiveResponse();
         
-        sleep(1);
+        sleep(10);
         
         // Test 5: Multiple commands at once (buffer test)
         std::cout << "\nTest 5: Multiple commands" << std::endl;
@@ -97,7 +97,7 @@ public:
         receiveResponse();
         receiveResponse();
         
-        sleep(1);
+        sleep(10);
         
         // Test 6: QUIT
         std::cout << "\nTest 6: Disconnecting" << std::endl;
