@@ -48,7 +48,7 @@ public:
         
         std::cout << "Server listening on port " << port << std::endl;
     }
-    
+
     void addClient() {
         sockaddr_in client_addr;
         socklen_t client_len = sizeof(client_addr);
@@ -58,27 +58,29 @@ public:
             std::cerr << "accept() failed" << std::endl;
             return;
         }
-        
+
         pollfd client_poll;
         client_poll.fd = client_fd;
         client_poll.events = POLLIN;
         client_poll.revents = 0;
         fds_sentinels.push_back(client_poll);
         
-        client_buffers[client_fd] = ""; // Initialize buffer for this client
+        client_buffers[client_fd] = "";
         
         std::cout << "New client connected: fd=" << client_fd << std::endl;
         
-        // Send welcome message
         std::string welcome = ":server 001 * :Welcome to IRC!\r\n";
         send(client_fd, welcome.c_str(), welcome.length(), 0);
     }
     
     void receiveData(int client_fd) {
-        char buffer[BUFFER_SIZE];
-        memset(buffer, 0, BUFFER_SIZE);
+        char buffer[BUFFER_SIZE] = {0};
         
         ssize_t bytes = recv(client_fd, buffer, BUFFER_SIZE - 1, 0);
+        // std::cout << "\033[32m"        // green
+        //       << "buffer: " << buffer << "sizeof(buffer)" << sizeof(buffer)
+        //       << "\033[0m"         // reset color
+        //       << std::endl;
         
         if (bytes <= 0) {
             // Client disconnected or error
@@ -93,6 +95,11 @@ public:
         
         // Add received data to client's buffer
         client_buffers[client_fd] += std::string(buffer, bytes);
+
+        std::cout << "\033[32m"        // green
+            << "buffer: " << client_buffers[client_fd] << "sizeof(buffer) " << sizeof(client_buffers) << " " << client_fd
+            << "\033[0m"         // reset color
+            << std::endl;
         
         // Process complete commands (IRC commands end with \r\n)
         processCommands(client_fd);
@@ -169,10 +176,10 @@ public:
         }
     }
 
-        ~SimpleIRCServer()
-        {
-            close(serv_fd);
-        }
+    ~SimpleIRCServer()
+    {
+        close(serv_fd);
+    }
 };
 
 int main()
