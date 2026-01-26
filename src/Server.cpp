@@ -91,8 +91,27 @@ void    Server::removeClient(int fd)
 void    processCmds(int fd)
 {
     // TODO
-    std::string& buffer = clients[fd];
-}
+    /**
+        Purpose of processCmds(fd)
+
+        ~~ This function is called after new data is read from the socket. Its job is to:
+
+        => Extract full commands from the client buffer (\r\n terminated)
+
+        => Parse the command and its parameters (e.g., NICK, USER, JOIN)
+
+        => Execute the command (update client state, respond to client, broadcast messages)
+
+        => Leave partial data in buffer if a command isn’t complete
+    **/
+    
+    Client* client = clients[fd];
+    std::string& buffer = client->inputBuffer;
+
+    while (buffer.find("\r\n") == std::string npos)
+    {
+        // On va continous !!
+    }
 
 void    Server::recieveData(int fdClient)
 {
