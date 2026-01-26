@@ -11,7 +11,7 @@
 class Client
 {
 private:
-    short       fd_client;
+    int         fd_client;
     std::string nickname;
     std::string username;
     std::string host;
