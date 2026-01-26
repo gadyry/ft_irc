@@ -7,20 +7,23 @@
 # include <iostream>
 # include <sys/socket.h>
 # include <sys/types.h>
+# include <set>
 
 class Client
 {
 private:
-    int         fd_client;
-    std::string nickname;
-    std::string username;
-    std::string host;
-    std::string inputBuffer;
-    bool        reg_stat;
+    int                     fd_client;
+    std::string             nickname;
+    std::string             username;
+    std::string             host;
+    std::string             inputBuffer;
+    bool                    reg_stat;
+    std::set<std::string>   joinedChannels; // chose of set : ignore the duplicate strings!
 
 public:
     // Constructor & Destructor
     Client();
+    Client(int fd);
     ~Client();
 
     // Setters
