@@ -4,6 +4,9 @@
 Client::Client()
     : fd_client(-1), nickname(""), username(""), host(""), inputBuffer(""), reg_stat(false) {}
 
+Client::Client(int fd)
+    : fd_client(fd), nickname(""), username(""), host(""), inputBuffer(""), reg_stat(false) {}
+
 // Destructor
 Client::~Client() {}
 
