@@ -4,6 +4,7 @@
 
     => Create a minimal Server class that binds and listens on a port.
 */
+
 #include <iostream>
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
@@ -19,7 +20,7 @@ bool validPort(char* str)
         if (!std::isdigit(str[i]))
             return (false);
 
-    short port = std::atoi(str);
+    u_short port = std::atoi(str);
     return (port >= 1024 && port <= 65535); // 16 bits → 2^16=65536 possible values
 }
 
@@ -39,7 +40,7 @@ int main(int ac, char** av)
     try
     {
         Server serv(std::atoi(av[1]), av[2]);
-        server.executionServ();
+        // server.executeServ();
     }
     catch (const std::exception &e)
     {
