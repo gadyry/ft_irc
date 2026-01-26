@@ -32,6 +32,7 @@ private :
     void    addClient();
 
     void    removeClient(int fd);
+    void    _handleCmd(std::string& cmd, int fd);
     void    processCmds(int fd);
     void    recieveData(int fdClient);
 
