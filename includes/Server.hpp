@@ -11,6 +11,7 @@
 # include <netinet/in.h>   // sockaddr_in, INADDR_ANY
 # include <arpa/inet.h>    // htons, htonl
 # include <unistd.h>       // close
+# include <sys/errno.h>
 
 # include "Client.hpp"
 
@@ -25,7 +26,7 @@ private :
     std::string password;
     int         serv_fd;
     std::vector<struct pollfd> fds_sentinels;
-    std::map<int, std::string> clients;
+    std::map<int, Client*> clients; // for me the best choise using object not std::string
 
     // methods: 
     void    addClient();

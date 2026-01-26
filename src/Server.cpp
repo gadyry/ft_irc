@@ -14,18 +14,10 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
     if (serv_fd < 0)
         throw std::runtime_error("socket() failed");
 
-    /*
-        struct sockaddr_in
-        {
-            sa_family_t    sin_family;   // Address family (AF_INET)
-            in_port_t      sin_port;     // Port number (network byte order)
-            struct in_addr sin_addr;     // IPv4 address
-            unsigned char  sin_zero[8];  // Padding (unused)
-        };
-    */
+    // std::memset(&addr_serv, 0, sizeof(addr_serv));
     addr_serv.sin_family = PF_INET;
-    addr_serv.sin_port = htons(this->port); // Host TO Network Short
-    addr_serv.sin_addr.s_addr = INADDR_ANY; // Bind to all interfaces (0.0.0.0)
+    addr_serv.sin_port = htons(this->port);
+    addr_serv.sin_addr.s_addr = INADDR_ANY;
 
 	if(setsockopt(this->serv_fd, SOL_SOCKET, SO_REUSEADDR, &camus, sizeof(camus)) < 0)
 		throw std::runtime_error("failed to set option (SO_REUSEADDR) on socket");
@@ -36,50 +28,53 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
     if (bind(serv_fd, (sockaddr*)&addr_serv, sizeof(addr_serv)) < 0)
         throw std::runtime_error("bind() failed");
 
-    if (listen(serv_fd, 128) < 0) // int listen(int socket, int backlog); try to set it to 0
+    if (listen(serv_fd, 128) < 0)
         throw std::runtime_error("listen() failed");
 
     std::cout << "Server connected\n";
     std::cout << "Waiting for connection" << std::endl;
 
-    newPollFd.fd = serv_fd; // WHO to watch: which socket!
-    newPollFd.events = POLLIN; // WHAT I want to watch: who care about !
-    newPollFd.revents = 0; // WHAT actually happened (kernel writes this) disappears, I can leave it without assign it!
+    newPollFd.fd = serv_fd;
+    newPollFd.events = POLLIN;
+    newPollFd.revents = 0;
 
     fds_sentinels.push_back(newPollFd);
-
-    /********* This next step just for testing: ********/
-    int clientSocket = accept(serv_fd, NULL, NULL);
-
-    char buffer[1024] = { 0 };
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-    std::cout << "Message from client: " << buffer
-              << std::endl;
 }
 
 void    Server::addClient()
 {
     struct pollfd       newPoll;
-    Client              client;
     struct sockaddr_in  addr_client;
     socklen_t           address_len = sizeof(addr_client);
 
     int acpt = accept(this->serv_fd, (struct sockaddr*)&addr_client, &address_len);
     if (acpt == -1)
+    {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return;
         throw std::runtime_error("accept() failed");
+    }
+
+    // if (fcntl(acpt, F_SETFL, O_NONBLOCK) == -1)
+    // {
+    //     close(acpt);
+    //     throw std::runtime_error("fcntl(O_NONBLOCK) failed");
+    // }
 
     newPoll.fd = acpt;
     newPoll.events = POLLIN;
     newPoll.revents = 0;
 
     fds_sentinels.push_back(newPoll);
-    clients[acpt] = "";
+
+    clients[acpt] = new Client(acpt);
 
     std::cout << "New client: " << acpt << "connected" << std::endl;
 }
 
 void    Server::removeClient(int fd)
 {
+    delete clients[fd];
     clients.erase(fd);
 
     for(size_t i = 0; i <fds_sentinels.size(); i++)
@@ -96,6 +91,7 @@ void    Server::removeClient(int fd)
 void    processCmds(int fd)
 {
     // TODO
+    std::string& buffer = clients[fd];
 }
 
 void    Server::recieveData(int fdClient)

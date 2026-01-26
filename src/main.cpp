@@ -20,7 +20,7 @@ bool validPort(char* str)
         if (!std::isdigit(str[i]))
             return (false);
 
-    u_short port = std::atoi(str);
+    long port = std::strtol(str, NULL, 10);
     return (port >= 1024 && port <= 65535); // 16 bits → 2^16=65536 possible values
 }
 
@@ -39,8 +39,8 @@ int main(int ac, char** av)
     }
     try
     {
-        Server serv(std::atoi(av[1]), av[2]);
-        // server.executeServ();
+        Server serv(std::strtol(av[1], NULL, 10), av[2]);
+        server.executeServ();
     }
     catch (const std::exception &e)
     {
