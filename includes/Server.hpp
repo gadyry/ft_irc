@@ -21,7 +21,7 @@ class Client;
 class Server
 {
 private :
-    short       port;
+    u_short       port;
     std::string password;
     int         serv_fd;
     std::vector<struct pollfd> fds_sentinels;
@@ -36,7 +36,7 @@ private :
 
 public :
     Server();
-    Server(short port, std::string password);
+    Server(u_short port, std::string password);
     ~Server();
 
     // methods :

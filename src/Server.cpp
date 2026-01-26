@@ -4,7 +4,7 @@
 
 Server::Server() {}
 
-Server::Server(short port, std::string password) : port(port), password(password), serv_fd(-1)
+Server::Server(u_short port, std::string password) : port(port), password(password), serv_fd(-1)
 {
     struct sockaddr_in  addr_serv;
     int                 camus = 1;
@@ -111,7 +111,7 @@ void    Server::recieveData(int fdClient)
             std::cout << "Client disconnected: fd=" << fdClient << std::endl;
         else
             std::cerr << "recv() error on fd=" << fdClient << std::endl;
-        removeClient(clientFd) // TODO !
+        removeClient(fdClient); // TODO !
         return;
     }
 
@@ -119,7 +119,7 @@ void    Server::recieveData(int fdClient)
 
     // comp cmd => (IRC commands end with \r\n)
         // =>TODO
-    processCmds(clientFd);
+    processCmds(fdClient);
 }
 
 void    Server::executeServ()
