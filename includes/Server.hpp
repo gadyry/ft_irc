@@ -29,6 +29,9 @@ private :
     std::vector<struct pollfd> fds_sentinels;
     std::map<int, Client*> clients; // for me the best choise using object not std::string
 
+    typedef void (Server::*handleCommand)(Client&);
+    std::map<std::string, handleCommand> __commands; // the best & clean way to handle cmds , <<if, else == prostutation>>
+
     // methods: 
     void    addClient();
 
@@ -36,6 +39,7 @@ private :
     void    _handleCmd(std::string& fullCmd, int fd);
     void    processCmds(int fd);
     void    recieveData(int fdClient);
+    void    senError(Client& client, const std::string& msg);
 
 public :
     Server();
