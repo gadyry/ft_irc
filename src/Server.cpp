@@ -2,15 +2,22 @@
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
 
-Server::Server() {}
+Server::Server()
+{
+    // handleCommand["NICK"] = &Server::_cmdNick;
+    // handleCommand["USER"] = &Server::_cmdUser;
+    // handleCommand["JOIN"] = &Server::_cmdJoin;
+    // handleCommand["PRIVMSG"] = &Server::_cmdPrivmsg;
+    // handleCommand["QUIT"] = &Server::_cmdQuit;
+}
 
-Server::Server(u_short port, std::string password) : port(port), password(password), serv_fd(-1)
+Server::Server(u_short port, std::string password) : port(port), password(password)
 {
     struct sockaddr_in  addr_serv;
     int                 camus = 1;
     struct pollfd       newPollFd;
 
-    this->serv_fd = socket(PF_INET, SOCK_STREAM, 0);
+  this->serv_fd = socket(PF_INET, SOCK_STREAM, 0);
     if (serv_fd < 0)
         throw std::runtime_error("socket() failed");
 
@@ -88,7 +95,7 @@ void    Server::removeClient(int fd)
     close(fd);
 }
 
-void    senError(Client& client, const std::String& msg)
+void    Server::sendError(Client* client, const std::string& msg)
 {
     /* this function will help you to handle all type errors possible without
     *  repeating msgs each time!!!!!
@@ -98,35 +105,49 @@ void    senError(Client& client, const std::String& msg)
     std::cout <<"client: " << client.fd_client <<std::endl;
 }
 
-void    _handleCmd(std::string& fullCmd, int fd)
-{
-    std::std::istringstream splitCmd(fullCmd); // full cmd splited {"NICK", "leehwak"}
-    std::string             cmd; // NICK, JOIN, ...
-    // std::string         restCmd; // the rest line after cmd
-    std::map<std::string, handleCommand>::iterator it;
-    Client* client = Client[fd];
 
-    splitCmd >> cmd;
-    it = __commands.find(cmd);
-    if (it != __commands.end())
-        (this->*(it->second))(client);
-    else
-        sendError(client, "421 Unknown command");
+// 8=>  helpe me to split string to tokens d zeeb
+std::vector<std::string> split_or(const std::string& str)
+{
+    std::vector<std::string> tokens;
+    std::istringstream splitStr(str);
+    std::string token;
+    
+    while (splitStr >> token)
+        tokens.push_back(token);
+    
+    return (tokens);
 }
 
-void    processCmds(int fd)
+void    _handleCmd(std::string& fullCmd, int fd)
+{
+    std::vector<std::string> tokens = split(fullCmd);
+    std::string cmd = tokens[0];
+
+    if (cmd == "NICK")
+        cmdNick(client, tokens);
+    else if (cmd == "USER")
+        cmdUser(client, tokens)
+    else if (cmd == "JOIN")
+        cmdUser(client, tokens);
+    else if (cmd == "CHEE9LWA")
+        // HANDLE CMD
+    
+}
+
+void    Server::processCmds(int fd)
 {
     Client* client = clients[fd];
     std::string& buffer = client->inputBuffer;
-    size_t position = 0
+    size_t position = 0;
 
-    while ((position = buffer.find("\r\n")) != std::string npos)
+    while ((position = buffer.find("\r\n")) != std::string::npos)
     {
-       std::string cmd = buffer.substr(0, position);
+       std::string fullCmd = buffer.substr(0, position);
        buffer.erase(0, position + 2);
 
-       if (!cmd.empty())
-            _handleCmd(cmd, fd);
+       if (!fullCmd.empty())
+            _handleCmd(fullCmd, fd);
     }
 }
 
