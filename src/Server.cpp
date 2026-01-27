@@ -88,12 +88,16 @@ void    Server::removeClient(int fd)
     close(fd);
 }
 
-void    _handleCmd(std::string& cmd, int fd)
+void    _handleCmd(std::string& fullCmd, int fd)
 {
-    if (cmd.find("NICK") == 0)
-        // HANDLE NICK cmd!
+    std::isstringstream splitCmd(fullCmd); // full cmd splited {"NICK", "leehwak"}
+    std::string         cmd; // NICK, JOIN, ...
+    std::string         restCmd; // the rest line after cmd
 
-    // TODO
+    slpitStr >> cmd;
+    std::getline(splitCmd, restCmd);
+
+    // if else , to check cmds type !!!
 }
 
 void    processCmds(int fd)
@@ -108,10 +112,7 @@ void    processCmds(int fd)
        buffer.erase(0, position + 2);
 
        if (!cmd.empty())
-       {
-            std::cout << "Client " << fd << " sent: " << cmd << std::endl;
             _handleCmd(cmd, fd);
-       }
     }
 }
 

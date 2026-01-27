@@ -147,7 +147,7 @@ public:
             removeClient(client_fd);
         }
     }
-    
+
     void removeClient(int client_fd) {
         close(client_fd);
         client_buffers.erase(client_fd);

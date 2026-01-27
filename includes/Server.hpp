@@ -12,6 +12,7 @@
 # include <arpa/inet.h>    // htons, htonl
 # include <unistd.h>       // close
 # include <sys/errno.h>
+# include <istream> // for getline(isstreamstring, dorthwa);
 
 # include "Client.hpp"
 
@@ -32,7 +33,7 @@ private :
     void    addClient();
 
     void    removeClient(int fd);
-    void    _handleCmd(std::string& cmd, int fd);
+    void    _handleCmd(std::string& fullCmd, int fd);
     void    processCmds(int fd);
     void    recieveData(int fdClient);
 
