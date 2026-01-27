@@ -119,25 +119,30 @@ std::vector<std::string> split_or(const std::string& str)
     return (tokens);
 }
 
-void    _handleCmd(std::string& fullCmd, int fd)
+void    _handleCmd(Client* client, int fd)
 {
     std::vector<std::string> tokens = split(fullCmd);
     std::string cmd = tokens[0];
 
     if (cmd == "NICK")
-        cmdNick(client, tokens);
+        _cmdNick(client, tokens);
     else if (cmd == "USER")
-        cmdUser(client, tokens)
+        _cmdUser(client, tokens);
     else if (cmd == "JOIN")
-        cmdUser(client, tokens);
-    else if (cmd == "CHEE9LWA")
-        // HANDLE CMD
-    
+        _cmdJoin(client, tokens);
+    else if (cmd == "PRIVMSG")
+        _handlePrivmsg(client, fullCmd);
+    else if (cmd == "QUIT")
+        _handleQuit(client);
+    // else if (cmd == "CHEE9LWA")
+    //     // HANDLE CMD
 }
 
 void    Server::processCmds(int fd)
 {
     Client* client = clients[fd];
+    if (!client) return;
+
     std::string& buffer = client->inputBuffer;
     size_t position = 0;
 
@@ -147,7 +152,7 @@ void    Server::processCmds(int fd)
        buffer.erase(0, position + 2);
 
        if (!fullCmd.empty())
-            _handleCmd(fullCmd, fd);
+            _handleCmd(client, fd);
     }
 }
 
