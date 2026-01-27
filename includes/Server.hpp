@@ -37,10 +37,17 @@ private :
     void    addClient();
 
     void    removeClient(int fd);
-    void    _handleCmd(std::string& fullCmd, int fd);
+    void    _handleCmd(Client* client, int fd);
     void    processCmds(int fd);
     void    recieveData(int fdClient);
     void    sendError(Client* client, const std::string& msg);
+
+    // irc commands:
+    void    _cmdNick(Client* client, std::vector<std::string>& tokens);
+    void    _cmdUser(Client* client, std::vector<std::string>& tokens);
+    void    _cmdJoin(Client* client, std::vector<std::string>& tokens);
+    void    _handlePrivmsg(Client* client, std::string fullCmd);
+    void    _handleQuit(Client* client);
 
 public :
     Server();
