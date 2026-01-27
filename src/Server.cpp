@@ -88,16 +88,30 @@ void    Server::removeClient(int fd)
     close(fd);
 }
 
+void    senError(Client& client, const std::String& msg)
+{
+    /* this function will help you to handle all type errors possible without
+    *  repeating msgs each time!!!!!
+    */
+
+    // for What I need I send a simple msg !!!
+    std::cout <<"client: " << client.fd_client <<std::endl;
+}
+
 void    _handleCmd(std::string& fullCmd, int fd)
 {
-    std::isstringstream splitCmd(fullCmd); // full cmd splited {"NICK", "leehwak"}
-    std::string         cmd; // NICK, JOIN, ...
-    std::string         restCmd; // the rest line after cmd
+    std::std::istringstream splitCmd(fullCmd); // full cmd splited {"NICK", "leehwak"}
+    std::string             cmd; // NICK, JOIN, ...
+    // std::string         restCmd; // the rest line after cmd
+    std::map<std::string, handleCommand>::iterator it;
+    Client* client = Client[fd];
 
-    slpitStr >> cmd;
-    std::getline(splitCmd, restCmd);
-
-    // if else , to check cmds type !!!
+    splitCmd >> cmd;
+    it = __commands.find(cmd);
+    if (it != __commands.end())
+        (this->*(it->second))(client);
+    else
+        sendError(client, "421 Unknown command");
 }
 
 void    processCmds(int fd)
