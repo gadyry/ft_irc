@@ -335,3 +335,34 @@ void Server::_handleCmd(std::string& fullCmd, int fd)
     else
         client->sendMsg("421 " + cmd + " :Unknown command\r\n");
 }
+
+
+void Server::_handleCmd(std::string& fullCmd, int fd)
+{
+    Client* client = clients[fd];
+    if (!client)
+        return;
+
+    std::vector<std::string> args = split_or(fullCmd);
+    if (args.empty())
+        return;
+
+    std::string cmd = args[0];
+
+    // IRC commands are case-insensitive
+    for (size_t i = 0; i < cmd.size(); ++i)
+        cmd[i] = std::toupper(cmd[i]);
+
+    if (cmd == "NICK")
+        handleNick(*client, args);
+    else if (cmd == "USER")
+        handleUser(*client, args);
+    else if (cmd == "JOIN")
+        handleJoin(*client, args);
+    else if (cmd == "PRIVMSG")
+        handlePrivmsg(*client, fullCmd); // ⚠ special case
+    else if (cmd == "QUIT")
+        handleQuit(*client);
+    else
+        client->sendMsg("421 " + cmd + " :Unknown command\r\n");
+}
