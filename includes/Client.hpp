@@ -20,6 +20,11 @@ private:
     bool                    reg_stat; // khdamteek db a B9 jatt
     std::set<std::string>   joinedChannels; // chose of set : ignore the duplicate strings!
 
+    bool pass_ok;
+    bool nick_ok;
+    bool user_ok;
+
+
 public:
     // Constructor & Destructor
     Client();
