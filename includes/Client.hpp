@@ -17,7 +17,7 @@ private:
     std::string             username;
     std::string             host;
     std::string             inputBuffer;
-    bool                    reg_stat;
+    bool                    reg_stat; // khdamteek db a B9 jatt
     std::set<std::string>   joinedChannels; // chose of set : ignore the duplicate strings!
 
 public:
