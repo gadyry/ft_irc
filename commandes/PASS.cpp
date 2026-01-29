@@ -2,36 +2,30 @@
 # include "../includes/Client.hpp"
 # include "../includes/IrcReplies.hpp"
 
-void    Server::_cmdPass(Client* client, std::vector<std::string> tokens, std::string& fullCmd)
+void Server::_cmdPass(Client* client, std::vector<std::string>& tokens)
 {
-    std::string& cmd = tokens[0];
-
-    if (client->getReg_stat()) // client already regestred!!!
+    if (client->getRegStat())
     {
-        sendError(client, ERR_ALREADYREGISTRED, "msg Error: client already regestred");
+        sendError(client, ERR_ALREADYREGISTRED(client->getNickname()));
         return;
     }
 
-    if (client->size() < 2) // need more params!!
+    if (tokens.size() < 2)
     {
-        sendError(client, ERR_NEEDMOREPARAMS, "msg Error:  need more params");
+        sendError(client, ERR_NEEDMOREPARAMS(client->getNickname(), "PASS"));
         return;
     }
 
-    if (client->size() > 2) // need more params!!
-    {
-        sendError(client, ERR_NEEDMOREPARAMS, "msg Error:  Too many param");
-        return;
-    }
-
-    std::string& pass = tokens[1];
-    if (pass[0] == ':')
-        pass.erase(0,1);
+    std::string pass = tokens[1];
+    if (!pass.empty() && pass[0] == ':')
+        pass.erase(0, 1);
 
     if (pass != this->password)
     {
-        sendError(client, "464 :Password incorrect");
+        sendError(client, ERR_PASSWDMISMATCH(client->getNickname()));
         return;
     }
-    
+
+    client->pass_ok = true;
 }
+
