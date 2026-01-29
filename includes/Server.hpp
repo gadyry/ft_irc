@@ -35,18 +35,25 @@ private :
 
     // methods: 
     void    addClient();
+    void    recieveData(int fdClient);
 
     void    removeClient(int fd);
-    void    _handleCmd(Client* client, int fd);
-    void    processCmds(int fd);
-    void    recieveData(int fdClient);
     void    sendError(Client* client, const std::string& msg);
 
+    // utils handle cmd part:
+    void    _regestrationIsValid(Client* client);
+    void    _handleLine(Client* client, std::string& fullCmd);
+    void    _handleCmd(Client* client, std::vector<std::string>& tokens);
+    void    processCmds(int fd);
+
     // irc commands:
+    void    _cmdPass(Client* client, std::vector<std::string>& tokens, std::string& fullCmd);
     void    _cmdNick(Client* client, std::vector<std::string>& tokens);
     void    _cmdUser(Client* client, std::vector<std::string>& tokens);
+
     void    _cmdJoin(Client* client, std::vector<std::string>& tokens);
     void    _handlePrivmsg(Client* client, std::string fullCmd);
+
     void    _handleQuit(Client* client);
 
 public :
