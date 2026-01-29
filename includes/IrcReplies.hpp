@@ -1,6 +1,5 @@
-// ============= replies.hpp =============
-#ifndef REPLIES_HPP
-#define REPLIES_HPP
+#ifndef IRCREPLIES_HPP
+#define IRCREPLIES_HPP
 
 #include <string>
 
@@ -172,4 +171,4 @@
 #define RPL_PONG(server, token) \
     (std::string(":") + (server) + " PONG " + (server) + " :" + (token) + POSTFIX)
 
-#endif // REPLIES_HPP
+#endif

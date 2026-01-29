@@ -15,7 +15,7 @@ Server::_cmdPass(Client* client, std::vector<std::string> tokens, std::string& f
     if (client->size() < 2) // need more params!!
     {
         sendError(client, ERR_NEEDMOREPARAMS, "msg Error:  need more params");
-        return ;
+        return;
     }
 
     if (client->size() > 2) // need more params!!
@@ -23,7 +23,5 @@ Server::_cmdPass(Client* client, std::vector<std::string> tokens, std::string& f
         sendError(client, ERR_NEEDMOREPARAMS, "msg Error:  Too many param");
         return;
     }
-
-    
 
 }

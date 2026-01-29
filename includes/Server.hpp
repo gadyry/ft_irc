@@ -16,6 +16,7 @@
 # include <istream> // for getline(isstreamstring, dorthwa);
 
 # include "Client.hpp"
+# include "IrcReplies.hpp"
 
 # define BUFFER_SIZE 1024
 
