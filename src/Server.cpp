@@ -102,8 +102,7 @@ void    Server::sendError(Client* client, const std::string& msg)
     */
 
     // for now:I need I send a simple msg, I should change it in future !!!
-    std::cerr <<"client: " << client.fd_client
-              << " " << msg << std::endl;
+    send(client->getFd(), msg.c_str(), msg.length(), 0);
 }
 
 
@@ -122,8 +121,13 @@ std::vector<std::string> split_or(const std::string& str)
 
 void    _regestrationIsValid(Client* client)
 {
-    if (client->nickname && client->username && )
-    // TODO
+
+    if (client->pass_ok && client->nick_ok && client->user_ok)
+    {
+        client->setRegStat(true);
+        // send msg RPL_WELCOME !!
+    }
+
 }
 
 void    _handleLine(Client* client, std::String& fullCmd)
@@ -134,7 +138,7 @@ void    _handleLine(Client* client, std::String& fullCmd)
     if (!client->getReg_stat())
     {
         if (cmd == "PASS")
-            _cmdPass(client, tokens, fullCmd);
+            _cmdPass(client, tokens);
         else if (cmd == "NICK")
             _cmdNick(client, tokens);
         else if (cmd == "USER")

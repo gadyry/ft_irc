@@ -48,7 +48,7 @@ private :
     void    processCmds(int fd);
 
     // irc commands:
-    void    _cmdPass(Client* client, std::vector<std::string>& tokens, std::string& fullCmd);
+    void    _cmdPass(Client* client, std::vector<std::string>& tokens);
     void    _cmdNick(Client* client, std::vector<std::string>& tokens);
     void    _cmdUser(Client* client, std::vector<std::string>& tokens);
 
