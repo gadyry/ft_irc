@@ -1,4 +1,3 @@
-
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
 
@@ -137,12 +136,12 @@ void    _handleLine(Client* client, std::string& fullCmd)
     {
         if (cmd == "PASS")
             _cmdPass(client, tokens);
-        else if (cmd == "NICK")
-            _cmdNick(client, tokens);
-        else if (cmd == "USER")
-            _cmdUser(client, tokens);
-        else if (cmd == "QUIT")
-            _handleQuit(client);
+        // else if (cmd == "NICK")
+        //     _cmdNick(client, tokens);
+        // else if (cmd == "USER")
+        //     _cmdUser(client, tokens);
+        // else if (cmd == "QUIT")
+        //     _handleQuit(client);
         else
             sendError(client, ERR_NOTREGISTERED(client->getNickname()));
 
