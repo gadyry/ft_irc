@@ -102,7 +102,7 @@ void    Server::sendError(Client* client, const std::string& msg)
     */
 
     // for now:I need I send a simple msg, I should change it in future !!!
-    send(client->getFd(), msg.c_str(), msg.length(), 0);
+    send(client->client->getFdClient(), msg.c_str(), msg.length(), 0);
 }
 
 
@@ -121,13 +121,11 @@ std::vector<std::string> split_or(const std::string& str)
 
 void    _regestrationIsValid(Client* client)
 {
-
-    if (client->pass_ok && client->nick_ok && client->user_ok)
+    if (client->isFullyAuthenticated())
     {
-        client->setRegStat(true);
-        // send msg RPL_WELCOME !!
+        std::string welcome = RPL_WELCOME(client->getNickname(), client->getUserName(), client->getHost());
+        send(client->getFdClient(), welcome.c_str(), welcome.length(), 0);
     }
-
 }
 
 void    _handleLine(Client* client, std::String& fullCmd)
@@ -135,7 +133,7 @@ void    _handleLine(Client* client, std::String& fullCmd)
     std::vector<std::string> tokens = split_or(fullCmd);
     std::string cmd = tokens[0];
 
-    if (!client->getReg_stat())
+    if (!client->checkAuthComplete())
     {
         if (cmd == "PASS")
             _cmdPass(client, tokens);
@@ -146,7 +144,7 @@ void    _handleLine(Client* client, std::String& fullCmd)
         else if (cmd == "QUIT")
             _handleQuit(client);
         else
-            sendError(client, "451 :You have not registered");
+            sendError(client, ERR_NOTREGISTERED(client->getNickname()));
 
         _regestrationIsValid(client); // TODO
 
