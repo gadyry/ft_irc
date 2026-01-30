@@ -132,6 +132,7 @@ void    Server::_handleLine(Client* client, std::string& fullCmd)
     std::vector<std::string> tokens = split_or(fullCmd);
     std::string cmd = tokens[0];
 
+    std::cout<<"leehwak rani dkhalt" << std::endl;
     if (!client->checkAuthComplete())
     {
         if (cmd == "PASS")
