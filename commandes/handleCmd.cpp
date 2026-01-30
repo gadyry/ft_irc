@@ -1,17 +1,21 @@
-# include "Server.cpp"
-# include "Client.cpp"
+# include "../includes/Server.hpp"
+# include "../includes/Client.hpp"
+# include <string>
 
-Server::void    _handleCmd(Client* client, std::vector<std::string>& tokens)
+void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
 {
-    std::string& cmd = tokens[0];
+    std::string cmd = tokens[0];
 
-    if (client->getReg_stat())
+    if (client->checkAuthComplete())
     {
         if (cmd == "JOIN")
-            // _handleJoin(...)
+        {
+            // TODO: implement join handling
+        }
         else if (cmd == "TOPIC")
-            // _handleTopic(...)
+        {
+            // TODO: implement topic handling
+        }
         // ...
     }
-    // POUR SUIVRE !!!!!!!!!!!
 }
