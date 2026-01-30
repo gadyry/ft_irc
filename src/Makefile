@@ -2,7 +2,7 @@ NAME =  ircserv
 CPP = c++
 CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRC = main.cpp  Server.cpp Client.cpp ../commandes/PASS.cpp ../commandes/handleCmd
+SRC = main.cpp  Server.cpp Client.cpp ../commandes/PASS.cpp ../commandes/handleCmd.cpp
 OBJ = $(SRC:.cpp=.o)
 
 all: $(NAME)
