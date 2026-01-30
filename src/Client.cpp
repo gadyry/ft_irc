@@ -33,11 +33,6 @@ void Client::setInputBuffer(const std::string &buf)
     inputBuffer = buf;
 }
 
-void Client::setRegStat(bool status)
-{
-    reg_stat = status;
-}
-
 // Getters
 short Client::getFdClient()
 { 
@@ -59,9 +54,26 @@ std::string Client::getInputBuffer()
 { 
     return (inputBuffer);
 }
-bool Client::getReg_stat()
+
+// Authentication methods
+void    Client::setPassOk()
 {
-    return (reg_stat);
+    if (authState == AUTH_DISCONNECTED)
+        authState = AUTH_PASS_OK;
+}
+void    Client::setNickOk()
+{
+    if (authState == AUTH_PASS_OK)
+        authState = AUTH_PASS_NICK_OK;
+}
+void    Client::setUserOk()
+{
+    if (authState = AUTH_PASS_NICK_OK)
+        authState = AUTH_COMPLETE;
+}
+boll    Client::checkAuthComplete()
+{
+    return (authState == AUTH_COMPLETE);
 }
 
 // Utility

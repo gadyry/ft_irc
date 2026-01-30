@@ -9,6 +9,14 @@
 # include <sys/types.h>
 # include <set>
 
+enum AuthState
+{
+    AUTH_DISCONNECTED,
+    AUTH_PASS_OK,
+    AUTH_PASS_NICK_OK,
+    AUTH_COMPLETE
+}
+
 class Client
 {
 private:
@@ -17,13 +25,8 @@ private:
     std::string             username;
     std::string             host;
     std::string             inputBuffer;
-    bool                    reg_stat; // khdamteek db a B9 jatt
+    AuthState               authState;
     std::set<std::string>   joinedChannels; // chose of set : ignore the duplicate strings!
-
-    bool pass_ok;
-    bool nick_ok;
-    bool user_ok;
-
 
 public:
     // Constructor & Destructor
@@ -37,7 +40,6 @@ public:
     void setUsername(const std::string &user);
     void setHost(const std::string &h);
     void setInputBuffer(const std::string &buf);
-    void setRegStat(bool status);
 
     // Getters
     short       getFdClient();
@@ -45,7 +47,12 @@ public:
     std::string getUsername();
     std::string getHost();
     std::string getInputBuffer();
-    bool        getReg_stat();
+
+    // Authentication methods
+    void    setPassOk();
+    void    setNickOk();
+    void    setUserOk();
+    bool    checkAuthComplete();
 
     void clearInputBuffer();
 };
