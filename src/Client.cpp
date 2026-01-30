@@ -13,15 +13,15 @@ Client::~Client() {}
 // Setters
 void Client::setFdClient(short fd)
 {
-    fd_client = fd;
+    this->fd_client = fd;
 }
 void Client::setNickname(const std::string &nick)
 {
-    nickname = nick;
+    this->nickname = nick;
 }
 void Client::setUsername(const std::string &user)
 {
-    username = user;
+    this->username = user;
 }
 
 void Client::setHost(const std::string &h)
@@ -30,7 +30,7 @@ void Client::setHost(const std::string &h)
 }
 void Client::setInputBuffer(const std::string &buf)
 {
-    inputBuffer = buf;
+    this->inputBuffer = buf;
 }
 
 // Getters
@@ -51,6 +51,10 @@ std::string Client::getHost()
     return (host);
 }
 std::string Client::getInputBuffer()
+{ 
+    return (inputBuffer);
+}
+std::string& Client::getInputBufferRef()
 { 
     return (inputBuffer);
 }
