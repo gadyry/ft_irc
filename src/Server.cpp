@@ -102,7 +102,7 @@ void    Server::sendError(Client* client, const std::string& msg)
     */
 
     // for now:I need I send a simple msg, I should change it in future !!!
-    send(client->client->getFdClient(), msg.c_str(), msg.length(), 0);
+    send(client->getFdClient(), msg.c_str(), msg.length(), 0);
 }
 
 
@@ -121,14 +121,14 @@ std::vector<std::string> split_or(const std::string& str)
 
 void    _regestrationIsValid(Client* client)
 {
-    if (client->isFullyAuthenticated())
+    if (client->checkAuthComplete())
     {
-        std::string welcome = RPL_WELCOME(client->getNickname(), client->getUserName(), client->getHost());
+        std::string welcome = RPL_WELCOME(client->getNickname(), client->getUsername(), client->getHost());
         send(client->getFdClient(), welcome.c_str(), welcome.length(), 0);
     }
 }
 
-void    _handleLine(Client* client, std::String& fullCmd)
+void    _handleLine(Client* client, std::string& fullCmd)
 {
     std::vector<std::string> tokens = split_or(fullCmd);
     std::string cmd = tokens[0];
@@ -150,7 +150,7 @@ void    _handleLine(Client* client, std::String& fullCmd)
 
         return;
     }
-    _handleClientCmd(client, fd);
+    _handleCmd(client, tokens); // Fix that!!
 }
 
 void    Server::processCmds(int fd)
@@ -158,7 +158,7 @@ void    Server::processCmds(int fd)
     Client* client = clients[fd];
     if (!client) return;
 
-    std::string& buffer = client->inputBuffer;
+    std::string& buffer = client->getInputBufferRef();
     size_t position = 0;
 
     while ((position = buffer.find("\r\n")) != std::string::npos)
@@ -189,8 +189,7 @@ void    Server::recieveData(int fdClient)
         return;
     }
 
-    clients[fdClient] += std::string(buffer, bytes);
-
+    clients[fdClient]->setInputBuffer(clients[fdClient]->getInputBuffer() + std::string(buffer, bytes));
     // comp cmd => (IRC commands end with \r\n)
         // =>TODO
     processCmds(fdClient);
