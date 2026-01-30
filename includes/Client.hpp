@@ -15,7 +15,7 @@ enum AuthState
     AUTH_PASS_OK,
     AUTH_PASS_NICK_OK,
     AUTH_COMPLETE
-}
+};
 
 class Client
 {
@@ -42,11 +42,12 @@ public:
     void setInputBuffer(const std::string &buf);
 
     // Getters
-    short       getFdClient();
-    std::string getNickname();
-    std::string getUsername();
-    std::string getHost();
-    std::string getInputBuffer();
+    short           getFdClient();
+    std::string     getNickname();
+    std::string     getUsername();
+    std::string     getHost();
+    std::string     getInputBuffer();
+    std::string&    getInputBufferRef();
 
     // Authentication methods
     void    setPassOk();
