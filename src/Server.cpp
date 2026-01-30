@@ -118,7 +118,7 @@ std::vector<std::string> split_or(const std::string& str)
     return (tokens);
 }
 
-void    _regestrationIsValid(Client* client)
+void    Server::_regestrationIsValid(Client* client)
 {
     if (client->checkAuthComplete())
     {
@@ -127,7 +127,7 @@ void    _regestrationIsValid(Client* client)
     }
 }
 
-void    _handleLine(Client* client, std::string& fullCmd)
+void    Server::_handleLine(Client* client, std::string& fullCmd)
 {
     std::vector<std::string> tokens = split_or(fullCmd);
     std::string cmd = tokens[0];
@@ -135,21 +135,21 @@ void    _handleLine(Client* client, std::string& fullCmd)
     if (!client->checkAuthComplete())
     {
         if (cmd == "PASS")
-            _cmdPass(client, tokens);
+            this->_cmdPass(client, tokens);
         // else if (cmd == "NICK")
-        //     _cmdNick(client, tokens);
+        //     this->_cmdNick(client, tokens);
         // else if (cmd == "USER")
-        //     _cmdUser(client, tokens);
+        //     this->_cmdUser(client, tokens);
         // else if (cmd == "QUIT")
-        //     _handleQuit(client);
+        //     this->_handleQuit(client);
         else
-            sendError(client, ERR_NOTREGISTERED(client->getNickname()));
+            this->sendError(client, ERR_NOTREGISTERED(client->getNickname()));
 
-        _regestrationIsValid(client); // TODO
+        this->_regestrationIsValid(client); // TODO
 
         return;
     }
-    _handleCmd(client, tokens); // Fix that!!
+    this->_handleCmd(client, tokens);
 }
 
 void    Server::processCmds(int fd)
