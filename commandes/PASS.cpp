@@ -4,7 +4,7 @@
 
 void Server::_cmdPass(Client* client, std::vector<std::string>& tokens)
 {
-    if (client->getRegStat())
+    if (client->checkAuthComplete())
     {
         sendError(client, ERR_ALREADYREGISTRED(client->getNickname()));
         return;
@@ -26,6 +26,6 @@ void Server::_cmdPass(Client* client, std::vector<std::string>& tokens)
         return;
     }
 
-    client->pass_ok = true;
+    client->setPassOk();
 }
 
