@@ -2,10 +2,10 @@
 
 // Constructor
 Client::Client()
-    : fd_client(-1), nickname(""), username(""), host(""), inputBuffer(""), reg_stat(false) {}
+    : fd_client(-1), nickname(""), username(""), host(""), inputBuffer(""), authState(AUTH_DISCONNECTED) {}
 
 Client::Client(int fd)
-    : fd_client(fd), nickname(""), username(""), host(""), inputBuffer(""), reg_stat(false) {}
+    : fd_client(fd), nickname(""), username(""), host(""), inputBuffer(""), authState(AUTH_DISCONNECTED) {}
 
 // Destructor
 Client::~Client() {}
@@ -72,10 +72,11 @@ void    Client::setNickOk()
 }
 void    Client::setUserOk()
 {
-    if (authState = AUTH_PASS_NICK_OK)
+    if (authState == AUTH_PASS_NICK_OK)
         authState = AUTH_COMPLETE;
 }
-boll    Client::checkAuthComplete()
+
+bool    Client::checkAuthComplete()
 {
     return (authState == AUTH_COMPLETE);
 }
