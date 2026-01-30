@@ -39,7 +39,7 @@ int main(int ac, char** av)
     }
     try
     {
-        Server serv(std::strtol(av[1], NULL, 10), av[2]);
+        Server server(std::strtol(av[1], NULL, 10), av[2]);
         server.executeServ();
     }
     catch (const std::exception &e)
