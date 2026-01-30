@@ -57,7 +57,7 @@ std::string Client::getHost()
 }
 std::string Client::getInputBuffer()
 { 
-    return inputBuffer;
+    return (inputBuffer);
 }
 bool Client::getReg_stat()
 {
