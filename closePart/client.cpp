@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include "../includes/Server.hpp"
 
 #define BUFFER_SIZE 512
 
@@ -30,7 +31,7 @@ public:
         if (connect(sock_fd, (sockaddr*)&addr, sizeof(addr)) == -1)
             throw std::runtime_error("connect() failed");
         
-        std::cout << "Connected to server at " << server_ip << ":" << port << std::endl;
+        LOG(CLIENT, "Connected to server at " << server_ip << ":" << port);
     }
      
     void sendCommand(const std::string& cmd) {
@@ -38,9 +39,9 @@ public:
         ssize_t sent = send(sock_fd, full_cmd.c_str(), full_cmd.length(), 0);
         
         if (sent == -1) {
-            std::cerr << "send() failed" << std::endl;
+            LOG(ERROR, "send() failed");
         } else {
-            std::cout << "Sent: " << cmd << std::endl;
+            LOG(INFO, "[SENT] " << cmd);
         }
     }
     
@@ -51,47 +52,47 @@ public:
         ssize_t bytes = recv(sock_fd, buffer, BUFFER_SIZE - 1, 0);
         
         if (bytes > 0) {
-            std::cout << "Received: " << buffer;
+            LOG(INFO, "[RECV] " << buffer);
         } else if (bytes == 0) {
-            std::cout << "Server disconnected" << std::endl;
+            LOG(DISCONNECT, "Server disconnected");
         } else {
-            std::cerr << "recv() failed" << std::endl;
+            LOG(ERROR, "recv() failed");
         }
     }
     
     void runTests() {
-        std::cout << "\n=== Starting IRC Tests ===\n" << std::endl;
+        LOG(CLIENT, "\n=== Starting IRC Tests ===\n");
         
         // Test 1: NICK command
-        std::cout << "Test 1: Setting nickname" << std::endl;
+        LOG(CLIENT, "Test 1: Setting nickname");
         sendCommand("NICK testuser");
         receiveResponse();
         
         sleep(10);
         
         // Test 2: USER command
-        std::cout << "\nTest 2: User registration" << std::endl;
+        LOG(CLIENT, "\nTest 2: User registration");
         sendCommand("USER testuser 0 * :Test User leeeeeeeeehwak");
         receiveResponse();
         
         sleep(10);
         
         // Test 3: PING/PONG
-        std::cout << "\nTest 3: PING/PONG" << std::endl;
+        LOG(CLIENT, "\nTest 3: PING/PONG");
         sendCommand("PING :test123");
         receiveResponse();
         
         sleep(10);
         
         // Test 4: PRIVMSG
-        std::cout << "\nTest 4: Private message" << std::endl;
+        LOG(CLIENT, "\nTest 4: Private message");
         sendCommand("PRIVMSG #channel :Hello, World!");
         receiveResponse();
         
         sleep(10);
         
         // Test 5: Multiple commands at once (buffer test)
-        std::cout << "\nTest 5: Multiple commands" << std::endl;
+        LOG(CLIENT, "\nTest 5: Multiple commands");
         sendCommand("NICK user2");
         sendCommand("PING :test456");
         receiveResponse();
@@ -100,11 +101,11 @@ public:
         sleep(10);
         
         // Test 6: QUIT
-        std::cout << "\nTest 6: Disconnecting" << std::endl;
+        LOG(CLIENT, "\nTest 6: Disconnecting");
         sendCommand("QUIT :Goodbye!");
         receiveResponse();
         
-        std::cout << "\n=== Tests Complete ===\n" << std::endl;
+        LOG(CLIENT, "\n=== Tests Complete ===\n");
     }
 
     ~SimpleIRCClient() {
