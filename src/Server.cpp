@@ -1,6 +1,34 @@
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
 
+void log(LogLevel level, const std::string &msg)
+{
+    switch (level)
+    {
+        case INFO:
+            std::cout << C_GREEN << C_BOLD << "[SERVER] " << C_RESET << C_GREEN << msg << C_RESET << std::endl;
+            break;
+        case WARN:
+            std::cout << C_YELLOW << "[WARN] " << C_RESET << C_YELLOW << msg << C_RESET << std::endl;
+            break;
+        case ERROR:
+            std::cerr << C_RED << C_BOLD << "[ERROR] " << C_RESET << C_RED << msg << C_RESET << std::endl;
+            break;
+        case DEBUG:
+            std::cout << C_BLUE << "[DEBUG] " << C_RESET << C_BLUE << msg << C_RESET << std::endl;
+            break;
+        case CLIENT:
+            std::cout << C_MAGENTA << "[CLIENT] " << C_RESET << C_MAGENTA << msg << C_RESET << std::endl;
+            break;
+        case NEWCLIENT:
+            std::cout << C_CYAN << "[NEW CLIENT] " << C_RESET << C_CYAN << msg << C_RESET << std::endl;
+            break;
+        case DISCONNECT:
+            std::cout << C_MAGENTA << "[DISCONNECT] " << C_RESET << C_MAGENTA << msg << C_RESET << std::endl;
+            break;
+    }
+}
+
 Server::Server()
 {
     // handleCommand["NICK"] = &Server::_cmdNick;
@@ -37,8 +65,8 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
     if (listen(serv_fd, 128) < 0)
         throw std::runtime_error("listen() failed");
 
-    std::cout << "Server connected\n";
-    std::cout << "Waiting for connection" << std::endl;
+    LOG(INFO, "Server connected");
+    LOG(INFO, "Waiting for connection");
 
     newPollFd.fd = serv_fd;
     newPollFd.events = POLLIN;
@@ -75,7 +103,7 @@ void    Server::addClient()
 
     clients[acpt] = new Client(acpt);
 
-    std::cout << "New client: " << acpt << " connected" << std::endl;
+    LOG(NEWCLIENT, "New client: fd = " << acpt << " connected");
 }
 
 void    Server::removeClient(int fd)
@@ -181,9 +209,9 @@ void    Server::recieveData(int fdClient)
     {
         // TODO
         if (bytes == 0) // cleanup!!!!!!!!!!!!!!!
-            std::cout << "Client disconnected: fd = " << fdClient << std::endl;
+            LOG(DISCONNECT, "Client disconnected: fd = " << fdClient);
         else
-            std::cerr << "recv() error on fd = " << fdClient << std::endl;
+            LOG(ERROR, "recv() error on fd = " << fdClient);
         removeClient(fdClient); // TODO !
         return;
     }
