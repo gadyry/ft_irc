@@ -13,7 +13,7 @@
 # include <unistd.h>       // close
 # include <errno.h>
 # include <sstream>        // for istingstream
-# include <istream> // for getline(isstreamstring, dorthwa);
+# include <istream>        // for getline(isstreamstring, dorthwa);
 
 # include "Client.hpp"
 # include "IrcReplies.hpp"
