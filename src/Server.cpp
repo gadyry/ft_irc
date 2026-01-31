@@ -75,7 +75,7 @@ void    Server::addClient()
 
     clients[acpt] = new Client(acpt);
 
-    std::cout << "New client: " << acpt << "connected" << std::endl;
+    std::cout << "New client: " << acpt << " connected" << std::endl;
 }
 
 void    Server::removeClient(int fd)
@@ -132,7 +132,6 @@ void    Server::_handleLine(Client* client, std::string& fullCmd)
     std::vector<std::string> tokens = split_or(fullCmd);
     std::string cmd = tokens[0];
 
-    std::cout<<"leehwak rani dkhalt" << std::endl;
     if (!client->checkAuthComplete())
     {
         if (cmd == "PASS")
@@ -182,9 +181,9 @@ void    Server::recieveData(int fdClient)
     {
         // TODO
         if (bytes == 0) // cleanup!!!!!!!!!!!!!!!
-            std::cout << "Client disconnected: fd=" << fdClient << std::endl;
+            std::cout << "Client disconnected: fd = " << fdClient << std::endl;
         else
-            std::cerr << "recv() error on fd=" << fdClient << std::endl;
+            std::cerr << "recv() error on fd = " << fdClient << std::endl;
         removeClient(fdClient); // TODO !
         return;
     }
