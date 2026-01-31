@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "../includes/Server.hpp"
 
 #define BUFFER_SIZE 512
 
@@ -46,7 +47,7 @@ public:
         server_poll.revents = 0;
         fds_sentinels.push_back(server_poll);
         
-        std::cout << "Server listening on port " << port << std::endl;
+        LOG(INFO, "Server listening on port " << port);
     }
 
     void addClient() {
@@ -67,7 +68,7 @@ public:
         
         client_buffers[client_fd] = "";
         
-        std::cout << "New client connected: fd=" << client_fd << std::endl;
+        LOG(NEWCLIENT, "New client connected: fd=" << client_fd);
         
         std::string welcome = ":server 001 * :Welcome to IRC!\r\n";
         send(client_fd, welcome.c_str(), welcome.length(), 0);
@@ -85,9 +86,9 @@ public:
         if (bytes <= 0) {
             // Client disconnected or error
             if (bytes == 0)
-                std::cout << "Client disconnected: fd=" << client_fd << std::endl;
+                LOG(DISCONNECT, "Client disconnected: fd=" << client_fd);
             else
-                std::cerr << "recv() error on fd=" << client_fd << std::endl;
+                LOG(ERROR, "recv() error on fd=" << client_fd);
             
             removeClient(client_fd);
             return;
@@ -96,10 +97,7 @@ public:
         // Add received data to client's buffer
         client_buffers[client_fd] += std::string(buffer, bytes);
 
-        std::cout << "\033[32m"        // green
-            << "buffer: " << client_buffers[client_fd] << "sizeof(buffer) " << sizeof(client_buffers) << " " << client_fd
-            << "\033[0m"         // reset color
-            << std::endl;
+        LOG(INFO, "buffer: " << client_buffers[client_fd] << " sizeof(client_buffers): " << client_buffers.size() << " fd=" << client_fd);
         
         // Process complete commands (IRC commands end with \r\n)
         processCommands(client_fd);
