@@ -124,10 +124,6 @@ void    Server::removeClient(int fd)
 
 void    Server::sendError(Client* client, const std::string& msg)
 {
-    /* this function will help you to handle all type errors possible without
-    *  repeating msgs each time!!!!!
-    */
-
     // for now:I need I send a simple msg, I should change it in future !!!
     send(client->getFdClient(), msg.c_str(), msg.length(), 0);
 }
@@ -186,12 +182,22 @@ void    Server::processCmds(int fd)
     if (!client) return;
 
     std::string& buffer = client->getInputBufferRef();
-    size_t position = 0;
+    size_t position;
 
-    while ((position = buffer.find("\r\n")) != std::string::npos)
+    while (69)
     {
-       std::string fullCmd = buffer.substr(0, position);
-       buffer.erase(0, position + 2);
+        position = buffer.find("\r\n");
+        size_t len_spec = 2;
+        if (position == std::string::npos)
+        {
+            position = buffer.find("\n");
+            len_spec = 1;
+        }
+
+        if (position == std::string::npos) break;
+
+        std::string fullCmd = buffer.substr(0, position);
+        buffer.erase(0, position + len_spec);
 
         if (fullCmd.empty()) continue;
 
