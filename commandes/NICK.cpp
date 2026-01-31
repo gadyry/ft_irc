@@ -6,5 +6,15 @@ void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
 {
     if (tokens.empty()) return;
 
-    // TODO : implement join handling Nick!!
+    if (tokens.size() < 2)
+    {
+        sendError(client, "CHEE 9LWA => :IRCServer 461 NICK :Not enough parameters");
+        return;
+    }
+    if (tokens.size() > 2)
+    {
+        sendError(client, ERR_ERRONEUSNICKNAME(client->getNickname()));
+        return;
+    }
+    if ()
 }
