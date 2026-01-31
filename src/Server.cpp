@@ -129,7 +129,6 @@ void    Server::sendError(Client* client, const std::string& msg)
 }
 
 
-// 8=>  helpe me to split string to tokens d zeeb
 std::vector<std::string> split_or(const std::string& str)
 {
     std::vector<std::string> tokens;
@@ -214,17 +213,15 @@ void    Server::recieveData(int fdClient)
     if (bytes <= 0)
     {
         // TODO
-        if (bytes == 0) // cleanup!!!!!!!!!!!!!!!
+        if (bytes == 0)
             LOG(DISCONNECT, "Client disconnected: fd = " << fdClient);
         else
             LOG(ERROR, "recv() error on fd = " << fdClient);
-        removeClient(fdClient); // TODO !
+        removeClient(fdClient);
         return;
     }
 
     clients[fdClient]->setInputBuffer(clients[fdClient]->getInputBuffer() + std::string(buffer, bytes));
-    // comp cmd => (IRC commands end with \r\n)
-        // =>TODO
     processCmds(fdClient);
 }
 
@@ -233,11 +230,6 @@ void    Server::executeServ()
     // TODO 8=> I should handle the signal after building the serv
     while (69)
     {
-        /*
-            timeout = -1   // wait forever
-            timeout = 0    // do not wait (non-blocking check)
-            timeout > 0    // wait N milliseconds
-        */
         if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
             throw std::runtime_error("poll() failed");
 
@@ -245,12 +237,10 @@ void    Server::executeServ()
         {
             if (fds_sentinels[i].revents && POLLIN)
             {
-                /*    -> add a new client     */
                 if (fds_sentinels[i].fd == serv_fd)
                     addClient();
-                /*    -> recieve a new Data   */
                 else
-                    recieveData(fds_sentinels[i].fd); // TODO
+                    recieveData(fds_sentinels[i].fd);
             }
         }
     }
