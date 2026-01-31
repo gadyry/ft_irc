@@ -28,13 +28,12 @@ int main(int ac, char** av)
 {
     if (ac != 3)
     {
-        std::cerr << "Usage: ./ircserv <port> <password>" << std::endl;
+        LOG(ERROR,  "Usage: ./ircserv <port> <password>");
         return (1);
     }
     if (!validPort(av[1]) || !av[2][0])
     {
-        std::cerr << "Error: "
-                  << "try again: ./ircserv <port> <password>\n";
+        LOG(ERROR, "Error: " << "try again: ./ircserv <port> <password>");
         return (1);
     }
     try
