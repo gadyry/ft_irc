@@ -16,5 +16,8 @@ void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
         sendError(client, ERR_ERRONEUSNICKNAME(client->getNickname()));
         return;
     }
-    if ()
+    if (false)
+    {
+        // TODO : Handle somthing!!!
+    }
 }
