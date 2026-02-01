@@ -128,7 +128,6 @@ void    Server::sendError(Client* client, const std::string& msg)
     send(client->getFdClient(), msg.c_str(), msg.length(), 0);
 }
 
-
 std::vector<std::string> split_or(const std::string& str)
 {
     std::vector<std::string> tokens;
@@ -145,7 +144,7 @@ void    Server::_regestrationIsValid(Client* client)
 {
     if (client->checkAuthComplete())
     {
-        std::string welcome = RPL_WELCOME(client->getNickname(), client->getUsername(), client->getHost());
+        std::string welcome = RPL_WELCOME(client->getNickname());
         send(client->getFdClient(), welcome.c_str(), welcome.length(), 0);
     }
 }
@@ -159,15 +158,14 @@ void    Server::_handleLine(Client* client, std::string& fullCmd)
     {
         if (cmd == "PASS")
             this->_cmdPass(client, tokens);
-        else if (cmd == "NICK")
-            this->_cmdNick(client, tokens);
+        // else if (cmd == "NICK")
+        //     this->_cmdNick(client, tokens);
         // else if (cmd == "USER")
         //     this->_cmdUser(client, tokens);
         // else if (cmd == "QUIT")
         //     this->_handleQuit(client);
         else
-            this->sendError(client, ERR_NOTREGISTERED(client->getNickname()));
-
+            this->sendError(client, ERR_NOTREGISTERED());
         this->_regestrationIsValid(client); // TODO
 
         return;

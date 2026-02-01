@@ -58,5 +58,4 @@ void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
     }
 
     // The next step I should handle all cases when this shit successful!
-
 }
