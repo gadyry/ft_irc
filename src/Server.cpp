@@ -145,7 +145,7 @@ void    Server::_regestrationIsValid(Client* client)
 {
     if (client->checkAuthComplete())
     {
-        std::string welcome = RPL_WELCOME(client->getNickname(), client->getUsername(), client->getHost());
+        std::string welcome = RPL_WELCOME(client->getNickname());
         send(client->getFdClient(), welcome.c_str(), welcome.length(), 0);
     }
 }
@@ -166,7 +166,7 @@ void    Server::_handleLine(Client* client, std::string& fullCmd)
         // else if (cmd == "QUIT")
         //     this->_handleQuit(client);
         else
-            this->sendError(client, ERR_NOTREGISTERED(client->getNickname()));
+            this->sendError(client, ERR_NOTREGISTERED());
 
         this->_regestrationIsValid(client); // TODO
 

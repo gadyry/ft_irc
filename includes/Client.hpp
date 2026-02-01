@@ -7,6 +7,8 @@
 # include <sys/types.h>
 # include <set>
 
+# define LIMIT_NICK 50
+
 enum AuthState
 {
     AUTH_DISCONNECTED,
