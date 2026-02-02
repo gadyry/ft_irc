@@ -2,8 +2,8 @@ NAME = ircserv
 CPP = c++
 CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 
-
-SRC = src/main.cpp src/Server.cpp src/Client.cpp commandes/PASS.cpp commandes/handleCmd.cpp commandes/NICK.cpp
+SRC = src/main.cpp src/Server.cpp src/Client.cpp commandes/PASS.cpp commandes/handleCmd.cpp \
+		commandes/NICK.cpp commandes/USER.cpp commandes/QUIT.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
