@@ -156,7 +156,16 @@ void    Server::_regestrationIsValid(Client* client)
 void    Server::_handleLine(Client* client, std::string& fullCmd)
 {
     std::vector<std::string> tokens = split_or(fullCmd);
+    if (tokens.empty()) return;
+    
     std::string cmd = tokens[0];
+
+    // RFC 1459: QUIT can be sent at any time
+    if (cmd == "QUIT")
+    {
+        this->_handleQuit(client);
+        return;
+    }
 
     if (!client->checkAuthComplete())
     {
@@ -169,9 +178,12 @@ void    Server::_handleLine(Client* client, std::string& fullCmd)
         // else if (cmd == "QUIT")
         //     this->_handleQuit(client);
         else
+        {
             this->sendError(client, ERR_NOTREGISTERED());
-        this->_regestrationIsValid(client); // TODO
+            return;
+        }
 
+        this->_regestrationIsValid(client); // TODO
         return;
     }
     this->_handleCmd(client, tokens);

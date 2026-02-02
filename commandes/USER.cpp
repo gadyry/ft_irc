@@ -15,8 +15,8 @@ void    Server::_cmdUser(Client* client, std::vector<std::string>& tokens)
         return;
     }
 
-    std::string& username = tokens[1];
-    std::string& realname = tokens[4];
+    std::string username = tokens[1];
+    std::string realname = tokens[4];
 
     if (!client->getUsername().empty() && realname[0] == ':')
         realname.erase(0, 1);
