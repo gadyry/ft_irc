@@ -89,3 +89,15 @@ void Client::clearInputBuffer()
 {
     inputBuffer.clear();
 }
+
+void Client::addChannel(const std::string &channelName) {
+    joinedChannels.insert(channelName);
+}
+
+void Client::removeChannel(const std::string &channelName) {
+    joinedChannels.erase(channelName);
+}
+
+bool Client::isInChannel(const std::string &channelName) {
+    return joinedChannels.find(channelName) != joinedChannels.end();
+}

@@ -58,6 +58,11 @@ public:
     // void        completeRegistration(Client* client);
 
     void clearInputBuffer();
+
+    //channel shit 
+    void addChannel(const std::string &channelName);
+    void removeChannel(const std::string &channelName);
+    bool isInChannel(const std::string &channelName);
 };
 
 #endif

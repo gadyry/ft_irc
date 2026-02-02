@@ -3,7 +3,7 @@ CPP = c++
 CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRC = src/main.cpp src/Server.cpp src/Client.cpp commandes/PASS.cpp commandes/handleCmd.cpp \
-		commandes/NICK.cpp commandes/USER.cpp commandes/QUIT.cpp
+		commandes/NICK.cpp commandes/USER.cpp commandes/QUIT.cpp commandes/JOIN.cpp src/Channel.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

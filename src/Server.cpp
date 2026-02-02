@@ -254,3 +254,13 @@ Server::~Server()
     if (this->serv_fd != -1)
         close(this->serv_fd); // sakata zook dyal file descriptor
 }
+
+
+//channel
+Channel* Server::getChannel(const std::string& name) {
+    std::map<std::string, Channel*>::iterator it = ch_channels.find(name);
+    if (it != ch_channels.end()) {
+        return it->second;
+    }
+    return NULL;
+}
