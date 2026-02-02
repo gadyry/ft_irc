@@ -45,7 +45,7 @@ void log(LogLevel level, const std::string &msg);
 
 # define LOG(level, msg) do { std::ostringstream ss; ss << msg; log(level, ss.str()); } while(0)
 
-# define BUFFER_SIZE 1024
+# define BUFFER_SIZE 512
 
 class Client;
 
@@ -75,10 +75,14 @@ private :
     void    processCmds(int fd);
 
     // irc commands:
+    // PASS
     void    _cmdPass(Client* client, std::vector<std::string>& tokens);
+    // NICK
+    bool    existNickname(std::string& nickname);
     void    _cmdNick(Client* client, std::vector<std::string>& tokens);
+    // USER
     void    _cmdUser(Client* client, std::vector<std::string>& tokens);
-
+    // JOIN
     void    _cmdJoin(Client* client, std::vector<std::string>& tokens);
     void    _handlePrivmsg(Client* client, std::string fullCmd);
 

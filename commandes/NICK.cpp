@@ -9,9 +9,20 @@
     8=> This situation only happens in an IRC network with multiple servers.
 */
 
-bool    existNickname(std::string& nickname)
+bool    Server::existNickname(std::string& nickname)
 {
     // TODO: check If nickname is already in server nickname map
+    std::map<int, Client*>::iterator it;
+
+    for(it = clients.begin(); it != clients.end(); it++)
+    {
+        Client* client = it->second;
+        if (!client) continue;
+
+        if (client->getNickname() == nickname)
+            return (true);
+    }
+    return (false);
 }
 
 bool    nickIsValid(std::string& nickname)
@@ -19,20 +30,22 @@ bool    nickIsValid(std::string& nickname)
     if (nickname.length() > LIMIT_NICK)
         return (false);
 
-    std::string allowedSymbols = "-[]\\^{}|";
+    std::string allowedSymbols = "[]\\`_^{|}";
 
-    if (!isalpha(nickname[0]) || allowedSymbols.find(nickname[0]) != std::string::npos)
+    if (!isalpha(nickname[0]) && allowedSymbols.find(nickname[0]) == std::string::npos)
         return (false);
 
     for(size_t i = 1; i < nickname.length(); i++)
     {
-        if (!isalpha(nickname[i]) || !isdigit(nickname[i])
-                || allowedSymbols.find(nickname[i]) != std::string::npos)
+        char c = nickname[i];
+        if (!isalpha(c) && !isdigit(c)
+            && allowedSymbols.find(c) == std::string::npos && c != '-')
             return (false);
     }
     return (true);
 }
 
+/* === nickname = ( letter / special ) *8( letter / digit / special / "-" ) ===*/
 void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
 {
     if (tokens.empty()) return;
@@ -58,4 +71,7 @@ void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
     }
 
     // The next step I should handle all cases when this shit successful!
+    
+
+    client->setNickOk();
 }
