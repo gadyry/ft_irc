@@ -84,6 +84,7 @@ private :
     void    _cmdUser(Client* client, std::vector<std::string>& tokens);
     // JOIN
     void    _cmdJoin(Client* client, std::vector<std::string>& tokens);
+    // PRIVMSG
     void    _handlePrivmsg(Client* client, std::string fullCmd);
 
     void    _handleQuit(Client* client);

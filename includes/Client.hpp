@@ -55,6 +55,7 @@ public:
     void        setUserOk();
     AuthState   getAuthState();
     bool        checkAuthComplete();
+    // void        completeRegistration(Client* client);
 
     void clearInputBuffer();
 };

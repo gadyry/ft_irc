@@ -108,8 +108,12 @@ void    Server::addClient()
 
 void    Server::removeClient(int fd)
 {
-    delete clients[fd];
-    clients.erase(fd);
+    std::map<int, Client*>::iterator it = clients.find(fd);
+    if (it != clients.end())
+    {
+        delete it->second;
+        clients.erase(it);
+    }
 
     for(size_t i = 0; i <fds_sentinels.size(); i++)
     {
