@@ -7,7 +7,7 @@
 # include <sys/types.h>
 # include <set>
 
-# define LIMIT_NICK 50
+# define LIMIT_NICK 9
 
 enum AuthState
 {
@@ -50,10 +50,11 @@ public:
     std::string&    getInputBufferRef();
 
     // Authentication methods
-    void    setPassOk();
-    void    setNickOk();
-    void    setUserOk();
-    bool    checkAuthComplete();
+    void        setPassOk();
+    void        setNickOk();
+    void        setUserOk();
+    AuthState   getAuthState();
+    bool        checkAuthComplete();
 
     void clearInputBuffer();
 };

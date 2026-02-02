@@ -4,7 +4,8 @@
 
 void Server::_cmdPass(Client* client, std::vector<std::string>& tokens)
 {
-    if (client->checkAuthComplete())
+    if (!client->getNickname().empty() ||
+        client->checkAuthComplete() || client->getAuthState() != AUTH_DISCONNECTED)
     {
         sendError(client, ERR_ALREADYREGISTRED(client->getNickname()));
         return;

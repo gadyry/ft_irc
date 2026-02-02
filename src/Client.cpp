@@ -75,7 +75,10 @@ void    Client::setUserOk()
     if (authState == AUTH_PASS_NICK_OK)
         authState = AUTH_COMPLETE;
 }
-
+AuthState   Client::getAuthState()
+{
+    return authState;
+}
 bool    Client::checkAuthComplete()
 {
     return (authState == AUTH_COMPLETE);
