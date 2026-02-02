@@ -9,6 +9,11 @@
     8=> This situation only happens in an IRC network with multiple servers.
 */
 
+// void    Server::completeRegistration(Client* client)
+// {
+//     // TODO : implement this part !!
+// }
+
 bool    Server::existNickname(std::string& nickname)
 {
     // TODO: check If nickname is already in server nickname map
@@ -71,7 +76,12 @@ void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
     }
 
     // The next step I should handle all cases when this shit successful!
-    
+    if (!client->getNickname().empty())
+        client->setNickname(nickname);
 
     client->setNickOk();
+
+    LOG(NEWCLIENT, "Client fd=" << client->getFdClient() << " set nickname to '" << nickname << "'");
+    // if (client->checkAuthComplete())
+    //     completeRegistration(client);
 }
