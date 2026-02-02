@@ -17,6 +17,7 @@
 
 # include "Client.hpp"
 # include "IrcReplies.hpp"
+# include "Channel.hpp"
 
 // ANSI color macros
 # define C_RESET   "\033[0m"
@@ -57,6 +58,7 @@ private :
     int         serv_fd;
     std::vector<struct pollfd> fds_sentinels;
     std::map<int, Client*> clients; // for me the best choise using object not std::string
+    std::map<std::string, Channel*> ch_channels; // channel shit 2.0
 
     // typedef void (Server::*handleCommand)(Client*);
     // std::map<std::string, handleCommand> __commands; // the best & clean way to handle cmds , <<if, else == prostutation>>
@@ -88,6 +90,8 @@ private :
     void    _handlePrivmsg(Client* client, std::string fullCmd);
 
     void    _handleQuit(Client* client);
+    //channel
+    Channel* getChannel(const std::string& name);
 
 public :
     Server();

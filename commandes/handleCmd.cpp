@@ -10,16 +10,11 @@ void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
     {
         if (cmd == "JOIN")
         {
-            // TODO: implement join handling
+            _cmdJoin(client, tokens);
         }
         else if (cmd == "TOPIC")
         {
             // TODO: implement topic handling
         }
-        else if (cmd == "JOIN")
-        {
-            // TODO: implement JOIN handling
-        }
-        // ...
     }
 }
