@@ -164,8 +164,8 @@ void    Server::_handleLine(Client* client, std::string& fullCmd)
             this->_cmdPass(client, tokens);
         else if (cmd == "NICK")
             this->_cmdNick(client, tokens);
-        // else if (cmd == "USER")
-        //     this->_cmdUser(client, tokens);
+        else if (cmd == "USER")
+            this->_cmdUser(client, tokens);
         // else if (cmd == "QUIT")
         //     this->_handleQuit(client);
         else
