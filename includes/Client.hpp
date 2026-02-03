@@ -13,7 +13,7 @@ enum AuthState
 {
     AUTH_DISCONNECTED,
     AUTH_PASS_OK,
-    AUTH_PASS_NICK_OK,
+    AUTH_PASS_CMD_OK,
     AUTH_COMPLETE
 };
 
