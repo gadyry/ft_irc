@@ -88,6 +88,8 @@ private :
     void    _cmdJoin(Client* client, std::vector<std::string>& tokens);
     // PRIVMSG
     void    _handlePrivmsg(Client* client, std::string fullCmd);
+    //KICK
+    void    _cmdKick(Client *client, std::vector<std::string> &tokens);
 
     void    _handleQuit(Client* client);
     //channel
