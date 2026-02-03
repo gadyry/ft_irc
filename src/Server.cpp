@@ -1,7 +1,7 @@
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
 
-void log(LogLevel level, const std::string &msg)
+void    log(LogLevel level, const std::string &msg)
 {
     switch (level)
     {

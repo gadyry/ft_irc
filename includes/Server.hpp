@@ -18,7 +18,6 @@
 # include "Client.hpp"
 # include "IrcReplies.hpp"
 
-// ANSI color macros
 # define C_RESET   "\033[0m"
 # define C_BOLD    "\033[1m"
 # define C_RED     "\033[31m"
