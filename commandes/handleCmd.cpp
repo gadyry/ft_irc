@@ -2,7 +2,22 @@
 # include "../includes/Client.hpp"
 # include <string>
 
-void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
+
+/*
+    ---------------------------------------
+    | Command   |  Notes                  |
+    | --------- | ------------------------|
+    | `PING`    | Must respond with PONG  |
+    | `PONG`    | Minimal handling ok     |
+    | `PRIVMSG` | User→user first         |
+    | `NOTICE`  |Same parsing as PRIVMSG  |
+    | `WHOIS`   | Minimal version ok      |
+    | `NICK`    | Nick change             |
+    | `QUIT`    |Always allowed           |
+    ---------------------------------------
+*/
+
+void Server::_handleCmd(Client* client, std::string& fullCmd ,std::vector<std::string>& tokens)
 {
     std::string cmd = tokens[0];
 
@@ -10,15 +25,19 @@ void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
     {
         if (cmd == "JOIN")
         {
-            // TODO: implement join handling
+            _cmdJoin(client, tokens); return;
         }
         else if (cmd == "TOPIC")
         {
-            // TODO: implement topic handling
+            _cmdTopic(client, tokens); return;
         }
-        else if (cmd == "JOIN")
+        else if (cmd == "PRIVMSG")
+        {   
+            _handlePrivmsg(client, fullCmd); return;
+        }
+        else if (cmd == "PONG")
         {
-            // TODO: implement JOIN handling
+            // _cmdPong(client, tokens); return; // TODO
         }
         // ...
     }

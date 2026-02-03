@@ -70,7 +70,7 @@ private :
     // utils handle cmd part:
     void    _regestrationIsValid(Client* client);
     void    _handleLine(Client* client, std::string& fullCmd);
-    void    _handleCmd(Client* client, std::vector<std::string>& tokens);
+    void    _handleCmd(Client* client, std::string& fullCmd ,std::vector<std::string>& tokens);
     void    processCmds(int fd);
 
     // irc commands:
@@ -83,6 +83,8 @@ private :
     void    _cmdUser(Client* client, std::vector<std::string>& tokens);
     // JOIN
     void    _cmdJoin(Client* client, std::vector<std::string>& tokens);
+    // TOPIC
+    void    _cmdTopic(Client* client, std::vector<std::string>& tokens);
     // PRIVMSG
     void    _handlePrivmsg(Client* client, std::string fullCmd);
 
