@@ -2,21 +2,6 @@
 # include "../includes/Client.hpp"
 # include <string>
 
-
-/*
-    ---------------------------------------
-    | Command   |  Notes                  |
-    | --------- | ------------------------|
-    | `PING`    | Must respond with PONG  |
-    | `PONG`    | Minimal handling ok     |
-    | `PRIVMSG` | User→user first         |
-    | `NOTICE`  |Same parsing as PRIVMSG  |
-    | `WHOIS`   | Minimal version ok      |
-    | `NICK`    | Nick change             |
-    | `QUIT`    |Always allowed           |
-    ---------------------------------------
-*/
-
 void Server::_handleCmd(Client* client, std::string& fullCmd ,std::vector<std::string>& tokens)
 {
     std::string cmd = tokens[0];
