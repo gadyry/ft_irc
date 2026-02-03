@@ -67,17 +67,27 @@ void    Client::setPassOk()
 }
 void    Client::setNickOk()
 {
-    if (authState == AUTH_PASS_OK)
-        authState = AUTH_PASS_NICK_OK;
+    if (authState >= AUTH_PASS_OK)
+    {
+        if (authState == AUTH_PASS_CMD_OK)
+            authState = AUTH_COMPLETE;
+        else
+            authState = AUTH_PASS_CMD_OK;
+    }
 }
 void    Client::setUserOk()
 {
-    if (authState == AUTH_PASS_NICK_OK)
-        authState = AUTH_COMPLETE;
+    if (authState >= AUTH_PASS_OK)
+    {
+        if (authState == AUTH_PASS_CMD_OK)
+            authState = AUTH_COMPLETE;
+        else
+            authState = AUTH_PASS_CMD_OK;
+    }
 }
 AuthState   Client::getAuthState()
 {
-    return authState;
+    return (authState);
 }
 bool    Client::checkAuthComplete()
 {
