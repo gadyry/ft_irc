@@ -16,5 +16,8 @@ void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
         {
             // TODO: implement topic handling
         }
+        else if (cmd == "KICK") {
+            _cmdKick(client, tokens);
+        }
     }
 }

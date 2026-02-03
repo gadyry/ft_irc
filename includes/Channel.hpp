@@ -29,6 +29,8 @@ class Channel
     std::string ch_getName() const;
     std::string ch_getTopic() const;
     std::string getUserList();
+    Client* getMemberName(std::string nick);
+
 
     //JOIN fc
     void addMember(Client *client);

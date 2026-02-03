@@ -72,5 +72,12 @@ std::string Channel::getUserList() {
     return list;
 }
 
+Client* Channel::getMemberName(std::string nick) {
+    for (size_t i = 0; i < ch_members.size(); i++) {
+        if (ch_members[i]->getNickname() == nick)
+            return ch_members[i];
+    }
+    return NULL;
+}
 
 Channel::~Channel() {}
