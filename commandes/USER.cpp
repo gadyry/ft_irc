@@ -26,8 +26,4 @@ void    Server::_cmdUser(Client* client, std::vector<std::string>& tokens)
 
     client->setUsername(username);
     client->setUserOk();
-
-    // if (client->checkAuthComplete())
-    //     completeRegistration(client);
-
 }

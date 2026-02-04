@@ -75,18 +75,8 @@ void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
         return;
     }
 
-//this line caused problems When a user first connects 
-//their nickname is empty code skips the setNickname call entirely
-    
-    // The next step I should handle all cases when this shit successful!
-    // if (!client->getNickname().empty())
-    //     client->setNickname(nickname);
-//just removed the if : 
     client->setNickname(nickname);
-
     client->setNickOk();
 
     LOG(NEWCLIENT, "Client fd=" << client->getFdClient() << " set nickname to '" << nickname << "'");
-    // if (client->checkAuthComplete())
-    //     completeRegistration(client);
 }
