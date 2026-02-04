@@ -2,7 +2,7 @@
 # include "../includes/Client.hpp"
 # include <string>
 
-void Server::_handleCmd(Client* client, std::string& fullCmd ,std::vector<std::string>& tokens)
+void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
 {
     std::string cmd = tokens[0];
 
@@ -31,6 +31,10 @@ void Server::_handleCmd(Client* client, std::string& fullCmd ,std::vector<std::s
         else if (cmd == "MODE")
         {
             _cmdMode(client, tokens); return;
+        }
+        else
+        {
+            this->sendError(client, ERR_NOTREGISTERED()); return;
         }
     }
 }
