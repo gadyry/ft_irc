@@ -24,7 +24,17 @@ void Server::_cmdJoin(Client *client, std::vector<std::string> &tokens)
         ch_channels[chName] = channel;
     }
 
+    if (channel->isInviteOnly() && !channel->isInvited(client->getNickname())) {
+        std::string ermsg = ERR_INVITEONLYCHAN(client->getNickname(), chName);
+        send(client->getFdClient(), ermsg.c_str(), ermsg.length(), 0);
+        return;
+        
+    }
+
     channel->addMember(client);
+    /*theyre added so removing the invite in xase of leaving they wont have access to join agn they need a new
+    invite token*/
+    channel->removeInvite(client->getNickname());
 
     std::string jMsg = client->getNickname() + "!" + client->getUsername() + "@" + client->getHost();
     std::string joinMsg = RPL_JOIN(jMsg, chName);

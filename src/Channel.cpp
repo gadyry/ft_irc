@@ -1,6 +1,9 @@
 #include "../includes/Channel.hpp"
 
-Channel::Channel(std::string name) : ch_name(name), ch_topic("") {}
+Channel::Channel(std::string name) : ch_name(name), ch_topic(""),
+        _inviteOnly(false), _topicAdmOnly(true), _passKey(""),
+        _limitUser(0) {
+}
 
 std::string Channel::ch_getName() const {
     return ch_name;
@@ -78,6 +81,73 @@ Client* Channel::getMemberName(std::string nick) {
             return ch_members[i];
     }
     return NULL;
+}
+
+bool Channel::isInviteOnly() const {
+    return _inviteOnly;
+}
+
+bool Channel::isTopicAdmOnly() const {
+    return _topicAdmOnly;
+}
+
+std::string Channel::getPassKey() const {
+    return _passKey;
+}
+
+size_t Channel::getLimitUser() const {
+    return _limitUser;
+}
+
+void Channel::setInviteOnly(bool val) {
+    _inviteOnly = val;
+}
+
+void Channel::setTopicAdmOnly(bool val) {
+    _topicAdmOnly = val;
+}
+
+void Channel::setPassKey(std::string key) {
+    _passKey = key;
+}
+
+void Channel::setLimitUser(size_t limit) {
+    _limitUser = limit;
+}
+
+bool Channel::isInvited(std::string nick) {
+    for (size_t i = 0; i < ch_invited.size(); i++) {
+        if (ch_invited[i] == nick)
+            return true;
+    }
+    return false;
+}
+
+void Channel::addInvite(std::string nick) {
+    if (!isInvited(nick))
+        ch_invited.push_back(nick);
+}
+
+void Channel::removeInvite(std::string nick) {
+    for (std::vector<std::string>::iterator it = ch_invited.begin(); it != ch_invited.end(); ++it) {
+        if (*it == nick) {
+            ch_invited.erase(it);
+            break;
+        }
+    }
+}
+
+std::string Channel::getChFlags() {
+    std::string modeFlag = "+";
+    if (_inviteOnly)
+        modeFlag += "i";
+    if (_topicAdmOnly)
+        modeFlag += "t";
+    if (!_passKey.empty())
+        modeFlag += "k";
+    if (_limitUser > 0)
+        modeFlag += "l";
+    return modeFlag;
 }
 
 Channel::~Channel() {}
