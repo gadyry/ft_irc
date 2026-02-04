@@ -4,7 +4,6 @@
 
 void Server::_handleCmd(Client* client, std::string& fullCmd ,std::vector<std::string>& tokens)
 {
-    (void)fullCmd;
     std::string cmd = tokens[0];
 
     if (client->checkAuthComplete())
@@ -21,10 +20,10 @@ void Server::_handleCmd(Client* client, std::string& fullCmd ,std::vector<std::s
         {
             _cmdKick(client, tokens); return;
         }
-        // else if (cmd == "PRIVMSG")
-        // {   
-        //     _handlePrivmsg(client, fullCmd); return;
-        // }
+        else if (cmd == "PRIVMSG")
+        {   
+            _handlePrivmsg(client, tokens); return;
+        }
         else if (cmd == "PONG")
         {
             // _cmdPong(client, tokens); return; // TODO

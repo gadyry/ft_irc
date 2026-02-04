@@ -70,7 +70,7 @@
 
 // ============= ERROR REPLIES (400-599) =============
 
-// 401 ERR_NOSUCHNICK
+// 401 ERR_NOSUCHNICK 
 #define ERR_NOSUCHNICK(nick, target) \
     (std::string(SERVERPREFIX) + " 401 " + (nick) + " " + (target) + " :No such nick/channel" + POSTFIX)
 

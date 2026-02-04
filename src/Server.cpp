@@ -264,10 +264,12 @@ Server::~Server()
 
 
 //channel
-Channel* Server::getChannel(const std::string& name) {
+Channel* Server::getChannel(const std::string& name)
+{
     std::map<std::string, Channel*>::iterator it = ch_channels.find(name);
-    if (it != ch_channels.end()) {
-        return it->second;
-    }
-    return NULL;
+
+    if (it != ch_channels.end())
+        return (it->second);
+
+    return (NULL);
 }

@@ -88,7 +88,7 @@ private :
     // TOPIC
     void    _cmdTopic(Client* client, std::vector<std::string>& tokens);
     // PRIVMSG
-    void    _handlePrivmsg(Client* client, std::string fullCmd);
+    void    _handlePrivmsg(Client* senderCl, std::vector<std::string>& tokens);
     //KICK
     void    _cmdKick(Client *client, std::vector<std::string> &tokens);
     //MODE
