@@ -25,6 +25,8 @@ void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& token
     }
 
     std::string word = tokens[2];
+    //  Essue in this condition !! => PRIVMSG #ch :  heeeeelooooooo aaaaaaaaaaaaaaaa W69 
+    // res => :IRCServer 412 nick2 :No text to send
     if (tokens.size() < 3 || word[0] != ':' || word == ":")
     {
         sendError(senderCl, ERR_NOTEXTTOSEND(senderCl->getNickname()));
@@ -36,7 +38,7 @@ void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& token
     for(size_t i = 2; i < tokens.size(); i++)
     {
         if (i == 2)
-            msg = tokens[2].substr(1);
+            msg += tokens[2].substr(1);
         else
             msg += " " + tokens[i];
     }
@@ -67,7 +69,7 @@ void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& token
         channel->sendToMembers(senderCl, fullmsg);
         return;
     }
-    // send to user directelly if exist !!!
+
     Client* receiver = NULL;
     std::map<int, Client*>::iterator it = clients.begin();
     while (it != clients.end())
