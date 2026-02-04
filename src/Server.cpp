@@ -181,7 +181,7 @@ void    Server::_handleLine(Client* client, std::string& fullCmd)
         this->_regestrationIsValid(client);
         return;
     }
-    this->_handleCmd(client, fullCmd,tokens);
+    this->_handleCmd(client,tokens);
 }
 
 void    Server::processCmds(int fd)

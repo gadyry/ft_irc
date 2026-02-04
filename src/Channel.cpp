@@ -55,7 +55,7 @@ bool Channel::isadmiin(Client *client) {
     return (it != ch_admiins.end());
 }
 
-void Channel::broadcast(const std::string& message) {
+void    Channel::broadcast(const std::string& message) {
     for (size_t i = 0; i < ch_members.size(); i++) {
         if (ch_members[i]) {
             send(ch_members[i]->getFdClient(), message.c_str(), message.length(), 0);
@@ -151,3 +151,12 @@ std::string Channel::getChFlags() {
 }
 
 Channel::~Channel() {}
+
+void    Channel::sendToMembers(Client* sender, std::string& msg)
+{
+    for(size_t i = 0; i < ch_members.size(); i++)
+    {
+        if (ch_members[i] && ch_members[i] != sender)
+            send(ch_members[i]->getFdClient(), msg.c_str(), msg.length(), 0);
+    }
+}

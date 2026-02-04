@@ -76,5 +76,8 @@ class Channel
         ivited to channells..
     */
    // broadcast msg in channell
-   void broadcast(const std::string& message);
+    void broadcast(const std::string& message);
+
+
+    void    sendToMembers(Client* client, std::string& msg);
 };
