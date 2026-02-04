@@ -1,7 +1,7 @@
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
 
-void log(LogLevel level, const std::string &msg)
+void    log(LogLevel level, const std::string &msg)
 {
     switch (level)
     {
@@ -160,33 +160,28 @@ void    Server::_handleLine(Client* client, std::string& fullCmd)
     
     std::string cmd = tokens[0];
 
-    // RFC 1459: QUIT can be sent at any time
     if (cmd == "QUIT")
     {
-        this->_handleQuit(client);
-        return;
+        this->_handleQuit(client); return;
     }
 
     if (!client->checkAuthComplete())
     {
         if (cmd == "PASS")
             this->_cmdPass(client, tokens);
-        else if (cmd == "NICK")
+        else if (cmd == "NICK" && client->getAuthState() >= AUTH_PASS_OK)
             this->_cmdNick(client, tokens);
-        else if (cmd == "USER")
+        else if (cmd == "USER" && client->getAuthState() >= AUTH_PASS_OK)
             this->_cmdUser(client, tokens);
-        // else if (cmd == "QUIT")
-        //     this->_handleQuit(client);
         else
         {
-            this->sendError(client, ERR_NOTREGISTERED());
-            return;
+            this->sendError(client, ERR_NOTREGISTERED()); return;
         }
 
-        this->_regestrationIsValid(client); // TODO
+        this->_regestrationIsValid(client);
         return;
     }
-    this->_handleCmd(client, tokens);
+    this->_handleCmd(client, fullCmd,tokens);
 }
 
 void    Server::processCmds(int fd)

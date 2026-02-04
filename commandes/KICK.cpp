@@ -27,8 +27,20 @@ void Server::_cmdKick(Client *client, std::vector<std::string> &tokens) {
         return;
     }
     std::string banned = tokens[2];
+    size_t last = banned.find_last_not_of("\r\n");
+    if (last != std::string::npos)
+        banned = banned.substr(0, last + 1);
+
+    // --- DEBUG START ---
+    std::cout << "--- KICK DEBUG ---" << std::endl;
+    std::cout << "Target name from tokens: [" << banned << "]" << std::endl;
+    
+    // We need to access the private vector for a moment to see what's inside
+    // If you can't access ch_members directly, use your getUserList() or add a getter
+    std::string currentList = channel->getUserList();
+    std::cout << "Current Channel UserList: [" << currentList << "]" << std::endl;
+    // --- DEBUG END ---
     Client *Toban = channel->getMemberName(banned);
-    LOG(DEBUG, "|" << banned << "|");
     if (Toban == NULL) {
         std::string ermsg = ERR_USERNOTINCHANNEL(client->getNickname(), banned, CHanL);
         send(client->getFdClient(), ermsg.c_str(), ermsg.length(), 0);

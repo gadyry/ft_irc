@@ -21,6 +21,13 @@ class Channel
     std::vector<Client*>        ch_members;
     std::vector<Client*>        ch_admiins;
     std::vector<std::string>    ch_invited;
+
+    // modes
+    bool        _inviteOnly;
+    bool        _topicAdmOnly;
+    std::string _passKey;
+    size_t      _limitUser;
+
     public:
     Channel(std::string name);
     ~Channel();
@@ -30,6 +37,26 @@ class Channel
     std::string ch_getTopic() const;
     std::string getUserList();
     Client* getMemberName(std::string nick);
+
+    //modes
+    std::string getChFlags();
+
+    // Getters for Join logic checks
+    bool        isInviteOnly() const;
+    bool        isTopicAdmOnly() const;
+    std::string getPassKey() const;
+    size_t      getLimitUser() const;
+
+    // Setters for Mode command
+    void setInviteOnly(bool val);
+    void setTopicAdmOnly(bool val);
+    void setPassKey(std::string key);
+    void setLimitUser(size_t limit);
+    
+    // Invite logic (needed for +i)
+    void addInvite(std::string nick);
+    bool isInvited(std::string nick);
+    void removeInvite(std::string nick);
 
 
     //JOIN fc

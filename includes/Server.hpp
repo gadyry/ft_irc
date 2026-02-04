@@ -19,7 +19,6 @@
 # include "IrcReplies.hpp"
 # include "Channel.hpp"
 
-// ANSI color macros
 # define C_RESET   "\033[0m"
 # define C_BOLD    "\033[1m"
 # define C_RED     "\033[31m"
@@ -73,7 +72,7 @@ private :
     // utils handle cmd part:
     void    _regestrationIsValid(Client* client);
     void    _handleLine(Client* client, std::string& fullCmd);
-    void    _handleCmd(Client* client, std::vector<std::string>& tokens);
+    void    _handleCmd(Client* client, std::string& fullCmd ,std::vector<std::string>& tokens);
     void    processCmds(int fd);
 
     // irc commands:
@@ -86,10 +85,14 @@ private :
     void    _cmdUser(Client* client, std::vector<std::string>& tokens);
     // JOIN
     void    _cmdJoin(Client* client, std::vector<std::string>& tokens);
+    // TOPIC
+    void    _cmdTopic(Client* client, std::vector<std::string>& tokens);
     // PRIVMSG
     void    _handlePrivmsg(Client* client, std::string fullCmd);
     //KICK
     void    _cmdKick(Client *client, std::vector<std::string> &tokens);
+    //MODE
+    void    _cmdMode(Client* client, std::vector<std::string>& tokens);
 
     void    _handleQuit(Client* client);
     //channel
