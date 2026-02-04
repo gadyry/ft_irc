@@ -31,7 +31,7 @@ int main(int ac, char** av)
         LOG(ERROR,  "Usage: ./ircserv <port> <password>");
         return (1);
     }
-    if (!validPort(av[1]) || !av[2][0])
+    if (!validPort(av[1]) || !av[2][0]) // X : HANDLE PASS WHEN PASS JUST SPACES!!
     {
         LOG(ERROR, "Error: " << "try again: ./ircserv <port> <password>");
         return (1);
