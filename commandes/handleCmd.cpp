@@ -17,8 +17,9 @@ void Server::_handleCmd(Client* client, std::string& fullCmd ,std::vector<std::s
         // {
         //     _cmdTopic(client, tokens); return;
         // }
-        else if (cmd == "KICK") {
-            _cmdKick(client, tokens);
+        else if (cmd == "KICK")
+        {
+            _cmdKick(client, tokens); return;
         }
         // else if (cmd == "PRIVMSG")
         // {   
@@ -28,8 +29,9 @@ void Server::_handleCmd(Client* client, std::string& fullCmd ,std::vector<std::s
         {
             // _cmdPong(client, tokens); return; // TODO
         }
-        else if (cmd == "MODE") {
-            _cmdMode(client, tokens);
+        else if (cmd == "MODE")
+        {
+            _cmdMode(client, tokens); return;
         }
     }
 }

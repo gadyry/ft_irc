@@ -10,7 +10,7 @@ void    Server::_handleQuit(Client* client)
     
     // For now: Simply disconnect the client
     // TODO: Notify other clients in shared channels before disconnecting
-    
+
     LOG(DISCONNECT, "Client fd = " << client->getFdClient() << " quit");
     removeClient(client->getFdClient());
 }
