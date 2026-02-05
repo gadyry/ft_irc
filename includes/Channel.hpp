@@ -52,6 +52,7 @@ class Channel
     void setTopicAdmOnly(bool val);
     void setPassKey(std::string key);
     void setLimitUser(size_t limit);
+    void setTopic(std::string topic);
     
     // Invite logic (needed for +i)
     void addInvite(std::string nick);

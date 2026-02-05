@@ -93,10 +93,13 @@ private :
     void    _cmdKick(Client *client, std::vector<std::string> &tokens);
     //MODE
     void    _cmdMode(Client* client, std::vector<std::string>& tokens);
+    //INVITE
+    void _cmdInvite(Client *client, std::vector<std::string> &tokens);
 
     void    _handleQuit(Client* client);
     //channel
     Channel* getChannel(const std::string& name);
+    Client* getClientName(std::string nick);
 
 public :
     Server();

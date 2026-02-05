@@ -32,6 +32,12 @@ void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
         {
             _cmdMode(client, tokens); return;
         }
+        else if (cmd == "INVITE") {
+            _cmdInvite(client, tokens); return;
+        }
+        else if (cmd == "TOPIC") {
+            _cmdTopic(client, tokens); return;
+        }
         else
         {
             this->sendError(client, ERR_NOTREGISTERED()); return;

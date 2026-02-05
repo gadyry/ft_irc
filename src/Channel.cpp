@@ -115,6 +115,10 @@ void Channel::setLimitUser(size_t limit) {
     _limitUser = limit;
 }
 
+void Channel::setTopic(std::string topic) {
+    ch_topic = topic;
+}
+
 bool Channel::isInvited(std::string nick) {
     for (size_t i = 0; i < ch_invited.size(); i++) {
         if (ch_invited[i] == nick)
@@ -150,8 +154,6 @@ std::string Channel::getChFlags() {
     return modeFlag;
 }
 
-Channel::~Channel() {}
-
 void    Channel::sendToMembers(Client* sender, std::string& msg)
 {
     for(size_t i = 0; i < ch_members.size(); i++)
@@ -160,3 +162,5 @@ void    Channel::sendToMembers(Client* sender, std::string& msg)
             send(ch_members[i]->getFdClient(), msg.c_str(), msg.length(), 0);
     }
 }
+
+Channel::~Channel() {}

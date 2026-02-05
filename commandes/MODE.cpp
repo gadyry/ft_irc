@@ -48,6 +48,10 @@ void   Server::_cmdMode(Client* client, std::vector<std::string>& tokens) {
             channel->setInviteOnly(adding);
             execModes += "i";
         }
+        else if (mode == 't') {
+            channel->setTopicAdmOnly(adding);
+            execModes += "t";
+        }
         // future flags heeere 
         /*
         */
