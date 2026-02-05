@@ -140,7 +140,7 @@ std::vector<std::string> split_or(const std::string& str)
     
     while (splitStr >> token)
         tokens.push_back(token);
-    
+
     return (tokens);
 }
 
