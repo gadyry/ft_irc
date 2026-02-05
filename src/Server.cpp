@@ -112,6 +112,9 @@ void    Server::addClient()
     fds_sentinels.push_back(newPoll);
 
     clients[acpt] = new Client(acpt);
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &addr_client.sin_addr, ip, sizeof(ip));
+    clients[acpt]->setHost(ip);
 
     LOG(NEWCLIENT, "New client: fd = " << acpt << " connected");
 }
