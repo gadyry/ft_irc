@@ -1,6 +1,12 @@
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
 
+void    Server::signalHandler(int sig)
+{
+    (void)sig;
+    g_signalReceived = 1;
+}
+
 void    log(LogLevel level, const std::string &msg)
 {
     switch (level)
@@ -73,6 +79,10 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
     newPollFd.revents = 0;
 
     fds_sentinels.push_back(newPollFd);
+
+    signal(SIGINT, Server::signalHandler);
+    signal(SIGTERM, Server::signalHandler);
+    signal(SIGPIPE, SIG_IGN);
 }
 
 void    Server::addClient()
@@ -235,11 +245,14 @@ void    Server::recieveData(int fdClient)
 
 void    Server::executeServ()
 {
-    // TODO 8=> I should handle the signal after building the serv
-    while (69)
+    while (!g_signalReceived)
     {
         if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
+        {
+            if (errno == EINTR)
+                continue;  // Interrupted by signal, try again
             throw std::runtime_error("poll() failed");
+        }
 
         for (size_t i = 0; i < fds_sentinels.size(); i++)
         {
@@ -252,14 +265,30 @@ void    Server::executeServ()
             }
         }
     }
+
+    LOG(INFO, "Shutting down server...");
 }
 
 Server::~Server()
 {
-   // manage the resources!
+    // Close all client connections
+    for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+    {
+        close(it->first);
+        delete it->second;
+    }
+    clients.clear();
 
+    // Close all channels
+    for (std::map<std::string, Channel*>::iterator it = ch_channels.begin(); it != ch_channels.end(); ++it)
+        delete it->second;
+    ch_channels.clear();
+
+    // Close server socket
     if (this->serv_fd != -1)
-        close(this->serv_fd); // sakata zook dyal file descriptor
+        close(this->serv_fd);
+
+    LOG(INFO, "Server shutdown complete");
 }
 
 
