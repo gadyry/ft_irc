@@ -274,7 +274,6 @@ void    Server::executeServ()
 
 Server::~Server()
 {
-    // Close all client connections
     for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
     {
         close(it->first);
@@ -282,12 +281,10 @@ Server::~Server()
     }
     clients.clear();
 
-    // Close all channels
     for (std::map<std::string, Channel*>::iterator it = ch_channels.begin(); it != ch_channels.end(); ++it)
         delete it->second;
     ch_channels.clear();
 
-    // Close server socket
     if (this->serv_fd != -1)
         close(this->serv_fd);
 
