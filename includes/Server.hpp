@@ -48,8 +48,6 @@ void log(LogLevel level, const std::string &msg);
 
 # define BUFFER_SIZE 512
 
-volatile sig_atomic_t g_signalReceived = 0;
-
 class Client;
 
 class Server
@@ -112,6 +110,7 @@ public :
     // methods :
     void    executeServ();
     static  void    signalHandler(int sig);
+    static  int     g_signalReceived;
 };
 
 #endif
