@@ -14,6 +14,7 @@
 # include <errno.h>
 # include <sstream>        // for istingstream
 # include <istream>        // for getline(isstreamstring, dorthwa);
+# include <signal.h>       // signal handling
 
 # include "Client.hpp"
 # include "IrcReplies.hpp"
@@ -46,6 +47,8 @@ void log(LogLevel level, const std::string &msg);
 # define LOG(level, msg) do { std::ostringstream ss; ss << msg; log(level, ss.str()); } while(0)
 
 # define BUFFER_SIZE 512
+
+volatile sig_atomic_t g_signalReceived = 0;
 
 class Client;
 
@@ -108,6 +111,7 @@ public :
 
     // methods :
     void    executeServ();
+    static  void    signalHandler(int sig);
 };
 
 #endif
