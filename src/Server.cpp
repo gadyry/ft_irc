@@ -1,10 +1,12 @@
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
 
+int Server::g_signalReceived = 0;
+
 void    Server::signalHandler(int sig)
 {
     (void)sig;
-    g_signalReceived = 1;
+    Server::g_signalReceived = 1;
 }
 
 void    log(LogLevel level, const std::string &msg)
@@ -141,7 +143,6 @@ void    Server::removeClient(int fd)
 
 void    Server::sendError(Client* client, const std::string& msg)
 {
-    // for now:I need I send a simple msg, I should change it in future !!!
     send(client->getFdClient(), msg.c_str(), msg.length(), 0);
 }
 
@@ -248,7 +249,7 @@ void    Server::recieveData(int fdClient)
 
 void    Server::executeServ()
 {
-    while (!g_signalReceived)
+    while (!Server::g_signalReceived)
     {
         if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
         {
