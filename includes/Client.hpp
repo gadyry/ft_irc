@@ -55,11 +55,8 @@ public:
     void        setUserOk();
     AuthState   getAuthState();
     bool        checkAuthComplete();
-    // void        completeRegistration(Client* client);
 
-    void clearInputBuffer();
-
-    //channel shit 
+    //channel
     void addChannel(const std::string &channelName);
     void removeChannel(const std::string &channelName);
     bool isInChannel(const std::string &channelName);

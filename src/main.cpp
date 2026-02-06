@@ -8,8 +8,6 @@
 #include <iostream>
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
-#include <cstdlib>
-#include <cstdio>
 
 bool validPort(char* str)
 {

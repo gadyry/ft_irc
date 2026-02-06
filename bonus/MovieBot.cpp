@@ -1,10 +1,10 @@
 # include "../includes/MovieBot.hpp"
 
-MovieBot::MovieBot() : socketBot(-1), nick(""), user(""), servPort(0), hostname(""),
+MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
                     password(""), buffRecieve("") { }
 
-MovieBot::MovieBot(std::string host, u_short port, std::string password) : socketBot(-1), nick("MovieBot"), user("MovieBot test test test"), servPort(port),
-                    hostname(host), password(password), buffRecieve("") { }
+MovieBot::MovieBot(std::string host, u_short port, std::string password) : socketBot(-1), hostname(host), nick("MovieBot"), user("MovieBot test test test"),
+                    servPort(port), password(password), buffRecieve("") { }
 
 MovieBot::~MovieBot()
 {
@@ -13,7 +13,6 @@ MovieBot::~MovieBot()
 }
 
 // methods 
-
 void     MovieBot::connectToServer()
 {
     struct sockaddr_in  addr_serv;
@@ -33,10 +32,19 @@ void     MovieBot::connectToServer()
 
     if (connect(this->socketBot, (struct sockaddr *)&addr_serv, sizeof(addr_serv)) < 0)
 		throw std::runtime_error("connect() failed!");
+
+
+    std::string cmdPASS = "PASS" + password + "\r\n";
+    send(socketBot, cmdPASS.c_str(), cmdPASS.length(), 0);
+
+    std::string cmdNICK = "NICK" + nick + "\r\n";
+    send(socketBot, cmdNICK.c_str(), cmdNICK.length(), 0);
+
+    std::string cmdUSER = "USER" + user + "\r\n";
+    send(socketBot, cmdUSER.c_str(), cmdUSER.length(), 0);
 }
 
 void    MovieBot::executeMovieBot()
 {
     this->connectToServer();
-    this->Authentificate(); // TODO: implement this method to send the PASS, NICK and USER commands to the server for authentication
 }

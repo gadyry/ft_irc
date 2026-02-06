@@ -94,12 +94,6 @@ bool    Client::checkAuthComplete()
     return (authState == AUTH_COMPLETE);
 }
 
-// Utility
-void Client::clearInputBuffer()
-{
-    inputBuffer.clear();
-}
-
 void Client::addChannel(const std::string &channelName) {
     joinedChannels.insert(channelName);
 }

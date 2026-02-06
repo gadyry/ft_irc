@@ -33,12 +33,14 @@ int main(int ac, char** av)
 {
     if (ac != 4)
     {
-        LOG(ERROR,  "Usage: ./MoviesBot <hostname> <port> <password>");
+        // LOG(ERROR,  "Usage: ./MoviesBot <hostname> <port> <password>");
+        std::cout << "ERROR\n";
         return (1);
     }
     if (!validPort(av[2]) || !validPass(av[3]))
     {
-        LOG(ERROR, "Error: " << "try again: ./MoviesBot <hostname> <port> <password>");
+        // LOG(ERROR, "Error: " << "try again: ./MoviesBot <hostname> <port> <password>");
+        std::cout << "ERROR\n";
         return (1);
     }
     try
