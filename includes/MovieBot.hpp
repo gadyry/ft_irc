@@ -9,11 +9,11 @@
 # include <fcntl.h>        // fcntl
 # include <poll.h>         // struct pollfd, poll()
 # include <netinet/in.h>   // sockaddr_in, INADDR_ANY
-# include <arpa/inet.h>    // htons, htonl
+# include <arpa/inet.h>    // htons, htonl, inet_aton
 # include <unistd.h>       // close
 # include <errno.h>
 # include <sstream>        // for istingstream
-# include <istream>        // for getline(isstreamstring, dorthwa);
+# include <istream>        // for getline
 
 # include "Client.hpp"
 # include "IrcReplies.hpp"
@@ -31,7 +31,7 @@ private:
     std::string     buffRecieve;
 
     // methods :
-    void    connect();
+    void    connectToServer();
 public:
     // Constractor && Distractor:
         MovieBot();
