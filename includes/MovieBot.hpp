@@ -1,5 +1,5 @@
-#ifndef BOT_HPP
-#define BOT_HPP
+#ifndef MOVIEBOT_HPP
+#define MOVIEBOT_HPP
 
 # include <iostream>
 # include <vector>
@@ -18,19 +18,28 @@
 # include "Client.hpp"
 # include "IrcReplies.hpp"
 
-class Bot
+class MovieBot
 {
 private:
     // Attribut :
+    int             socketBot;
+    std::string     nick;
+    std::string     user;
+    unsigned short  servPort;
+    std::string     password;
+    std::string     buffRecieve;
 
     // methods :
 public:
     // Constractor && Distractor:
-        Bot();
-        Bot(u_short port, std::string password);
-        ~Bot();
+        MovieBot();
+        MovieBot(u_short port, std::string password);
+        ~MovieBot();
     
     // Setters && Getters
+
+    // methods helper
+    void    executeMovieBot();
 };
 
 #endif

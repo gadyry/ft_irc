@@ -28,7 +28,6 @@ void Server::_cmdJoin(Client *client, std::vector<std::string> &tokens)
         std::string ermsg = ERR_INVITEONLYCHAN(client->getNickname(), chName);
         send(client->getFdClient(), ermsg.c_str(), ermsg.length(), 0);
         return;
-        
     }
 
     channel->addMember(client);
