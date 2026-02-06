@@ -29,14 +29,14 @@ void     MovieBot::connectToServer()
     addr_serv.sin_port = htons(this->servPort);
     
     if (inet_aton(this->hostname.c_str(), &addr_serv.sin_addr) <= 0)
-        throw std::runtime_error("Invalid hostname");
+        throw std::runtime_error("Invalid hostname!");
 
     if (connect(this->socketBot, (struct sockaddr *)&addr_serv, sizeof(addr_serv)) < 0)
-		throw std::runtime_error("connect() failed");
+		throw std::runtime_error("connect() failed!");
 }
 
 void    MovieBot::executeMovieBot()
 {
     this->connectToServer();
-    // TODO: Implement bot logic
+    this->Authentificate(); // TODO: implement this method to send the PASS, NICK and USER commands to the server for authentication
 }
