@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+# include <algorithm> // for std::find(...) overriding we need it in linux !!
 #include "Client.hpp"
 
 class Client;

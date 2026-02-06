@@ -1,6 +1,14 @@
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
 
+int Server::g_signalReceived = 0;
+
+void    Server::signalHandler(int sig)
+{
+    (void)sig;
+    Server::g_signalReceived = 1;
+}
+
 void    log(LogLevel level, const std::string &msg)
 {
     switch (level)
@@ -73,6 +81,10 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
     newPollFd.revents = 0;
 
     fds_sentinels.push_back(newPollFd);
+
+    signal(SIGINT, Server::signalHandler);
+    signal(SIGTERM, Server::signalHandler);
+    signal(SIGPIPE, SIG_IGN);
 }
 
 void    Server::addClient()
@@ -102,6 +114,9 @@ void    Server::addClient()
     fds_sentinels.push_back(newPoll);
 
     clients[acpt] = new Client(acpt);
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &addr_client.sin_addr, ip, sizeof(ip));
+    clients[acpt]->setHost(ip);
 
     LOG(NEWCLIENT, "New client: fd = " << acpt << " connected");
 }
@@ -128,7 +143,6 @@ void    Server::removeClient(int fd)
 
 void    Server::sendError(Client* client, const std::string& msg)
 {
-    // for now:I need I send a simple msg, I should change it in future !!!
     send(client->getFdClient(), msg.c_str(), msg.length(), 0);
 }
 
@@ -140,7 +154,7 @@ std::vector<std::string> split_or(const std::string& str)
     
     while (splitStr >> token)
         tokens.push_back(token);
-    
+
     return (tokens);
 }
 
@@ -235,11 +249,14 @@ void    Server::recieveData(int fdClient)
 
 void    Server::executeServ()
 {
-    // TODO 8=> I should handle the signal after building the serv
-    while (69)
+    while (!Server::g_signalReceived)
     {
         if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
+        {
+            if (errno == EINTR)
+                continue;  // Interrupted by signal, try again
             throw std::runtime_error("poll() failed");
+        }
 
         for (size_t i = 0; i < fds_sentinels.size(); i++)
         {
@@ -252,14 +269,27 @@ void    Server::executeServ()
             }
         }
     }
+
+    LOG(INFO, "Shutting down server...");
 }
 
 Server::~Server()
 {
-   // manage the resources!
+    for (std::map<int, Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+    {
+        close(it->first);
+        delete it->second;
+    }
+    clients.clear();
+
+    for (std::map<std::string, Channel*>::iterator it = ch_channels.begin(); it != ch_channels.end(); ++it)
+        delete it->second;
+    ch_channels.clear();
 
     if (this->serv_fd != -1)
-        close(this->serv_fd); // sakata zook dyal file descriptor
+        close(this->serv_fd);
+
+    LOG(INFO, "Server shutdown complete");
 }
 
 

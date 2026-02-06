@@ -4,18 +4,6 @@
 # include "../includes/Channel.hpp"
 
 
-/*
-==================================================
-| Condition             | Error                  |
-| --------------------- | ---------------------- |
-| No target             | `ERR_NORECIPIENT`      |
-| No message            | `ERR_NOTEXTTOSEND`     |
-| Channel doesn't exist | `ERR_NOSUCHCHANNEL`    |
-| Not member of channel | `ERR_CANNOTSENDTOCHAN` |
-| Nick doesn't exist    | `ERR_NOSUCHNICK`       |
-==================================================
-*/
-
 void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& tokens)
 {
     if (tokens.size() < 2)
@@ -24,17 +12,13 @@ void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& token
         return;
     }
 
-    std::string word = tokens[2];
-    //  Essue in this condition !! => PRIVMSG #ch :  heeeeelooooooo aaaaaaaaaaaaaaaa W69 
-    // res => :IRCServer 412 nick2 :No text to send
-    if (tokens.size() < 3 || word[0] != ':' || word == ":")
+    if (tokens.size() < 3 || tokens[2][0] != ':')
     {
         sendError(senderCl, ERR_NOTEXTTOSEND(senderCl->getNickname()));
         return;
     }
 
     std::string msg;
-    // extract full msg from tokens[2] ... tokens[size - 1]
     for(size_t i = 2; i < tokens.size(); i++)
     {
         if (i == 2)
@@ -42,7 +26,6 @@ void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& token
         else
             msg += " " + tokens[i];
     }
-
     /* 
         8=============>
         Grammer of full msg : :nick!user@host PRIVMSG <receiver> :<text>

@@ -24,6 +24,18 @@ bool validPort(char* str)
     return (port >= 1024 && port <= 65535); // 16 bits → 2^16=65536 possible values
 }
 
+bool    validPass(char* password)
+{
+    if (!password || !password[0]) return (false);
+
+    for (size_t i = 0; password[i]; i++)
+    {
+        if (std::isspace(password[i]) || password[i] == '\t')
+            return (false);
+    }
+    return (true);
+}
+
 int main(int ac, char** av)
 {
     if (ac != 3)
@@ -31,7 +43,7 @@ int main(int ac, char** av)
         LOG(ERROR,  "Usage: ./ircserv <port> <password>");
         return (1);
     }
-    if (!validPort(av[1]) || !av[2][0]) // X : HANDLE PASS WHEN PASS JUST SPACES!!
+    if (!validPort(av[1]) || !validPass(av[2]))
     {
         LOG(ERROR, "Error: " << "try again: ./ircserv <port> <password>");
         return (1);
