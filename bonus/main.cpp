@@ -31,19 +31,19 @@ bool    validPass(char* password)
 
 int main(int ac, char** av)
 {
-    if (ac != 3)
+    if (ac != 4)
     {
-        LOG(ERROR,  "Usage: ./ircserv <port> <password>");
+        LOG(ERROR,  "Usage: ./MoviesBot <hostname> <port> <password>");
         return (1);
     }
-    if (!validPort(av[1]) || !validPass(av[2]))
+    if (!validPort(av[2]) || !validPass(av[3]))
     {
-        LOG(ERROR, "Error: " << "try again: ./ircserv <port> <password>");
+        LOG(ERROR, "Error: " << "try again: ./MoviesBot <hostname> <port> <password>");
         return (1);
     }
     try
     {
-        MovieBot bot(std::strtol(av[1], NULL, 10), av[2]);
+        MovieBot bot(av[1], std::strtol(av[2], NULL, 10), av[3]);
         bot.executeMovieBot();
     }
     catch (const std::exception &e)
