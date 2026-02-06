@@ -83,6 +83,10 @@ Client* Channel::getMemberName(std::string nick) {
     return NULL;
 }
 
+size_t  Channel::getMemSize() const {
+    return ch_members.size();
+}
+
 bool Channel::isInviteOnly() const {
     return _inviteOnly;
 }
