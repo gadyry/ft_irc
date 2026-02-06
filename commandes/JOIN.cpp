@@ -31,6 +31,20 @@ void Server::_cmdJoin(Client *client, std::vector<std::string> &tokens)
         
     }
 
+    if (!channel->getPassKey().empty()) {
+        if (tokens.size() < 3 || tokens[2] != channel->getPassKey()) {
+            std::string ermsg = ERR_BADCHANNELKEY(client->getNickname(), chName);
+            send(client->getFdClient(), ermsg.c_str(), ermsg.length(), 0);
+            return;
+        }
+    }
+
+    if (channel->getLimitUser() > 0 && channel->getMemSize() >= channel->getLimitUser()) {
+        std::string ermsg = ERR_CHANNELISFULL(client->getNickname(), chName);
+        send(client->getFdClient(), ermsg.c_str(), ermsg.length(), 0);
+        return;
+    }
+
     channel->addMember(client);
     /*theyre added so removing the invite in xase of leaving they wont have access to join agn they need a new
     invite token*/

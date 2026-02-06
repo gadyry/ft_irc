@@ -46,6 +46,7 @@ class Channel
     bool        isTopicAdmOnly() const;
     std::string getPassKey() const;
     size_t      getLimitUser() const;
+    size_t      getMemSize() const;
 
     // Setters for Mode command
     void setInviteOnly(bool val);
