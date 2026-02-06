@@ -14,6 +14,7 @@
 # include <errno.h>
 # include <sstream>        // for istingstream
 # include <istream>        // for getline(isstreamstring, dorthwa);
+# include <signal.h>       // signal handling
 
 # include "Client.hpp"
 # include "IrcReplies.hpp"
@@ -108,6 +109,8 @@ public :
 
     // methods :
     void    executeServ();
+    static  void    signalHandler(int sig);
+    static  int     g_signalReceived;
 };
 
 #endif

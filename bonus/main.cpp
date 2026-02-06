@@ -1,5 +1,5 @@
 
-# include "../includes/Bot.hpp"
+# include "../includes/MovieBot.hpp"
 
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
@@ -17,27 +17,39 @@ bool validPort(char* str)
     return (port >= 1024 && port <= 65535); // 16 bits → 2^16=65536 possible values
 }
 
+bool    validPass(char* password)
+{
+    if (!password || !password[0]) return (false);
+
+    for (size_t i = 0; password[i]; i++)
+    {
+        if (std::isspace(password[i]) || password[i] == '\t')
+            return (false);
+    }
+    return (true);
+}
+
 int main(int ac, char** av)
 {
-    if (ac != 3)
+    if (ac != 4)
     {
-        LOG(ERROR,  "Usage: ./ircserv <port> <password>");
+        LOG(ERROR,  "Usage: ./MoviesBot <hostname> <port> <password>");
         return (1);
     }
-    if (!validPort(av[1]) || !av[2][0])
+    if (!validPort(av[2]) || !validPass(av[3]))
     {
-        LOG(ERROR, "Error: " << "try again: ./ircserv <port> <password>");
+        LOG(ERROR, "Error: " << "try again: ./MoviesBot <hostname> <port> <password>");
         return (1);
     }
-    // try
-    // {
-    //     Bot bot(std::strtol(av[1], NULL, 10), av[2]);
-    //     bot.executeBot();
-    // }
-    // catch (const std::exception &e)
-    // {
-    //     std::cerr << e.what() << std::endl;
-    //     return (1);
-    // }
+    try
+    {
+        MovieBot bot(av[1], std::strtol(av[2], NULL, 10), av[3]);
+        bot.executeMovieBot();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return (1);
+    }
     return (0);
 }
