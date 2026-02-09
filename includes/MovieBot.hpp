@@ -30,27 +30,29 @@
 class MovieBot
 {
 private:
-    // Attribut :
-    int             socketBot;
-    std::string     hostname;
-    std::string     nick;
-    std::string     user;
-    unsigned short  servPort;
-    std::string     password;
-    std::string     buffRecieve;
+	// Attribut :
+	int             socketBot;
+	std::string     hostname;
+	std::string     nick;
+	std::string     user;
+	unsigned short  servPort;
+	std::string     password;
+	std::string     buffRecieve;
 
-    // methods :
-    void    connectToServer();
+	// methods :
+	void    connectToServer();
+	void	handleMessage(std::string& msg);
+	void    buildBot();
 public:
-    // Constractor && Distractor:
-        MovieBot();
-        MovieBot(std::string host, u_short port, std::string password);
-        ~MovieBot();
-    
-    // Setters && Getters
+	// Constractor && Distractor:
+		MovieBot();
+		MovieBot(std::string host, u_short port, std::string password);
+		~MovieBot();
+	
+	// Setters && Getters
 
-    // methods helper
-    void    executeMovieBot();
+	// methods helper
+	void    executeMovieBot();
 };
 
 #endif
