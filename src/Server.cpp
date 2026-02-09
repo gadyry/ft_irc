@@ -143,7 +143,8 @@ void    Server::removeClient(int fd)
 
 void    Server::sendError(Client* client, const std::string& msg)
 {
-	send(client->getFdClient(), msg.c_str(), msg.length(), 0);
+	if (send(client->getFdClient(), msg.c_str(), msg.length(), 0) == -1)
+		throw std::runtime_error("send() failed");
 }
 
 std::vector<std::string> split_or(const std::string& str)
