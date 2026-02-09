@@ -293,7 +293,6 @@ Server::~Server()
 	LOG(INFO, "Server shutdown complete");
 }
 
-
 //channel
 Channel* Server::getChannel(const std::string& name)
 {

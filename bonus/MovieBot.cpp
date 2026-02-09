@@ -14,10 +14,10 @@ MovieBot::~MovieBot()
 }
 
 // methods 
-void     MovieBot::connectToServer()
+void	MovieBot::connectToServer()
 {
-	struct sockaddr_in  addr_serv;
-	int                 camus = 1;
+	struct sockaddr_in	addr_serv;
+	int					camus = 1;
 
 	this->socketBot = socket(PF_INET, SOCK_STREAM, 0);
 	if (socketBot == -1)
@@ -46,10 +46,69 @@ void     MovieBot::connectToServer()
 	}
 }
 
+void	MovieBot::handleMessage(std::string &msg)
+{
+	std::cout << "[SERVER] " << msg << std::endl;
+
+	 // I should Implement the PING/PONG cmds
+	if (msg.compare(0, 4, "PING") == 0)
+	{
+		std::string pong = "PONG" + msg.substr(4) + "\r\n";
+		send(socketBot, pong.c_str(), pong.size(), 0);
+		return;
+	}
+
+	if (msg.find(" 001 ") != std::string::npos)
+	{
+		std::string join = "JOIN #movies\r\n";
+		send(socketBot, join.c_str(), join.size(), 0);
+		return;
+	}
+
+	if (msg.find("PRIVMSG") != std::string::npos)
+	{
+		_handlePrivMsg(msg); return;
+	}
+
+	if (msg.compare(0, 5, "ERROR") == 0)
+	{
+		std::cerr << "Server error: " << msg << std::endl;
+		return;
+	}
+}
+
+void	MovieBot::handleMessage()
+{
+	size_t pos;
+
+	while (69)
+	{
+		pos = recieveBuff.find("\r\n");
+		size_t len_spec = 2;
+
+		if (pos == std::string::npos)
+		{
+			pos = recieveBuff.find("\n");
+			len_spec = 1;
+		}
+
+		if (pos == std::string::npos)
+			break;
+
+		std::string fullMsg = recieveBuff.substr(0, pos);
+		recieveBuff.erase(0, pos + len_spec);
+
+		if (fullMsg.empty())
+			continue;
+
+		processMsg(fullMsg);
+	}
+}
+
+
 void    MovieBot::buildBot()
 {
-	// TODO:
-	char	buffer[BUFFER_SIZE] = {0};
+	char	buffer[BUFFER_SIZE] = {'\0'};
 
 	while (69)
 	{
@@ -62,11 +121,8 @@ void    MovieBot::buildBot()
 				std::cerr << "recv() error on fd = " << socketBot <<std::endl;
 			return;
 		}
-		buffer[bytes] = '\0';
-		std::string	msg(buffer);
-		std::cout << "SERVER: " << msg;
-
-		this->handleMessage(msg); // TODO
+		recieveBuff += std::string(buffer, bytes);
+		this->handleMessage(); // TODO
 	}
 }
 

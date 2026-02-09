@@ -6,14 +6,15 @@
 # include <map>
 # include <sys/socket.h>
 # include <sys/types.h>
-# include <fcntl.h>        // fcntl
-# include <poll.h>         // struct pollfd, poll()
+# include <fcntl.h>		// fcntl
+# include <poll.h>		// struct pollfd, poll()
 # include <netinet/in.h>   // sockaddr_in, INADDR_ANY
 # include <arpa/inet.h>    // htons, htonl, inet_aton
 # include <unistd.h>       // close
 # include <errno.h>
 # include <sstream>        // for istingstream
 # include <istream>        // for getline
+# include <algorithm>
 
 # include "Client.hpp"
 # include "IrcReplies.hpp"
@@ -37,12 +38,13 @@ private:
 	std::string     user;
 	unsigned short  servPort;
 	std::string     password;
-	std::string     buffRecieve;
+	std::string     recieveBuff;
 
 	// methods :
-	void    connectToServer();
-	void	handleMessage(std::string& msg);
-	void    buildBot();
+	void	connectToServer();
+	void	processMsg(std::string& fullMsg);
+	void	handleMessage();
+	void	buildBot();
 public:
 	// Constractor && Distractor:
 		MovieBot();
