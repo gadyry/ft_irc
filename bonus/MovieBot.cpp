@@ -33,15 +33,16 @@ void     MovieBot::connectToServer()
     if (connect(this->socketBot, (struct sockaddr *)&addr_serv, sizeof(addr_serv)) < 0)
 		throw std::runtime_error("connect() failed!");
 
+	std::vector<std::string> AuthCmds;
+	AuthCmds.push_back("PASS " + password + "\r\n");
+	AuthCmds.push_back("NICK " + nick + "\r\n");
+	AuthCmds.push_back("USER " + user + "\r\n");
 
-    std::string cmdPASS = "PASS" + password + "\r\n";
-    send(socketBot, cmdPASS.c_str(), cmdPASS.length(), 0);
-
-    std::string cmdNICK = "NICK" + nick + "\r\n";
-    send(socketBot, cmdNICK.c_str(), cmdNICK.length(), 0);
-
-    std::string cmdUSER = "USER" + user + "\r\n";
-    send(socketBot, cmdUSER.c_str(), cmdUSER.length(), 0);
+	for(size_t i = 0; i < AuthCmds.size(); i++)
+	{
+		if (send(socketBot, AuthCmds[i].c_str(), AuthCmds[i].length(), 0) == -1)
+			throw std::runtime_error("failed to send cmd");
+	}
 }
 
 void    MovieBot::executeMovieBot()
