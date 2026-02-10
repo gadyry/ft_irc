@@ -15,31 +15,33 @@ void log(LogLevel level, const std::string &msg)
 	switch (level)
 	{
 		case INFO:
-			std::cout << C_GREEN << C_BOLD << "[INFO] " << C_RESET << msg << std::endl;
+			std::cout << C_GREEN << C_BOLD << "[SERVER] " << C_RESET << C_GREEN << msg << C_RESET << std::endl;
 			break;
 		case WARN:
-			std::cout << C_YELLOW << "[WARN] " << C_RESET << msg << std::endl;
+			std::cout << C_YELLOW << "[WARN] " << C_RESET << C_YELLOW << msg << C_RESET << std::endl;
 			break;
 		case ERROR:
-			std::cerr << C_RED << C_BOLD << "[ERROR] " << C_RESET << msg << std::endl;
+			std::cerr << C_RED << C_BOLD << "[ERROR] " << C_RESET << C_RED << msg << C_RESET << std::endl;
 			break;
 		case DEBUG:
-			std::cout << C_BLUE << "[DEBUG] " << C_RESET << msg << std::endl;
+			std::cout << C_BLUE << "[DEBUG] " << C_RESET << C_BLUE << msg << C_RESET << std::endl;
 			break;
 		case CLIENT:
-			std::cout << C_MAGENTA << "[CLIENT] " << C_RESET << msg << std::endl;
+			std::cout << C_MAGENTA << "[CLIENT] " << C_RESET << C_MAGENTA << msg << C_RESET << std::endl;
 			break;
 		case NEWCLIENT:
-			std::cout << C_CYAN << "[NEW CLIENT] " << C_RESET << msg << std::endl;
+			std::cout << C_CYAN << "[NEW CLIENT] " << C_RESET << C_CYAN << msg << C_RESET << std::endl;
 			break;
 		case DISCONNECT:
-			std::cout << C_MAGENTA << "[DISCONNECT] " << C_RESET << msg << std::endl;
+			std::cout << C_MAGENTA << "[DISCONNECT] " << C_RESET << C_MAGENTA << msg << C_RESET << std::endl;
 			break;
 		case BOT:
-			std::cout << C_GREEN << "[BOT] " << C_RESET << msg << std::endl;
+			std::cout << C_GREEN << "[BOT] " << C_RESET << msg << std::endl;  // <-- added only
 			break;
 	}
 }
+
+
 
 
 Server::Server()
@@ -51,7 +53,7 @@ Server::Server()
 	// handleCommand["QUIT"] = &Server::_cmdQuit;
 }
 
-Server::Server(u_short port, std::string password) : port(port), password(password), servername("irc.server.com")
+Server::Server(u_short port, std::string password) : port(port), password(password), servername("irc.myserver.com")
 {
 	struct sockaddr_in  addr_serv;
 	int                 camus = 1;
@@ -181,15 +183,20 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 	std::string cmd = tokens[0];
 	if (cmd == "PING")
 	{
-		std::string pongMsg = "PONG";
-		std::string token = (tokens.size() > 1) ? tokens[1] : "";
-		std::string pongMsg = RPL_PONG(servername, token);
-
-		if (send(client->getFdClient(), pongMsg.c_str(), pongMsg.length(), 0) < 0)
+		std::string token;
+		size_t spacePos = fullCmd.find(' ');
+		if (spacePos != std::string::npos)
 		{
-			LOG(ERROR, "send() failed"); return;
+			token = fullCmd.substr(spacePos + 1);
+			if (!token.empty() && token[0] == ':')
+				token = token.substr(1);
 		}
-		LOG(INFO, "Responded to PING from " << client->getNickname());
+
+		std::string pongMsg = RPL_PONG(servername, token);
+		if (send(client->getFdClient(), pongMsg.c_str(), pongMsg.length(), 0) < 0)
+			LOG(ERROR, "send() failed for PONG");
+
+		LOG(INFO, "Responded to PING with token '" << token << "'");
 		return;
 	}
 

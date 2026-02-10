@@ -1,6 +1,7 @@
 # include "../includes/MovieBot.hpp"
 # include "../includes/Server.hpp"
 
+
 MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
 					password(""), recieveBuff("") { }
 
@@ -50,18 +51,30 @@ void	MovieBot::processMsg(std::string &msg)
 {
 	std::cout << "[SERVER] " << msg << std::endl;
 
-	 // I should Implement the PING/PONG cmds
 	if (msg.compare(0, 4, "PING") == 0)
 	{
-		std::string pong = "PONG" + msg.substr(4) + "\r\n";
-		send(socketBot, pong.c_str(), pong.size(), 0);
+		std::string token;
+		size_t spacePos = msg.find(' ');
+		if (spacePos != std::string::npos)
+		{
+			token = msg.substr(spacePos + 1);
+			if (!token.empty() && token[0] == ':')
+				token = token.substr(1);
+		}
+
+		std::string pongMsg = RPL_PONG(this->hostname, token);
+		if (send(socketBot, pongMsg.c_str(), pongMsg.length(), 0) < 0)
+			LOG(ERROR, "send() failed for PONG");
+
+		LOG(BOT, "Replied with: " << pongMsg);
 		return;
 	}
 
 	if (msg.find(" 001 ") != std::string::npos)
 	{
 		std::string join = "JOIN #movies\r\n";
-		send(socketBot, join.c_str(), join.size(), 0);
+		if (send(socketBot, join.c_str(), join.size(), 0) < 0)
+			LOG(ERROR, "send() failed");
 		return;
 	}
 
@@ -72,7 +85,7 @@ void	MovieBot::processMsg(std::string &msg)
 
 	if (msg.compare(0, 5, "ERROR") == 0)
 	{
-		std::cerr << "Server error: " << msg << std::endl;
+		LOG(ERROR, "Server error: " << msg);
 		return;
 	}
 }
