@@ -1,54 +1,13 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-# include <iostream>
-# include <vector>
-# include <map>
-# include <sys/socket.h>
-# include <sys/types.h>
-# include <fcntl.h>        // fcntl
-# include <poll.h>         // struct pollfd, poll()
-# include <netinet/in.h>   // sockaddr_in, INADDR_ANY
-# include <arpa/inet.h>    // htons, htonl
-# include <unistd.h>       // close
-# include <errno.h>
-# include <sstream>        // for istingstream
-# include <istream>        // for getline(isstreamstring, dorthwa);
-# include <signal.h>       // signal handling
-
 # include "Client.hpp"
 # include "IrcReplies.hpp"
 # include "Channel.hpp"
-
-# define C_RESET   "\033[0m"
-# define C_BOLD    "\033[1m"
-# define C_RED     "\033[31m"
-# define C_GREEN   "\033[32m"
-# define C_YELLOW  "\033[33m"
-# define C_BLUE    "\033[34m"
-# define C_MAGENTA "\033[35m"
-# define C_CYAN    "\033[36m"
-
-# define LOG_LABEL_SERVER C_GREEN C_BOLD "[SERVER] " C_RESET
-
-enum	LogLevel
-{
-	INFO,
-	WARN,
-	ERROR,
-	DEBUG,
-	CLIENT,
-	NEWCLIENT,
-	DISCONNECT
-};
-
-void log(LogLevel level, const std::string &msg);
-
-# define LOG(level, msg) do { std::ostringstream ss; ss << msg; log(level, ss.str()); } while(0)
-
-# define BUFFER_SIZE 512
+# include "IrcCommon.hpp"
 
 class Client;
+class Channel;
 
 class Server
 {

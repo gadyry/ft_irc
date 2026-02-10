@@ -2,10 +2,10 @@
 # include "../includes/Server.hpp"
 
 MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
-					password(""), buffRecieve("") { }
+					password(""), recieveBuff("") { }
 
 MovieBot::MovieBot(std::string host, u_short port, std::string password) : socketBot(-1), hostname(host), nick("MovieBot"), user("MovieBot test test test"),
-					servPort(port), password(password), buffRecieve("") { }
+					servPort(port), password(password), recieveBuff("") { }
 
 MovieBot::~MovieBot()
 {
@@ -46,7 +46,7 @@ void	MovieBot::connectToServer()
 	}
 }
 
-void	MovieBot::handleMessage(std::string &msg)
+void	MovieBot::processMsg(std::string &msg)
 {
 	std::cout << "[SERVER] " << msg << std::endl;
 
@@ -65,10 +65,10 @@ void	MovieBot::handleMessage(std::string &msg)
 		return;
 	}
 
-	if (msg.find("PRIVMSG") != std::string::npos)
-	{
-		_handlePrivMsg(msg); return;
-	}
+	// if (msg.find("PRIVMSG") != std::string::npos)
+	// {
+	// 	_handlePrivMsg(msg); return;
+	// }
 
 	if (msg.compare(0, 5, "ERROR") == 0)
 	{
