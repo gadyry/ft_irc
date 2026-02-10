@@ -5,9 +5,10 @@ CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRC = src/main.cpp src/Server.cpp src/Client.cpp commandes/PASS.cpp commandes/handleCmd.cpp \
 		commandes/NICK.cpp commandes/USER.cpp commandes/QUIT.cpp commandes/JOIN.cpp src/Channel.cpp \
-		commandes/KICK.cpp commandes/MODE.cpp commandes/PRIVMSG.cpp commandes/INVITE.cpp commandes/TOPIC.cpp
+		commandes/KICK.cpp commandes/MODE.cpp commandes/PRIVMSG.cpp commandes/INVITE.cpp commandes/TOPIC.cpp \
+		src/IrcCommon.cpp
 
-BONUS_SRC = bonus/main.cpp bonus/MovieBot.cpp
+BONUS_SRC = bonus/main.cpp bonus/MovieBot.cpp src/IrcCommon.cpp
 
 OBJ = $(SRC:.cpp=.o)
 BONUS_OBJ = $(BONUS_SRC:.cpp=.o)

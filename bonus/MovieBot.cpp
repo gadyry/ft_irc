@@ -53,7 +53,7 @@ void	MovieBot::processMsg(std::string &msg)
 
 	if (msg.compare(0, 4, "PING") == 0)
 	{
-		std::string token;
+		std::string token = "";
 		size_t spacePos = msg.find(' ');
 		if (spacePos != std::string::npos)
 		{
