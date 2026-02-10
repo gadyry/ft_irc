@@ -1,5 +1,6 @@
 # include "../includes/Server.hpp"
 # include "../includes/Client.hpp"
+# include "../includes/IrcCommon.hpp"
 
 int Server::g_signalReceived = 0;
 
@@ -9,7 +10,7 @@ void    Server::signalHandler(int sig)
 	Server::g_signalReceived = 1;
 }
 
-void    log(LogLevel level, const std::string &msg)
+void log(LogLevel level, const std::string &msg)
 {
 	switch (level)
 	{
@@ -34,8 +35,14 @@ void    log(LogLevel level, const std::string &msg)
 		case DISCONNECT:
 			std::cout << C_MAGENTA << "[DISCONNECT] " << C_RESET << C_MAGENTA << msg << C_RESET << std::endl;
 			break;
+		case BOT:
+			std::cout << C_GREEN << "[BOT] " << C_RESET << msg << std::endl;  // <-- added only
+			break;
 	}
 }
+
+
+
 
 Server::Server()
 {
@@ -46,7 +53,7 @@ Server::Server()
 	// handleCommand["QUIT"] = &Server::_cmdQuit;
 }
 
-Server::Server(u_short port, std::string password) : port(port), password(password)
+Server::Server(u_short port, std::string password) : port(port), password(password), servername("irc.myserver.com")
 {
 	struct sockaddr_in  addr_serv;
 	int                 camus = 1;
@@ -87,7 +94,7 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
 	signal(SIGPIPE, SIG_IGN);
 }
 
-void    Server::addClient()
+void	Server::addClient()
 {
 	struct pollfd       newPoll;
 	struct sockaddr_in  addr_client;
@@ -143,7 +150,8 @@ void    Server::removeClient(int fd)
 
 void    Server::sendError(Client* client, const std::string& msg)
 {
-	send(client->getFdClient(), msg.c_str(), msg.length(), 0);
+	if (send(client->getFdClient(), msg.c_str(), msg.length(), 0) == -1)
+		throw std::runtime_error("send() failed");
 }
 
 std::vector<std::string> split_or(const std::string& str)
@@ -167,12 +175,30 @@ void    Server::_regestrationIsValid(Client* client)
 	}
 }
 
-void    Server::_handleLine(Client* client, std::string& fullCmd)
+void	Server::_handleLine(Client* client, std::string& fullCmd)
 {
 	std::vector<std::string> tokens = split_or(fullCmd);
 	if (tokens.empty()) return;
 	
 	std::string cmd = tokens[0];
+	if (cmd == "PING")
+	{
+		std::string token;
+		size_t spacePos = fullCmd.find(' ');
+		if (spacePos != std::string::npos)
+		{
+			token = fullCmd.substr(spacePos + 1);
+			if (!token.empty() && token[0] == ':')
+				token = token.substr(1);
+		}
+
+		std::string pongMsg = RPL_PONG(servername, token);
+		if (send(client->getFdClient(), pongMsg.c_str(), pongMsg.length(), 0) < 0)
+			LOG(ERROR, "send() failed for PONG");
+
+		LOG(INFO, "Responded to PING with token '" << token << "'");
+		return;
+	}
 
 	if (cmd == "QUIT")
 	{
@@ -291,7 +317,6 @@ Server::~Server()
 
 	LOG(INFO, "Server shutdown complete");
 }
-
 
 //channel
 Channel* Server::getChannel(const std::string& name)

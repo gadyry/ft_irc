@@ -68,5 +68,8 @@ void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& token
         sendError(senderCl, ERR_NOSUCHNICK(senderCl->getNickname(), target));
         return;
     }
-    send(receiver->getFdClient(), fullmsg.c_str(), fullmsg.length(), 0);
+
+    if(send(receiver->getFdClient(), fullmsg.c_str(), fullmsg.length(), 0) == -1)
+        throw std::runtime_error("send() failed");
+
 }
