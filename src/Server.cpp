@@ -51,7 +51,7 @@ Server::Server()
 	// handleCommand["QUIT"] = &Server::_cmdQuit;
 }
 
-Server::Server(u_short port, std::string password) : port(port), password(password)
+Server::Server(u_short port, std::string password) : port(port), password(password), servername("irc.server.com")
 {
 	struct sockaddr_in  addr_serv;
 	int                 camus = 1;
@@ -92,7 +92,7 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
 	signal(SIGPIPE, SIG_IGN);
 }
 
-void    Server::addClient()
+void	Server::addClient()
 {
 	struct pollfd       newPoll;
 	struct sockaddr_in  addr_client;
@@ -173,12 +173,25 @@ void    Server::_regestrationIsValid(Client* client)
 	}
 }
 
-void    Server::_handleLine(Client* client, std::string& fullCmd)
+void	Server::_handleLine(Client* client, std::string& fullCmd)
 {
 	std::vector<std::string> tokens = split_or(fullCmd);
 	if (tokens.empty()) return;
 	
 	std::string cmd = tokens[0];
+	if (cmd == "PING")
+	{
+		std::string pongMsg = "PONG";
+		std::string token = (tokens.size() > 1) ? tokens[1] : "";
+		std::string pongMsg = RPL_PONG(servername, token);
+
+		if (send(client->getFdClient(), pongMsg.c_str(), pongMsg.length(), 0) < 0)
+		{
+			LOG(ERROR, "send() failed"); return;
+		}
+		LOG(INFO, "Responded to PING from " << client->getNickname());
+		return;
+	}
 
 	if (cmd == "QUIT")
 	{
