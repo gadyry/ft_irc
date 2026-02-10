@@ -15,6 +15,7 @@ private :
 	u_short       port;
 	std::string password;
 	int         serv_fd;
+	std::string	servername;
 	std::vector<struct pollfd> fds_sentinels;
 	std::map<int, Client*> clients; // for me the best choise using object not std::string
 	std::map<std::string, Channel*> ch_channels; // channel shit 2.0
