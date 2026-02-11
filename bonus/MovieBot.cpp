@@ -5,7 +5,7 @@
 MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
 					password(""), recieveBuff("") { }
 
-MovieBot::MovieBot(std::string host, u_short port, std::string password) : socketBot(-1), hostname(host), nick("MovieBot"), user("MovieBot test test test"),
+MovieBot::MovieBot(std::string host, u_short port, std::string password) : socketBot(-1), hostname(host), nick("MovieBot"), user("moviebot cretical cinephel :CelimaBot"),
 					servPort(port), password(password), recieveBuff("") { }
 
 MovieBot::~MovieBot()
@@ -47,6 +47,11 @@ void	MovieBot::connectToServer()
 	}
 }
 
+void	MovieBot::dealWithPrivMsg(std::string&)
+{
+	// TODO : 
+}
+
 void	MovieBot::processMsg(std::string &msg)
 {
 	std::cout << "[SERVER] " << msg << std::endl;
@@ -77,20 +82,17 @@ void	MovieBot::processMsg(std::string &msg)
 		return;
 	}
 
-	// parse IRC Commmande, using find("PRIVMSG") is weak parsing, Weaaaaaaaaaaaaaaaaaaaaaak weakkkkkkk 
 	std::string	prefix;
 	std::string	line = msg;
 	std::string cmd;
-	// remove :[prefix]
 	if (!line.empty() && line[0] == ':')
 	{
 		size_t pos_space = line.find(' ');
 		if (pos_space == std::string::npos)
 			return;
 		prefix = prefix.substr(1, pos_space - 1);
-		line = line.substr(pos_space + 1); // +1 to ignore space
+		line = line.substr(pos_space + 1);
 	}
-	// I need to extract cmd if exist
 	size_t	spacePos = line.find(' ');
 	if (spacePos == std::string::npos)
 		cmd = line;
@@ -98,7 +100,7 @@ void	MovieBot::processMsg(std::string &msg)
 		cmd = line.substr(0, spacePos);
 	if (cmd == "PRIVMSG")
 	{
-		// _handlePrivMsg(msg); return; // TODO DOOR THWA
+		dealWithPrivMsg(line); return; // TODO DOOR THWA
 	}
 
 	if (msg.compare(0, 5, "ERROR") == 0)
