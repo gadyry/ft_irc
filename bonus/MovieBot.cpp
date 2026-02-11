@@ -47,7 +47,7 @@ void	MovieBot::connectToServer()
 	}
 }
 
-void	MovieBot::dealWithPrivMsg(std::string&)
+void	MovieBot::dealWithPrivMsg(std::string&line)
 {
 	// TODO : 
 }
