@@ -145,7 +145,8 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 {
 	std::vector<std::string> tokens = split_or(fullCmd);
 	if (tokens.empty()) return;
-	
+
+	LOG(DEBUG, "fullCmd:  " << fullCmd << " | fd : " << client->getFdClient());
 	std::string cmd = tokens[0];
 	if (cmd == "PING")
 	{
@@ -252,7 +253,7 @@ void	Server::executeServ()
 
 		for (size_t i = 0; i < fds_sentinels.size(); i++)
 		{
-			if (fds_sentinels[i].revents && POLLIN)
+			if (fds_sentinels[i].revents & POLLIN)
 			{
 				if (fds_sentinels[i].fd == serv_fd)
 					addClient();
