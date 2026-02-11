@@ -61,7 +61,6 @@ void	MovieBot::processMsg(std::string &msg)
 			if (!token.empty() && token[0] == ':')
 				token = token.substr(1);
 		}
-
 		std::string pongMsg = RPL_PONG(this->hostname, token);
 		if (send(socketBot, pongMsg.c_str(), pongMsg.length(), 0) < 0)
 			LOG(ERROR, "send() failed for PONG");
@@ -78,10 +77,29 @@ void	MovieBot::processMsg(std::string &msg)
 		return;
 	}
 
-	// if (msg.find("PRIVMSG") != std::string::npos)
-	// {
-	// 	_handlePrivMsg(msg); return;
-	// }
+	// parse IRC Commmande, using find("PRIVMSG") is weak parsing, Weaaaaaaaaaaaaaaaaaaaaaak weakkkkkkk 
+	std::string	prefix;
+	std::string	line = msg;
+	std::string cmd;
+	// remove :[prefix]
+	if (!line.empty() && line[0] == ':')
+	{
+		size_t pos_space = line.find(' ');
+		if (pos_space == std::string::npos)
+			return;
+		prefix = prefix.substr(1, pos_space - 1);
+		line = line.substr(pos_space + 1); // +1 to ignore space
+	}
+	// I need to extract cmd if exist
+	size_t	spacePos = line.find(' ');
+	if (spacePos == std::string::npos)
+		cmd = line;
+	else
+		cmd = line.substr(0, spacePos);
+	if (cmd == "PRIVMSG")
+	{
+		// _handlePrivMsg(msg); return; // TODO DOOR THWA
+	}
 
 	if (msg.compare(0, 5, "ERROR") == 0)
 	{
