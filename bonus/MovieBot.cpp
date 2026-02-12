@@ -72,7 +72,26 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 
 	if (msgContent[0] != '!') return;
 
-	// commande of MovieBot
+	std::string	cmdLine = msgContent.substr(1);
+	std::istringstream isstream(cmdLine);
+	std::string cmd; isstream >> cmd;
+	for (size_t i = 0; i < cmd.length(); i++)
+		cmd[i] = std::tolower(cmd[i]);
+	std::vector<std::string> cmdArgs;
+	std::string arg;
+	while (isstream >> arg)	cmdArgs.push_back(arg);
+
+	// std::string response;
+	// if (cmd == "quote")
+	// 	response = handleQuote(cmdArgs); // TODO
+	// else if (cmd == "help")
+	// 	response = "🎬 Commands: !quote [movie], !list, !help";
+	// else if (cmd == "list")
+	// 	response = "🎥 Movies: matrix, starwars, godfather, lotr, inception";
+	// else
+	// 	response = "❌ Unknown command: " + cmd + ". Type !help";
+
+	// sendPrivMsg(replyTarget, response); // TODO
 }
 
 void	MovieBot::processMsg(std::string &msg)
