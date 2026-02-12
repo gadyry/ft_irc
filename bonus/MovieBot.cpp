@@ -47,14 +47,40 @@ void	MovieBot::connectToServer()
 	}
 }
 
-void	MovieBot::dealWithPrivMsg(std::string&line)
+void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& args)
 {
-	// TODO : 
+	if (args.size() < 2) return;
+
+	std::string	target = args[0];
+	std::string	msgContent = args[1];
+
+	if (msgContent.empty()) return;
+
+	size_t pos = prefix.find('!');
+	std::string sender = (pos != std::string::npos) ? sender = prefix.substr(0, pos) : sender = prefix;
+	if (sender == this->nick) 
+		return;
+	if (msgContent[0] == '\x01') return; // Ignore CTCP (messages starting with ASCII 0x01)
+
+	std::string replyTarget;
+	if (target == this->nick)
+		replyTarget = sender;
+	else if (target[0] == '#')
+		replyTarget = target;
+	else
+		return;
+
+	if (msgContent[0] != '!') return;
+
+	// commande of MovieBot
 }
 
 void	MovieBot::processMsg(std::string &msg)
 {
-	std::cout << "[SERVER] " << msg << std::endl;
+	std::cout << "[SERVER] " << msg << std::endl; 
+
+	if (msg.length() >= 2 && msg.substr(msg.length() - 2) == "\r\n")
+		msg = msg.substr(0, msg.length() - 2);
 
 	if (msg.compare(0, 4, "PING") == 0)
 	{
@@ -82,25 +108,50 @@ void	MovieBot::processMsg(std::string &msg)
 		return;
 	}
 
-	std::string	prefix;
+	std::string	prefix, cmd;
 	std::string	line = msg;
-	std::string cmd;
+	std::vector<std::string> args;
 	if (!line.empty() && line[0] == ':')
 	{
 		size_t pos_space = line.find(' ');
 		if (pos_space == std::string::npos)
 			return;
-		prefix = prefix.substr(1, pos_space - 1);
+		prefix = line.substr(1, pos_space - 1);
 		line = line.substr(pos_space + 1);
 	}
 	size_t	spacePos = line.find(' ');
 	if (spacePos == std::string::npos)
+	{
 		cmd = line;
+		line = "";
+	}
 	else
+	{
 		cmd = line.substr(0, spacePos);
+		line = line.substr(spacePos + 1);
+	}
+	while (!line.empty())
+	{
+		if (line[0] == ':')
+		{
+			args.push_back(line.substr(1));
+			break;
+		}
+		size_t next_space = line.find(' ');
+		if (next_space != std::string::npos)
+		{
+			args.push_back(line.substr(0, next_space));
+			line = line.substr(next_space + 1);
+		}
+		else
+		{
+			args.push_back(line); break;
+		}
+	}
+	// :leehwak!user@host PRIVMSG MovieBot :!quote
 	if (cmd == "PRIVMSG")
 	{
-		dealWithPrivMsg(line); return; // TODO DOOR THWA
+		dealWithPrivMsg(prefix, args); return;
 	}
 
 	if (msg.compare(0, 5, "ERROR") == 0)

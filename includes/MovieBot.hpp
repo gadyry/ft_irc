@@ -19,7 +19,7 @@ private:
 
 	// methods :
 	void	connectToServer();
-	void	dealWithPrivMsg(std::string& line);
+	void	dealWithPrivMsg(std::string& prefix, std::vector<std::string>& args);
 	void	processMsg(std::string& fullMsg);
 	void	handleMessage();
 	void	buildBot();
