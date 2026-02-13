@@ -20,6 +20,7 @@
 # include <sstream>
 # include <istream>
 # include <signal.h>
+# include <ctime>
 
 # define BUFFER_SIZE 512
 
