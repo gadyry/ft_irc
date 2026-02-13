@@ -3,10 +3,12 @@
 
 
 MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
-					password(""), recieveBuff("") { }
+					password(""), recieveBuff("")
+{std::srand(std::time(NULL));}
 
 MovieBot::MovieBot(std::string host, u_short port, std::string password) : socketBot(-1), hostname(host), nick("MovieBot"), user("moviebot cretical cinephel :CelimaBot"),
-					servPort(port), password(password), recieveBuff("") { }
+					servPort(port), password(password), recieveBuff("")
+{ std::srand(std::time(NULL));}
 
 MovieBot::~MovieBot()
 {
@@ -97,7 +99,7 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 		response = handleHelp();
 	else if (cmd == "suggest" || cmd == "recommend")
 		response = handleSuggest(cmdArgs);
-	else if (cmd == "add")
+	else if (cmd == "add") // this cmd I can changing it, because feeha lmachakil dzeb
 		response = handleAdd(cmdArgs, sender);
 	else if (cmd == "info")
 		response = handleInfo(cmdArgs);
@@ -239,7 +241,7 @@ void    MovieBot::buildBot()
 			return;
 		}
 		recieveBuff += std::string(buffer, bytes);
-		this->handleMessage(); // TODO
+		this->handleMessage();
 	}
 }
 
@@ -247,9 +249,8 @@ void    MovieBot::executeMovieBot()
 {
 	this->connectToServer();
 
-	// // Load the CSV data
 	loadMovies("data/movies.csv");
 	loadQuotes("data/quotes.csv");
 
-	this->buildBot(); // TODO
+	this->buildBot();
 }

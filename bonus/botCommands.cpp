@@ -16,17 +16,34 @@ std::string	MovieBot::handleHelp()
 
 std::string MovieBot::handleQuote(std::vector<std::string>& args)
 {
+	if (args.empty())
+			return ("Usage: !quote <movie title>"); // for now I can deal with it by this way!!
 	// if (args.empty())
 	// 	return (getRandomQuote()); // TODO
 
 	std::string movieName;
 	for (size_t i = 0; i < args.size(); ++i)
 	{
-		if (i > 0)
-			movieName += " ";
 		movieName += args[i];
+		if (i < args.size() - 1)
+			movieName += " ";
 	}
-	// return (searchQuoteByMovie(movieName)); // TODO
+
+	for(size_t i = 0; i < movieName.length(); i++)
+		movieName[i] = std::tolower(movieName[i]);
+
+	std::map<std::string, unsigned short>::iterator it;
+	it = titleToId.find(movieName);
+	if (it == titleToId.end())
+		return ("❌ Movie not found: " + movieName);
+	unsigned short	movieId = it->second;
+
+	if (quotesByMovieId.find(movieId) == quotesByMovieId.end() || quotesByMovieId[movieId].empty())
+		return ("❌ No quotes available for this movie.");
+
+	std::vector<t_Quote>& vec = quotesByMovieId[movieId];
+	int index = std::rand() % vec.size();
+	return ("🎬 " + moviesById[movieId].title + ": " + vec[index].text);
 }
 
 std::string	MovieBot::handleSuggest(std::vector<std::string>& args)
