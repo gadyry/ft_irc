@@ -248,8 +248,8 @@ void    MovieBot::executeMovieBot()
 	this->connectToServer();
 
 	// // Load the CSV data
-	// loadMovies("data/movies.csv");
-	// loadQuotes("data/quotes.csv");
+	loadMovies("data/movies.csv");
+	loadQuotes("data/quotes.csv");
 
 	this->buildBot(); // TODO
 }
