@@ -44,11 +44,6 @@ void	MovieBot::loadMovies(std::string db_movies)
 	}
 }
 
-void	MovieBot::loadQuotes(std::string db_quotes)
-{
-	// TODO
-}
-
 void MovieBot::loadQuotes(std::string db_quotes)
 {
 	std::ifstream file(db_quotes.c_str());
