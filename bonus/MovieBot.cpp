@@ -90,13 +90,13 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 	while (isstream >> arg)	cmdArgs.push_back(arg);
 
 	std::string response;
-   
+
 	if (cmd == "quote")
 		response = handleQuote(cmdArgs);
 	else if (cmd == "help")
 		response = handleHelp();
-	else if (cmd == "list")
-		response = handleList(cmdArgs);
+	else if (cmd == "suggest" || cmd == "recommend")
+		response = handleSuggest(cmdArgs);
 	else if (cmd == "add")
 		response = handleAdd(cmdArgs, sender);
 	else if (cmd == "info")
@@ -246,5 +246,10 @@ void    MovieBot::buildBot()
 void    MovieBot::executeMovieBot()
 {
 	this->connectToServer();
+
+	// // Load the CSV data
+	// loadMovies("data/movies.csv");
+	// loadQuotes("data/quotes.csv");
+
 	this->buildBot(); // TODO
 }
