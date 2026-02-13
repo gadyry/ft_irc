@@ -14,6 +14,14 @@ MovieBot::~MovieBot()
 	close(this->socketBot);
 }
 
+void	MovieBot::sendPrivMsg(std::string& target, std::string& message)
+{
+	std::string reply = "PRIVMSG " + target + " :" + message + "\r\n";
+
+	if (send(socketBot, reply.c_str(), reply.size(), 0) < 0)
+		LOG(ERROR, "send() failed in sendPrivMsg()");
+}
+
 // methods 
 void	MovieBot::connectToServer()
 {
@@ -57,10 +65,10 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 	if (msgContent.empty()) return;
 
 	size_t pos = prefix.find('!');
-	std::string sender = (pos != std::string::npos) ? sender = prefix.substr(0, pos) : sender = prefix;
+	std::string sender = (pos != std::string::npos) ? prefix.substr(0, pos) : prefix;
 	if (sender == this->nick) 
 		return;
-	if (msgContent[0] == '\x01') return; // Ignore CTCP (messages starting with ASCII 0x01)
+	if (msgContent[0] == '\x01') return;
 
 	std::string replyTarget;
 	if (target == this->nick)
@@ -81,17 +89,23 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 	std::string arg;
 	while (isstream >> arg)	cmdArgs.push_back(arg);
 
-	// std::string response;
-	// if (cmd == "quote")
-	// 	response = handleQuote(cmdArgs); // TODO
-	// else if (cmd == "help")
-	// 	response = "🎬 Commands: !quote [movie], !list, !help";
-	// else if (cmd == "list")
-	// 	response = "🎥 Movies: matrix, starwars, godfather, lotr, inception";
-	// else
-	// 	response = "❌ Unknown command: " + cmd + ". Type !help";
+	std::string response;
+   
+	if (cmd == "quote")
+		response = handleQuote(cmdArgs);
+	else if (cmd == "help")
+		response = handleHelp();
+	else if (cmd == "list")
+		response = handleList(cmdArgs);
+	else if (cmd == "add")
+		response = handleAdd(cmdArgs, sender);
+	else if (cmd == "info")
+		response = handleInfo(cmdArgs);
+	else
+		response = "❌ Unknown command: " + cmd + ". Try !help";
 
-	// sendPrivMsg(replyTarget, response); // TODO
+	if (!response.empty())
+		sendPrivMsg(replyTarget, response);
 }
 
 void	MovieBot::processMsg(std::string &msg)
