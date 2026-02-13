@@ -8,7 +8,7 @@ SRC = src/main.cpp src/Server.cpp src/Client.cpp commandes/PASS.cpp commandes/ha
 		commandes/KICK.cpp commandes/MODE.cpp commandes/PRIVMSG.cpp commandes/INVITE.cpp commandes/TOPIC.cpp \
 		src/IrcCommon.cpp
 
-BONUS_SRC = bonus/main.cpp bonus/MovieBot.cpp src/IrcCommon.cpp
+BONUS_SRC = bonus/main.cpp bonus/MovieBot.cpp bonus/botCommands.cpp src/IrcCommon.cpp
 
 OBJ = $(SRC:.cpp=.o)
 BONUS_OBJ = $(BONUS_SRC:.cpp=.o)
