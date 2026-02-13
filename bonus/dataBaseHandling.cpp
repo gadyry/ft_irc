@@ -49,3 +49,39 @@ void	MovieBot::loadQuotes(std::string db_quotes)
 	// TODO
 }
 
+void MovieBot::loadQuotes(std::string db_quotes)
+{
+	std::ifstream file(db_quotes.c_str());
+	if (!file.is_open())
+	{
+		std::cerr << "Error: cannot open file: "
+				  << db_quotes << std::endl;
+		return;
+	}
+
+	std::string line;
+	std::getline(file, line);
+
+	while (std::getline(file, line))
+	{
+		if (line.empty())
+			continue;
+
+		std::stringstream ss(line);
+		std::string token;
+
+		t_Quote quote;
+		std::getline(ss, token, ',');
+		quote.movieId = static_cast<unsigned short>(std::atoi(token.c_str()));
+
+		std::getline(ss, quote.text);
+
+		if (moviesById.find(quote.movieId) == moviesById.end())
+		{
+			std::cerr << "Warning: Quote with invalid movieId: "
+					  << quote.movieId << std::endl;
+			continue;
+		}
+		quotesByMovieId[quote.movieId].push_back(quote);
+	}
+}
