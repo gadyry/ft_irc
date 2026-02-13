@@ -24,18 +24,25 @@ private:
 	void	processMsg(std::string& fullMsg);
 	void	handleMessage();
 	void	buildBot();
+
 	// 8=> cmds methods
 	std::string handleHelp();
 	std::string handleQuote(std::vector<std::string>& args);
-	std::string handleList(std::vector<std::string>& args);
+	std::string handleSuggest(std::vector<std::string>& args);
 	std::string handleAdd(std::vector<std::string>& args, std::string& sender);
 	std::string handleInfo(std::vector<std::string>& args);
+
+	// leoading data from data base
+
+	void	loadMovies(std::string db_movies);
+	void	loadQuotes(std::string db_quotes);
+
 public:
 	// Constractor && Distractor:
 		MovieBot();
 		MovieBot(std::string host, u_short port, std::string password);
 		~MovieBot();
-	
+
 	// Setters && Getters
 
 	// methods helper
