@@ -42,6 +42,7 @@ private:
 
 	std::map<unsigned short, t_Movies> moviesById;
 	std::map<std::string, unsigned short> titleToId;
+	std::map<unsigned short, std::vector<t_Quote> > quotesByMovieId;
 
 	// methods :
 	void	connectToServer();
