@@ -5,6 +5,29 @@
 # include "IrcReplies.hpp"
 # include "IrcCommon.hpp"
 
+
+typedef struct	s_Movies
+{
+	uint16_t	id;
+	std::string	title;
+	uint16_t	years;
+	std::string	rating;
+	std::string	director;
+	std::string	plot;
+
+	// std::string	searchKey; // We can used for (lowercase title for fast lookup)
+}	t_Movies;
+
+typedef struct	s_Quote
+{
+	uint16_t	movieId;
+	std::string	text;
+
+	// std::string	addedBy;
+	// std::time_t	timestamp;
+}	t_Quote;
+
+
 class MovieBot
 {
 private:
@@ -16,6 +39,9 @@ private:
 	unsigned short  servPort;
 	std::string     password;
 	std::string     recieveBuff;
+
+	t_Movies		movie;
+	t_Quote			quote;
 
 	// methods :
 	void	connectToServer();
