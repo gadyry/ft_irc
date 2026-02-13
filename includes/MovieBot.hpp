@@ -40,8 +40,8 @@ private:
 	std::string     password;
 	std::string     recieveBuff;
 
-	t_Movies		movie;
-	t_Quote			quote;
+	std::map<unsigned short, t_Movies> moviesById;
+	std::map<std::string, unsigned short> titleToId;
 
 	// methods :
 	void	connectToServer();
