@@ -123,7 +123,7 @@ std::string	MovieBot::handleInfo(std::vector<std::string>& args)
         << "Directed by " << m.director << "\n"
         << "📖 " << m.plot;
 
-    return oss.str();
+    return (oss.str());
 }
 
 // std::string	MovieBot::handleAdd(std::vector<std::string>& args, std::string& sender)
