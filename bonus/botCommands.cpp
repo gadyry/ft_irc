@@ -120,5 +120,7 @@ std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 	}
 	if (movieId == -69)
 		return ("Movie not found for now.");
+
 	// printing content of struct  !!
+	return ("Info: 8=> ...");
 }
