@@ -14,12 +14,30 @@ std::string	MovieBot::handleHelp()
 	return (helpText);
 }
 
+std::string MovieBot::getRandomQuote()
+{
+	if (quotesByMovieId.empty())
+		return ("No quotes available.");
+	size_t r = std::rand() % quotesByMovieId.size();
+	std::map<unsigned short, std::vector<t_Quote> >::iterator it = quotesByMovieId.begin();
+	while (r--)
+		++it;
+
+	unsigned short movieId = it->first;
+	std::vector<t_Quote>& vect = it->second;
+
+	if (vect.empty())
+		return "No quotes available.");
+
+	size_t index = std::rand() % vect.size();
+
+	return ("🎬 " + moviesById[movieId].title + ": " + vect[index].text);
+}
+
 std::string MovieBot::handleQuote(std::vector<std::string>& args)
 {
 	if (args.empty())
-			return ("Usage: !quote <movie title>"); // for now I can deal with it by this way!!
-	// if (args.empty())
-	// 	return (getRandomQuote()); // TODO
+		return (getRandomQuote());
 
 	std::string movieName;
 	for (size_t i = 0; i < args.size(); ++i)
@@ -35,11 +53,11 @@ std::string MovieBot::handleQuote(std::vector<std::string>& args)
 	std::map<std::string, unsigned short>::iterator it;
 	it = titleToId.find(movieName);
 	if (it == titleToId.end())
-		return ("❌ Movie not found: " + movieName);
+		return ("Movie not found: " + movieName);
 	unsigned short	movieId = it->second;
 
 	if (quotesByMovieId.find(movieId) == quotesByMovieId.end() || quotesByMovieId[movieId].empty())
-		return ("❌ No quotes available for this movie.");
+		return ("No quotes available for this movie.");
 
 	std::vector<t_Quote>& vec = quotesByMovieId[movieId];
 	int index = std::rand() % vec.size();
@@ -55,7 +73,6 @@ std::string	MovieBot::handleAdd(std::vector<std::string>& args, std::string& sen
 {
 	// TODO
 }
-
 
 std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 {
