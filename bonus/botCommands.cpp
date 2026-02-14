@@ -101,7 +101,13 @@ std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 	
 	std::string	collMoviesName;
 	int			movieId = -69;
-	// I should collect the args in one string !!
+
+	for(size_t i = 0; i < args.size(); i++)
+	{
+		collMoviesName += args[i];
+		if (args.size() - 1)
+			collMoviesName += " ";
+	}
 
 	std::map<std::string, unsigned short>::iterator	it;
 	for(it = titleToId.begin(); it != titleToId.end(); it++)
