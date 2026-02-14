@@ -17,30 +17,30 @@ void	MovieBot::loadMovies(std::string db_movies)
 	{
 		if (line.empty())
 			continue;
-		
+
 		std::stringstream	ss(line);
 		std::string			token;
 		t_Movies			movie;
 
-		std::getline(ss, token, ',')
-		movie.id = static_cast<uint16_t>(std::atoi(token.c_str()));
+		std::getline(ss, token, '|');
+		movie.id = static_cast<unsigned short>(std::atoi(token.c_str()));
 
-		std::getline(ss, movie.title, ',');
+		std::getline(ss, movie.title, '|');
 
-		std::getline(ss, token, ',');
-		movie.years = static_cast<uint16_t>(std::atoi(token.c_str()));
+		std::getline(ss, token, '|');
+		movie.years = static_cast<unsigned short>(std::atoi(token.c_str()));
 
-		std::getline(ss, movie.rating, ',');
-		std::getline(ss, movie.director, ',');
-		std::getline(ss, movie.plot, ',');
+		std::getline(ss, movie.rating, '|');
+		std::getline(ss, movie.director, '|');
+		std::getline(ss, movie.plot, '|');
 
 		moviesById[movie.id] = movie;
 
 		std::string lowerTitle = movie.title;
-		for (size_t i = 0; i < lowerTitle.length(); ++i)
+		for (size_t i = 0; i < lowerTitle.length(); i++)
 			lowerTitle[i] = std::tolower(lowerTitle[i]);
-		
-		titleToId[lowerTitle] = movie;
+
+		titleToId[lowerTitle] = movie.id;
 	}
 }
 
@@ -66,7 +66,7 @@ void MovieBot::loadQuotes(std::string db_quotes)
 		std::string token;
 
 		t_Quote quote;
-		std::getline(ss, token, ',');
+		std::getline(ss, token, '|');
 		quote.movieId = static_cast<unsigned short>(std::atoi(token.c_str()));
 
 		std::getline(ss, quote.text);

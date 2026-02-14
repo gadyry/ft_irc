@@ -54,6 +54,7 @@ private:
 
 	// 8=> cmds methods
 	std::string handleHelp();
+	std::string	getRandomQuote();
 	std::string handleQuote(std::vector<std::string>& args);
 	std::string handleSuggest(std::vector<std::string>& args);
 	std::string handleAdd(std::vector<std::string>& args, std::string& sender);
