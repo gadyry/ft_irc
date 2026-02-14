@@ -12,10 +12,6 @@ void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
         {
             _cmdJoin(client, tokens); return;
         }
-        else if (cmd == "TOPIC")
-        {
-            _cmdTopic(client, tokens); return;
-        }
         else if (cmd == "KICK")
         {
             _cmdKick(client, tokens); return;
@@ -24,10 +20,6 @@ void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
         {   
             _handlePrivmsg(client, tokens); return;
         }
-        // else if (cmd == "PONG")
-        // {
-        //     _cmdPong(client, tokens); return; // TODO
-        // }
         else if (cmd == "MODE")
         {
             _cmdMode(client, tokens); return;

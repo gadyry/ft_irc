@@ -3,15 +3,25 @@
 
 
 MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
-					password(""), recieveBuff("") { }
+					password(""), recieveBuff("")
+{std::srand(std::time(NULL));}
 
-MovieBot::MovieBot(std::string host, u_short port, std::string password) : socketBot(-1), hostname(host), nick("MovieBot"), user("MovieBot test test test"),
-					servPort(port), password(password), recieveBuff("") { }
+MovieBot::MovieBot(std::string host, u_short port, std::string password) : socketBot(-1), hostname(host), nick("MovieBot"), user("moviebot cretical cinephel :CelimaBot"),
+					servPort(port), password(password), recieveBuff("")
+{ std::srand(std::time(NULL));}
 
 MovieBot::~MovieBot()
 {
 	// manage the resources!!!
 	close(this->socketBot);
+}
+
+void	MovieBot::sendPrivMsg(std::string& target, std::string& message)
+{
+	std::string reply = "PRIVMSG " + target + " :" + message + "\r\n";
+
+	if (send(socketBot, reply.c_str(), reply.size(), 0) < 0)
+		LOG(ERROR, "send() failed in sendPrivMsg()");
 }
 
 // methods 
@@ -47,13 +57,69 @@ void	MovieBot::connectToServer()
 	}
 }
 
+void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& args)
+{
+	if (args.size() < 2) return;
+
+	std::string	target = args[0];
+	std::string	msgContent = args[1];
+
+	if (msgContent.empty()) return;
+
+	size_t pos = prefix.find('!');
+	std::string sender = (pos != std::string::npos) ? prefix.substr(0, pos) : prefix;
+	if (sender == this->nick) 
+		return;
+	if (msgContent[0] == '\x01') return;
+
+	std::string replyTarget;
+	if (target == this->nick)
+		replyTarget = sender;
+	else if (target[0] == '#')
+		replyTarget = target;
+	else
+		return;
+
+	if (msgContent[0] != '!') return;
+
+	std::string	cmdLine = msgContent.substr(1);
+	std::istringstream isstream(cmdLine);
+	std::string cmd; isstream >> cmd;
+	for (size_t i = 0; i < cmd.length(); i++)
+		cmd[i] = std::tolower(cmd[i]);
+	std::vector<std::string> cmdArgs;
+	std::string arg;
+	while (isstream >> arg)	cmdArgs.push_back(arg);
+
+	std::string response;
+
+	if (cmd == "quote")
+		response = handleQuote(cmdArgs);
+	else if (cmd == "help")
+		response = handleHelp();
+	else if (cmd == "suggest" || cmd == "recommend")
+		response = handleSuggest();
+	// else if (cmd == "add") // this cmd I can changing it, because feeha lmachakil dzeb
+	// 	response = handleAdd(cmdArgs, sender);
+	else if (cmd == "info")
+		response = handleInfo(cmdArgs);
+	else
+		response = "❌ Unknown command: " + cmd + ". Try !help";
+
+	if (!response.empty())
+		sendPrivMsg(replyTarget, response);
+}
+
 void	MovieBot::processMsg(std::string &msg)
 {
-	std::cout << "[SERVER] " << msg << std::endl;
+	std::cout << "[SERVER] " << msg << std::endl; 
+
+	if (msg.length() >= 2 && msg.substr(msg.length() - 2) == "\r\n")
+		msg = msg.substr(0, msg.length() - 2);
 
 	if (msg.compare(0, 4, "PING") == 0)
 	{
-		std::string token;
+		std::string token = "";
 		size_t spacePos = msg.find(' ');
 		if (spacePos != std::string::npos)
 		{
@@ -61,7 +127,6 @@ void	MovieBot::processMsg(std::string &msg)
 			if (!token.empty() && token[0] == ':')
 				token = token.substr(1);
 		}
-
 		std::string pongMsg = RPL_PONG(this->hostname, token);
 		if (send(socketBot, pongMsg.c_str(), pongMsg.length(), 0) < 0)
 			LOG(ERROR, "send() failed for PONG");
@@ -78,10 +143,51 @@ void	MovieBot::processMsg(std::string &msg)
 		return;
 	}
 
-	// if (msg.find("PRIVMSG") != std::string::npos)
-	// {
-	// 	_handlePrivMsg(msg); return;
-	// }
+	std::string	prefix, cmd;
+	std::string	line = msg;
+	std::vector<std::string> args;
+	if (!line.empty() && line[0] == ':')
+	{
+		size_t pos_space = line.find(' ');
+		if (pos_space == std::string::npos)
+			return;
+		prefix = line.substr(1, pos_space - 1);
+		line = line.substr(pos_space + 1);
+	}
+	size_t	spacePos = line.find(' ');
+	if (spacePos == std::string::npos)
+	{
+		cmd = line;
+		line = "";
+	}
+	else
+	{
+		cmd = line.substr(0, spacePos);
+		line = line.substr(spacePos + 1);
+	}
+	while (!line.empty())
+	{
+		if (line[0] == ':')
+		{
+			args.push_back(line.substr(1));
+			break;
+		}
+		size_t next_space = line.find(' ');
+		if (next_space != std::string::npos)
+		{
+			args.push_back(line.substr(0, next_space));
+			line = line.substr(next_space + 1);
+		}
+		else
+		{
+			args.push_back(line); break;
+		}
+	}
+	// :leehwak!user@host PRIVMSG MovieBot :!quote
+	if (cmd == "PRIVMSG")
+	{
+		dealWithPrivMsg(prefix, args); return;
+	}
 
 	if (msg.compare(0, 5, "ERROR") == 0)
 	{
@@ -135,12 +241,16 @@ void    MovieBot::buildBot()
 			return;
 		}
 		recieveBuff += std::string(buffer, bytes);
-		this->handleMessage(); // TODO
+		this->handleMessage();
 	}
 }
 
 void    MovieBot::executeMovieBot()
 {
 	this->connectToServer();
-	this->buildBot(); // TODO
+
+	loadMovies("../data/movies.csv");
+	loadQuotes("../data/quotes.csv");
+
+	this->buildBot();
 }

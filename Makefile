@@ -3,11 +3,12 @@ BONUS_NAME = MoviesBot
 CPP = c++
 CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRC = src/main.cpp src/Server.cpp src/Client.cpp commandes/PASS.cpp commandes/handleCmd.cpp \
-		commandes/NICK.cpp commandes/USER.cpp commandes/QUIT.cpp commandes/JOIN.cpp src/Channel.cpp \
-		commandes/KICK.cpp commandes/MODE.cpp commandes/PRIVMSG.cpp commandes/INVITE.cpp commandes/TOPIC.cpp
+SRC = src/main.cpp src/Server.cpp src/Client.cpp commands/PASS.cpp commands/handleCmd.cpp \
+		commands/NICK.cpp commands/USER.cpp commands/QUIT.cpp commands/JOIN.cpp src/Channel.cpp \
+		commands/KICK.cpp commands/MODE.cpp commands/PRIVMSG.cpp commands/INVITE.cpp commands/TOPIC.cpp \
+		src/IrcCommon.cpp
 
-BONUS_SRC = bonus/main.cpp bonus/MovieBot.cpp
+BONUS_SRC = bonus/main.cpp bonus/MovieBot.cpp bonus/botCommands.cpp bonus/dataBaseHandling.cpp src/IrcCommon.cpp
 
 OBJ = $(SRC:.cpp=.o)
 BONUS_OBJ = $(BONUS_SRC:.cpp=.o)

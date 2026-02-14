@@ -1,6 +1,5 @@
 
 # include "../includes/MovieBot.hpp"
-
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
 
@@ -33,14 +32,12 @@ int main(int ac, char** av)
 {
     if (ac != 4)
     {
-        // LOG(ERROR,  "Usage: ./MoviesBot <hostname> <port> <password>");
-        std::cout << "ERROR\n";
+        LOG(ERROR,  "Invalid param, Usage: ./MoviesBot <hostname> <port> <password>");
         return (1);
     }
     if (!validPort(av[2]) || !validPass(av[3]))
     {
-        // LOG(ERROR, "Error: " << "try again: ./MoviesBot <hostname> <port> <password>");
-        std::cout << "ERROR\n";
+        LOG(ERROR, "Port/ Pass ERROR: " << "try again: ./MoviesBot <hostname> <port> <password>");
         return (1);
     }
     try
