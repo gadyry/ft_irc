@@ -27,7 +27,7 @@ std::string MovieBot::getRandomQuote()
 	std::vector<t_Quote>& vect = it->second;
 
 	if (vect.empty())
-		return "No quotes available.");
+		return ("No quotes available.");
 
 	size_t index = std::rand() % vect.size();
 
