@@ -116,14 +116,20 @@ std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 	if (movieId == -69)
 		return ("Movie not found for now.");
 
-	t_Movies& m = moviesById[movieId];
+	t_Movies& m = moviesById[it->second];
 
-    std::ostringstream oss;
-    oss << "🎬 **" << m.title << "** (" << m.year << ")\n"
-        << "Directed by " << m.director << "\n"
-        << "📖 " << m.plot;
+	std::ostringstream oss;
+	oss << "🎬 " << m.title;
+	if (m.year > 0)
+		oss << " (" << m.year << ")";
+	if (!m.director.empty())
+		oss << " - Directed by " << m.director;
+	if (!m.rating.empty())
+		oss << " | Rating: " << m.rating;
+	if (!m.plot.empty())
+		oss << " | 📖 " << m.plot;
 
-    return (oss.str());
+	return (oss.str());
 }
 
 // std::string	MovieBot::handleAdd(std::vector<std::string>& args, std::string& sender)
