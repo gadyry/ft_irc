@@ -28,7 +28,7 @@ void	MovieBot::loadMovies(std::string db_movies)
 		std::getline(ss, movie.title, '|');
 
 		std::getline(ss, token, '|');
-		movie.years = static_cast<unsigned short>(std::atoi(token.c_str()));
+		movie.year = static_cast<unsigned short>(std::atoi(token.c_str()));
 
 		std::getline(ss, movie.rating, '|');
 		std::getline(ss, movie.director, '|');

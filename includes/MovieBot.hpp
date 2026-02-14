@@ -10,7 +10,7 @@ typedef struct	s_Movies
 {
 	unsigned short	id;
 	std::string		title;
-	unsigned short	years;
+	unsigned short	year;
 	std::string		rating;
 	std::string		director;
 	std::string		plot;
@@ -57,7 +57,7 @@ private:
 	std::string	getRandomQuote();
 	std::string handleQuote(std::vector<std::string>& args);
 	std::string handleSuggest();
-	std::string handleAdd(std::vector<std::string>& args, std::string& sender);
+	// std::string handleAdd(std::vector<std::string>& args, std::string& sender);
 	std::string handleInfo(std::vector<std::string>& args);
 
 	// leoading data from data base

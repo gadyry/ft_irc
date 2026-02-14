@@ -3,7 +3,7 @@
 
 std::string	MovieBot::handleHelp()
 {
-	std::string helpText = "🎬 **MovieBot Commands** 🎬\r\n";
+	std::string helpText = "🎬 === MovieBot Commands === 🎬\r\n";
 	helpText += "!quote - Random movie quote\r\n";
 	helpText += "!quote <movie> - Quote from specific movie\r\n";
 	helpText += "!suggest / !recommend - recommend movie\r\n";
@@ -79,19 +79,14 @@ std::string	MovieBot::handleSuggest()
 
 	std::ostringstream oss;
 	oss << "🎥 Recommendation: " << m.title;
-	if (m.years > 0)
-		oss << " (" << m.years << ")";
+	if (m.year > 0)
+		oss << " (" << m.year << ")";
 	if (!m.director.empty())
 		oss << " - " << m.director;
 	if (!m.rating.empty())
 		oss << " | Rating: " << m.rating;
 
 	return oss.str();
-}
-
-std::string	MovieBot::handleAdd(std::vector<std::string>& args, std::string& sender)
-{
-	// TODO
 }
 
 std::string	MovieBot::handleInfo(std::vector<std::string>& args)
@@ -105,7 +100,7 @@ std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 	for(size_t i = 0; i < args.size(); i++)
 	{
 		collMoviesName += args[i];
-		if (args.size() - 1)
+		if (i < args.size() - 1)
 			collMoviesName += " ";
 	}
 
@@ -121,6 +116,17 @@ std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 	if (movieId == -69)
 		return ("Movie not found for now.");
 
-	// printing content of struct  !!
-	return ("Info: 8=> ...");
+	t_Movies& m = moviesById[movieId];
+
+    std::ostringstream oss;
+    oss << "🎬 **" << m.title << "** (" << m.year << ")\n"
+        << "Directed by " << m.director << "\n"
+        << "📖 " << m.plot;
+
+    return oss.str();
 }
+
+// std::string	MovieBot::handleAdd(std::vector<std::string>& args, std::string& sender)
+// {
+// 	// TODO
+// }
