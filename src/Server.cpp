@@ -146,7 +146,6 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 	std::vector<std::string> tokens = split_or(fullCmd);
 	if (tokens.empty()) return;
 
-	LOG(DEBUG, "fullCmd:  " << fullCmd << " | fd : " << client->getFdClient());
 	std::string cmd = tokens[0];
 	if (cmd == "PING")
 	{
@@ -191,7 +190,7 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 	this->_handleCmd(client,tokens);
 }
 
-void    Server::processCmds(int fd)
+void	Server::processCmds(int fd)
 {
 	Client* client = clients[fd];
 	if (!client) return;

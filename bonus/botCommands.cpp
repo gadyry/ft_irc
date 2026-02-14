@@ -64,9 +64,29 @@ std::string	MovieBot::handleQuote(std::vector<std::string>& args)
 	return ("🎬 " + moviesById[movieId].title + ": " + vec[index].text);
 }
 
-std::string	MovieBot::handleSuggest(std::vector<std::string>& args)
+std::string	MovieBot::handleSuggest()
 {
-	
+	if (moviesById.empty())
+		return ("No movie available.");
+
+	size_t	randSugg = rand() % moviesById.size();
+	std::map<unsigned short, t_Movies>::iterator	it = moviesById.begin();
+
+	while(randSugg--)
+		it++;
+
+	t_Movies& m = it->second;
+
+	std::ostringstream oss;
+	oss << "🎥 Recommendation: " << m.title;
+	if (m.years > 0)
+		oss << " (" << m.years << ")";
+	if (!m.director.empty())
+		oss << " - " << m.director;
+	if (!m.rating.empty())
+		oss << " | Rating: " << m.rating;
+
+	return oss.str();
 }
 
 std::string	MovieBot::handleAdd(std::vector<std::string>& args, std::string& sender)
@@ -76,5 +96,23 @@ std::string	MovieBot::handleAdd(std::vector<std::string>& args, std::string& sen
 
 std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 {
-	// TODO
+	if (args.empty())
+		return("Try, !info <movie>.");
+	
+	std::string	collMoviesName;
+	int			movieId = -69;
+	// I should collect the args in one string !!
+
+	std::map<std::string, unsigned short>::iterator	it;
+	for(it = titleToId.begin(); it != titleToId.end(); it++)
+	{
+		if (it->first == collMoviesName)
+		{
+			movieId = it->second;
+			break;
+		}
+	}
+	if (movieId == -69)
+		return ("Movie not found for now.");
+	// printing content of struct  !!
 }
