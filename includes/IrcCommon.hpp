@@ -5,6 +5,7 @@
 # include <sstream>
 # include <iostream>
 # include <iostream>
+# include <fstream>
 # include <vector>
 # include <map>
 # include <algorithm>
@@ -16,9 +17,9 @@
 # include <arpa/inet.h>
 # include <unistd.h>
 # include <errno.h>
-# include <sstream>
 # include <istream>
 # include <signal.h>
+# include <ctime>
 
 # define BUFFER_SIZE 512
 
@@ -30,6 +31,14 @@
 # define C_BLUE    "\033[34m"
 # define C_MAGENTA "\033[35m"
 # define C_CYAN    "\033[36m"
+
+// ============= IRC codes (for IRC messages)=============
+// # define IRC_BOLD   "\x02"
+// # define IRC_RESET  "\x0F"
+// # define IRC_GREEN  "\x0303"
+// # define IRC_CYAN   "\x0311"
+
+// # define IRC_CMD(text) std::string(IRC_GREEN) + text + IRC_RESET
 
 enum LogLevel
 {
