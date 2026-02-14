@@ -14,7 +14,7 @@ std::string	MovieBot::handleHelp()
 	return (helpText);
 }
 
-std::string MovieBot::getRandomQuote()
+std::string	MovieBot::getRandomQuote()
 {
 	if (quotesByMovieId.empty())
 		return ("No quotes available.");
@@ -34,7 +34,7 @@ std::string MovieBot::getRandomQuote()
 	return ("🎬 " + moviesById[movieId].title + ": " + vect[index].text);
 }
 
-std::string MovieBot::handleQuote(std::vector<std::string>& args)
+std::string	MovieBot::handleQuote(std::vector<std::string>& args)
 {
 	if (args.empty())
 		return (getRandomQuote());
@@ -66,7 +66,7 @@ std::string MovieBot::handleQuote(std::vector<std::string>& args)
 
 std::string	MovieBot::handleSuggest(std::vector<std::string>& args)
 {
-	// TODO
+	
 }
 
 std::string	MovieBot::handleAdd(std::vector<std::string>& args, std::string& sender)

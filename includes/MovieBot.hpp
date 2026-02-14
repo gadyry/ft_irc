@@ -8,20 +8,20 @@
 
 typedef struct	s_Movies
 {
-	uint16_t	id;
-	std::string	title;
-	uint16_t	years;
-	std::string	rating;
-	std::string	director;
-	std::string	plot;
+	unsigned short	id;
+	std::string		title;
+	unsigned short	years;
+	std::string		rating;
+	std::string		director;
+	std::string		plot;
 
 	// std::string	searchKey; // We can used for (lowercase title for fast lookup)
 }	t_Movies;
 
 typedef struct	s_Quote
 {
-	uint16_t	movieId;
-	std::string	text;
+	unsigned short	movieId;
+	std::string		text;
 
 	// std::string	addedBy;
 	// std::time_t	timestamp;
