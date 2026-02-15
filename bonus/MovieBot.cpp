@@ -1,7 +1,6 @@
 # include "../includes/MovieBot.hpp"
 # include "../includes/Server.hpp"
 
-
 MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
 					password(""), recieveBuff("")
 {std::srand(std::time(NULL));}
@@ -12,8 +11,11 @@ MovieBot::MovieBot(std::string host, u_short port, std::string password) : socke
 
 MovieBot::~MovieBot()
 {
-	// manage the resources!!!
-	close(this->socketBot);
+	if (this->socketBot >= 0)
+	{
+		close(this->socketBot);
+		this->socketBot = -1;
+	}
 }
 
 void	MovieBot::sendPrivMsg(std::string& target, std::string& message)
@@ -34,16 +36,25 @@ void	MovieBot::connectToServer()
 	if (socketBot == -1)
 		throw std::runtime_error("failed to create socket!");
 
-	setsockopt(socketBot, SOL_SOCKET, SO_REUSEADDR, &camus, sizeof(camus));
+	if (setsockopt(socketBot, SOL_SOCKET, SO_REUSEADDR, &camus, sizeof(camus)) == -1)
+	{
+		close(socketBot);
+		socketBot = -1;
+		throw std::runtime_error("setsockopt() failed!");
+	}
 
 	addr_serv.sin_family = PF_INET;
 	addr_serv.sin_port = htons(this->servPort);
 	
-	if (inet_aton(this->hostname.c_str(), &addr_serv.sin_addr) <= 0)
-		throw std::runtime_error("Invalid hostname!");
+	if (inet_pton(AF_INET, this->hostname.c_str(), &addr_serv.sin_addr) <= 0)
+		throw std::runtime_error("Invalid hostname/IP!");
 
 	if (connect(this->socketBot, (struct sockaddr *)&addr_serv, sizeof(addr_serv)) < 0)
+	{
+		close(socketBot);
+		socketBot = -1;
 		throw std::runtime_error("connect() failed!");
+	}
 
 	std::vector<std::string> AuthCmds;
 	AuthCmds.push_back("PASS " + password + "\r\n");
@@ -75,7 +86,7 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 	std::string replyTarget;
 	if (target == this->nick)
 		replyTarget = sender;
-	else if (target[0] == '#')
+	else if (!target.empty() && target[0] == '#')
 		replyTarget = target;
 	else
 		return;
@@ -92,7 +103,6 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 	while (isstream >> arg)	cmdArgs.push_back(arg);
 
 	std::string response;
-
 	if (cmd == "quote")
 		response = handleQuote(cmdArgs);
 	else if (cmd == "help")
@@ -107,7 +117,27 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 		response = "❌ Unknown command: " + cmd + ". Try !help";
 
 	if (!response.empty())
-		sendPrivMsg(replyTarget, response);
+	{
+
+		size_t pos = 0;
+		std::string line;
+		while (pos < response.length())
+		{
+			size_t newlinePos = response.find("\r\n", pos);
+			if (newlinePos == std::string::npos)
+			{
+				line = response.substr(pos);
+				pos = response.length();
+			}
+			else
+			{
+				line = response.substr(pos, newlinePos - pos);
+				pos = newlinePos + 2;
+			}
+			if (!line.empty())
+				sendPrivMsg(replyTarget, line);
+		}
+	}
 }
 
 void	MovieBot::processMsg(std::string &msg)
@@ -249,8 +279,8 @@ void    MovieBot::executeMovieBot()
 {
 	this->connectToServer();
 
-	loadMovies("../data/movies.csv");
-	loadQuotes("../data/quotes.csv");
+	loadMovies("data/movies.csv");
+	loadQuotes("data/quotes.csv");
 
 	this->buildBot();
 }
