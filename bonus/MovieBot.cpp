@@ -119,7 +119,27 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 		response = "❌ Unknown command: " + cmd + ". Try !help";
 
 	if (!response.empty())
-		sendPrivMsg(replyTarget, response);
+	{
+		// Split response by \r\n and send each line separately
+		size_t pos = 0;
+		std::string line;
+		while (pos < response.length())
+		{
+			size_t newlinePos = response.find("\r\n", pos);
+			if (newlinePos == std::string::npos)
+			{
+				line = response.substr(pos);
+				pos = response.length();
+			}
+			else
+			{
+				line = response.substr(pos, newlinePos - pos);
+				pos = newlinePos + 2;
+			}
+			if (!line.empty())
+				sendPrivMsg(replyTarget, line);
+		}
+	}
 }
 
 void	MovieBot::processMsg(std::string &msg)
