@@ -47,6 +47,7 @@ private:
 	// methods :
 	void	connectToServer();
 	void	sendPrivMsg(std::string& target, std::string& message);
+
 	void	dealWithPrivMsg(std::string& prefix, std::vector<std::string>& args);
 	void	processMsg(std::string& fullMsg);
 	void	handleMessage();
@@ -60,7 +61,7 @@ private:
 	// std::string handleAdd(std::vector<std::string>& args, std::string& sender);
 	std::string handleInfo(std::vector<std::string>& args);
 
-	// leoading data from data base
+	// loading data from data base
 
 	void	loadMovies(std::string db_movies);
 	void	loadQuotes(std::string db_quotes);
