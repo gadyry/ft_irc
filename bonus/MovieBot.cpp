@@ -1,7 +1,6 @@
 # include "../includes/MovieBot.hpp"
 # include "../includes/Server.hpp"
 
-// define IRC color constants (C++98-friendly static std::string definitions)
 const std::string MovieBot::IRC_COLOR_RESET = "\x0f";
 const std::string MovieBot::IRC_COLOR_CYAN = "\x03""11";
 const std::string MovieBot::IRC_COLOR_GREEN = "\x03""03";
@@ -12,7 +11,6 @@ std::string MovieBot::colorize(const std::string &text, const std::string &color
 {
 	return color + text + IRC_COLOR_RESET;
 }
-
 
 MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
 					password(""), recieveBuff("")
@@ -33,7 +31,6 @@ MovieBot::~MovieBot()
 
 void	MovieBot::sendPrivMsg(std::string& target, std::string& message)
 {
-	// default to cyan
 	sendPrivMsg(target, message, MovieBot::IRC_COLOR_CYAN);
 }
 
@@ -124,7 +121,6 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 
 	std::string response;
 
-	// choose color per command (C++98-friendly)
 	std::string cmdColor = MovieBot::IRC_COLOR_CYAN;
 	if (cmd == "quote")
 	{
@@ -153,7 +149,7 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 
 	if (!response.empty())
 	{
-		// Split response by \r\n and send each line separately
+
 		size_t pos = 0;
 		std::string line;
 		while (pos < response.length())

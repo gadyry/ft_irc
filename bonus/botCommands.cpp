@@ -85,6 +85,8 @@ std::string	MovieBot::handleSuggest()
 		oss << " - " << m.director;
 	if (!m.rating.empty())
 		oss << " | Rating: " << m.rating;
+	if (!m.plot.empty())
+		oss << " | Plot: " << m.plot;
 
 	return oss.str();
 }
@@ -95,8 +97,6 @@ std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 		return("Try, !info <movie>.");
 	
 	std::string	collMoviesName;
-	int			movieId = -69;
-
 	for(size_t i = 0; i < args.size(); i++)
 	{
 		collMoviesName += args[i];
@@ -104,19 +104,15 @@ std::string	MovieBot::handleInfo(std::vector<std::string>& args)
 			collMoviesName += " ";
 	}
 
-	std::map<std::string, unsigned short>::iterator	it;
-	for(it = titleToId.begin(); it != titleToId.end(); it++)
-	{
-		if (it->first == collMoviesName)
-		{
-			movieId = it->second;
-			break;
-		}
-	}
-	if (movieId == -69)
+	for(size_t i = 0; i < collMoviesName.length(); i++)
+		collMoviesName[i] = std::tolower(collMoviesName[i]);
+
+	std::map<std::string, unsigned short>::iterator it = titleToId.find(collMoviesName);
+	if (it == titleToId.end())
 		return ("Movie not found for now.");
 
-	t_Movies& m = moviesById[it->second];
+	unsigned short movieId = it->second;
+	t_Movies& m = moviesById[movieId];
 
 	std::ostringstream oss;
 	oss << "🎬 " << m.title;
