@@ -44,18 +44,19 @@ private:
 	std::map<std::string, unsigned short> titleToId;
 	std::map<unsigned short, std::vector<t_Quote> > quotesByMovieId;
 
-	// methods :
-	void	connectToServer();
-	void	sendPrivMsg(std::string& target, std::string& message);
-	void	sendPrivMsg(std::string& target, std::string& message, const std::string& color);
-
 	// IRC color codes and helpers for colored bot messages
 	static const std::string IRC_COLOR_RESET;
 	static const std::string IRC_COLOR_CYAN;
 	static const std::string IRC_COLOR_GREEN;
 	static const std::string IRC_COLOR_RED;
 	static const std::string IRC_COLOR_YELLOW;
-	static std::string colorize(const std::string &text, const std::string &color);
+	static std::string	colorize(const std::string &text, const std::string &color);
+
+	// methods :
+	void	connectToServer();
+	void	sendPrivMsg(std::string& target, std::string& message);
+	void	sendPrivMsg(std::string& target, std::string& message, const std::string& color);
+
 	void	dealWithPrivMsg(std::string& prefix, std::vector<std::string>& args);
 	void	processMsg(std::string& fullMsg);
 	void	handleMessage();
