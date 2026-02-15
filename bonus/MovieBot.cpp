@@ -1,6 +1,18 @@
 # include "../includes/MovieBot.hpp"
 # include "../includes/Server.hpp"
 
+// define IRC color constants (C++98-friendly static std::string definitions)
+const std::string MovieBot::IRC_COLOR_RESET = "\x0f";
+const std::string MovieBot::IRC_COLOR_CYAN = "\x03""11";
+const std::string MovieBot::IRC_COLOR_GREEN = "\x03""03";
+const std::string MovieBot::IRC_COLOR_RED = "\x03""04";
+const std::string MovieBot::IRC_COLOR_YELLOW = "\x03""08";
+
+std::string MovieBot::colorize(const std::string &text, const std::string &color)
+{
+	return color + text + IRC_COLOR_RESET;
+}
+
 
 MovieBot::MovieBot() : socketBot(-1), hostname(""), nick(""), user(""), servPort(6969),
 					password(""), recieveBuff("")
@@ -21,7 +33,14 @@ MovieBot::~MovieBot()
 
 void	MovieBot::sendPrivMsg(std::string& target, std::string& message)
 {
-	std::string reply = "PRIVMSG " + target + " :" + message + "\r\n";
+	// default to cyan
+	sendPrivMsg(target, message, MovieBot::IRC_COLOR_CYAN);
+}
+
+void	MovieBot::sendPrivMsg(std::string& target, std::string& message, const std::string& color)
+{
+	std::string colored = MovieBot::colorize(message, color);
+	std::string reply = "PRIVMSG " + target + " :" + colored + "\r\n";
 
 	if (send(socketBot, reply.c_str(), reply.size(), 0) < 0)
 		LOG(ERROR, "send() failed in sendPrivMsg()");
@@ -87,7 +106,7 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 	std::string replyTarget;
 	if (target == this->nick)
 		replyTarget = sender;
-	else if (target[0] == '#')
+	else if (!target.empty() && target[0] == '#')
 		replyTarget = target;
 	else
 		return;
@@ -105,18 +124,32 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 
 	std::string response;
 
+	// choose color per command (C++98-friendly)
+	std::string cmdColor = MovieBot::IRC_COLOR_CYAN;
 	if (cmd == "quote")
+	{
 		response = handleQuote(cmdArgs);
+		cmdColor = MovieBot::IRC_COLOR_GREEN;
+	}
 	else if (cmd == "help")
+	{
 		response = handleHelp();
+		cmdColor = MovieBot::IRC_COLOR_CYAN;
+	}
 	else if (cmd == "suggest" || cmd == "recommend")
+	{
 		response = handleSuggest();
+		cmdColor = MovieBot::IRC_COLOR_YELLOW;
+	}
 	// else if (cmd == "add") // this cmd I can changing it, because feeha lmachakil dzeb
 	// 	response = handleAdd(cmdArgs, sender);
 	else if (cmd == "info")
 		response = handleInfo(cmdArgs);
 	else
+	{
 		response = "❌ Unknown command: " + cmd + ". Try !help";
+		cmdColor = MovieBot::IRC_COLOR_RED;
+	}
 
 	if (!response.empty())
 	{
@@ -137,7 +170,7 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 				pos = newlinePos + 2;
 			}
 			if (!line.empty())
-				sendPrivMsg(replyTarget, line);
+				sendPrivMsg(replyTarget, line, cmdColor);
 		}
 	}
 }
@@ -281,8 +314,8 @@ void    MovieBot::executeMovieBot()
 {
 	this->connectToServer();
 
-	loadMovies("../data/movies.csv");
-	loadQuotes("../data/quotes.csv");
+	loadMovies("data/movies.csv");
+	loadQuotes("data/quotes.csv");
 
 	this->buildBot();
 }

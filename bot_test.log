@@ -1,0 +1,9 @@
+[SERVER] :IRCServer 001 MovieBot :Welcome to the Internet Relay Network MovieBot
+[SERVER] :MovieBot!moviebot@127.0.0.1 JOIN #movies
+[SERVER] :IRCServer 331 MovieBot #movies :No topic is set
+[SERVER] :IRCServer 353 MovieBot = #movies :@MovieBot
+[SERVER] :IRCServer 366 MovieBot #movies :End of /NAMES list
+[SERVER] :testuser!testuser@127.0.0.1 JOIN #movies
+[SERVER] :testuser!testuser@127.0.0.1 PRIVMSG #movies :!help
+[SERVER] :testuser!testuser@127.0.0.1 PRIVMSG MovieBot :!help
+Client disconnected: fd = 3
