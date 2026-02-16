@@ -153,11 +153,9 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 			if (!token.empty() && token[0] == ':')
 				token = token.substr(1);
 		}
-
 		std::string pongMsg = RPL_PONG(servername, token);
 		if (send(client->getFdClient(), pongMsg.c_str(), pongMsg.length(), 0) < 0)
 			LOG(ERROR, "send() failed for PONG");
-
 		LOG(INFO, "Responded to PING with token '" << token << "'");
 		return;
 	}
