@@ -221,6 +221,12 @@
 #define RPL_PONG(server, token) \
     (std::string(":") + (server) + " PONG " + (server) + " :" + (token) + POSTFIX)
 
+#define ERR_NOORIGIN(nick) \
+    (std::string(SERVERPREFIX) + " 409 " + (nick) + " :No origin specified" + POSTFIX)
+
+#define ERR_NOSUCHSERVER(nick, server) \
+    (std::string(SERVERPREFIX) + " 402 " + (nick) + " " + (server) + " :No such server" + POSTFIX)
+
 // ============= HELPER MACROS =============
 
 // Create client prefix: nick!user@host

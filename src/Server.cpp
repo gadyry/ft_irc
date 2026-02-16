@@ -22,7 +22,6 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
 	if (serv_fd < 0)
 		throw std::runtime_error("socket() failed");
 
-	// std::memset(&addr_serv, 0, sizeof(addr_serv));
 	addr_serv.sin_family = PF_INET;
 	addr_serv.sin_port = htons(this->port);
 	addr_serv.sin_addr.s_addr = INADDR_ANY;
@@ -66,12 +65,6 @@ void	Server::addClient()
 			return;
 		throw std::runtime_error("accept() failed");
 	}
-
-	// if (fcntl(acpt, F_SETFL, O_NONBLOCK) == -1)
-	// {
-	//     close(acpt);
-	//     throw std::runtime_error("fcntl(O_NONBLOCK) failed");
-	// }
 
 	newPoll.fd = acpt;
 	newPoll.events = POLLIN;
@@ -141,25 +134,10 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 	if (tokens.empty()) return;
 
 	std::string cmd = tokens[0];
-	// if (cmd == "PONG" || cmd == "PING")
-	// 		this->_cmdPingPong(client, tokens);
-	if (cmd == "PING")
+	if (cmd == "PONG" || cmd == "PING")
 	{
-		std::string token = "";
-		size_t spacePos = fullCmd.find(' ');
-		if (spacePos != std::string::npos)
-		{
-			token = fullCmd.substr(spacePos + 1);
-			if (!token.empty() && token[0] == ':')
-				token = token.substr(1);
-		}
-
-		std::string pongMsg = RPL_PONG(servername, token);
-		if (send(client->getFdClient(), pongMsg.c_str(), pongMsg.length(), 0) < 0)
-			LOG(ERROR, "send() failed for PONG");
-
-		LOG(INFO, "Responded to PING with token '" << token << "'");
-		return;
+			this->_cmdPingPong(client, tokens);
+			return;
 	}
 
 	if (cmd == "QUIT")
