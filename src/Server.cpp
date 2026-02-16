@@ -22,7 +22,6 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
 	if (serv_fd < 0)
 		throw std::runtime_error("socket() failed");
 
-	// std::memset(&addr_serv, 0, sizeof(addr_serv));
 	addr_serv.sin_family = PF_INET;
 	addr_serv.sin_port = htons(this->port);
 	addr_serv.sin_addr.s_addr = INADDR_ANY;
@@ -66,12 +65,6 @@ void	Server::addClient()
 			return;
 		throw std::runtime_error("accept() failed");
 	}
-
-	// if (fcntl(acpt, F_SETFL, O_NONBLOCK) == -1)
-	// {
-	//     close(acpt);
-	//     throw std::runtime_error("fcntl(O_NONBLOCK) failed");
-	// }
 
 	newPoll.fd = acpt;
 	newPoll.events = POLLIN;
