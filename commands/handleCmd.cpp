@@ -38,9 +38,6 @@ void	Server::_cmdPingPong(Client* client, std::vector<std::string>& tokens)
 	}
 	else if (tokens[0] == "PONG")
 	{
-		client->markAlive();
-		client->updateLastPongTime();
-
 		LOG(INFO, "Received PONG from client with token '" << token << "'");
 		return;
 	}

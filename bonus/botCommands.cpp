@@ -7,7 +7,7 @@ std::string	MovieBot::handleHelp()
 	helpText += "!quote - Random movie quote\r\n";
 	helpText += "!quote <movie> - Quote from specific movie\r\n";
 	helpText += "!suggest / !recommend - recommend movie\r\n";
-	helpText += "!add <movie>|<quote> - Add a new quote\r\n";
+	// helpText += "!add <movie>|<quote> - Add a new quote\r\n";
 	helpText += "!info <movie> - Movie information\r\n";
 	helpText += "!help - This help message";
 
