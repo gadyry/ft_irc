@@ -6,7 +6,6 @@
 # include <sys/socket.h>
 # include <sys/types.h>
 # include <set>
-# include <ctime>
 
 # define LIMIT_NICK 9
 
@@ -29,8 +28,6 @@ private:
 	std::string             inputBuffer;
 	AuthState               authState;
 	std::set<std::string>   joinedChannels;
-	bool                    alive;
-	std::time_t             lastPongTime;
 
 public:
 	// Constructor & Destructor
@@ -59,10 +56,7 @@ public:
 	void        setUserOk();
 	AuthState   getAuthState();
 	bool		checkAuthComplete();
-	void		markAlive();
-	void		updateLastPongTime();
-	bool		isAlive();
-	std::time_t	getLastPongTime();
+
 	void addChannel(const std::string &channelName);
 	void removeChannel(const std::string &channelName);
 	bool isInChannel(const std::string &channelName);
