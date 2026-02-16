@@ -27,7 +27,7 @@ private:
 	std::string             host;
 	std::string             inputBuffer;
 	AuthState               authState;
-	std::set<std::string>   joinedChannels; // chose of set : ignore the duplicate strings!
+	std::set<std::string>   joinedChannels;
 
 public:
 	// Constructor & Destructor
@@ -55,9 +55,8 @@ public:
 	void        setNickOk();
 	void        setUserOk();
 	AuthState   getAuthState();
-	bool        checkAuthComplete();
+	bool		checkAuthComplete();
 
-	//channel
 	void addChannel(const std::string &channelName);
 	void removeChannel(const std::string &channelName);
 	bool isInChannel(const std::string &channelName);
