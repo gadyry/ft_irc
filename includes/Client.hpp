@@ -27,7 +27,7 @@ private:
 	std::string             host;
 	std::string             inputBuffer;
 	AuthState               authState;
-	std::set<std::string>   joinedChannels; // chose of set : ignore the duplicate strings!
+	std::set<std::string>   joinedChannels;
 
 public:
 	// Constructor & Destructor
