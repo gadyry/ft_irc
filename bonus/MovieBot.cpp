@@ -79,7 +79,7 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 
 	size_t pos = prefix.find('!');
 	std::string sender = (pos != std::string::npos) ? prefix.substr(0, pos) : prefix;
-	if (sender == this->nick) 
+	if (sender == this->nick)
 		return;
 	if (msgContent[0] == '\x01') return;
 
@@ -142,7 +142,7 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 
 void	MovieBot::processMsg(std::string &msg)
 {
-	std::cout << "[SERVER] " << msg << std::endl; 
+	std::cout << "[SERVER] " << msg << std::endl;
 
 	if (msg.length() >= 2 && msg.substr(msg.length() - 2) == "\r\n")
 		msg = msg.substr(0, msg.length() - 2);
@@ -213,7 +213,6 @@ void	MovieBot::processMsg(std::string &msg)
 			args.push_back(line); break;
 		}
 	}
-	// :leehwak!user@host PRIVMSG MovieBot :!quote
 	if (cmd == "PRIVMSG")
 	{
 		dealWithPrivMsg(prefix, args); return;
@@ -275,7 +274,7 @@ void    MovieBot::buildBot()
 	}
 }
 
-void    MovieBot::executeMovieBot()
+void	MovieBot::executeMovieBot()
 {
 	this->connectToServer();
 

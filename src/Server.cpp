@@ -117,7 +117,7 @@ void    Server::removeClient(int fd)
 void    Server::sendError(Client* client, const std::string& msg)
 {
 	if (send(client->getFdClient(), msg.c_str(), msg.length(), 0) == -1)
-		throw std::runtime_error("send() failed");
+		LOG(ERROR, "send() failed");
 }
 
 std::vector<std::string> split_or(const std::string& str)
@@ -137,7 +137,8 @@ void    Server::_regestrationIsValid(Client* client)
 	if (client->checkAuthComplete())
 	{
 		std::string welcome = RPL_WELCOME(client->getNickname());
-		send(client->getFdClient(), welcome.c_str(), welcome.length(), 0);
+		if (send(client->getFdClient(), welcome.c_str(), welcome.length(), 0) == -1)
+			LOG(ERROR, "send() failed");
 	}
 }
 
@@ -147,6 +148,8 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 	if (tokens.empty()) return;
 
 	std::string cmd = tokens[0];
+	// if (cmd == "PONG" || cmd == "PING")
+	// 		this->_cmdPingPong(client, tokens);
 	if (cmd == "PING")
 	{
 		std::string token = "";
@@ -246,7 +249,7 @@ void	Server::executeServ()
 		if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
 		{
 			if (errno == EINTR)
-				continue;  // Interrupted by signal, try again
+				continue;
 			throw std::runtime_error("poll() failed");
 		}
 
