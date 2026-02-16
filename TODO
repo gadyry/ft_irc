@@ -1,0 +1,11 @@
+PASS ss
+NICK yassine
+:IRCServer 433  yassine :Nickname is already in use
+NICK yassine'
+:IRCServer 432  yassine' :Erroneous nickname
+NICK yassine
+NICK sss
+:IRCServer 001 sss :Welcome to the Internet Relay Network sss
+------------------------------------------------------------------
+nc 127.0.0.1 2024  < /dev/random
+------------------------------------------------------------------
