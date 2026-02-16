@@ -2,10 +2,10 @@
 
 // Constructor
 Client::Client()
-	: fd_client(-1), nickname(""), username(""), host(""), inputBuffer(""), authState(AUTH_DISCONNECTED) {}
+	: fd_client(-1), nickname(""), username(""), host(""), inputBuffer(""), authState(AUTH_DISCONNECTED), alive(true), lastPongTime(std::time(NULL)) {}
 
 Client::Client(int fd)
-	: fd_client(fd), nickname(""), username(""), host(""), inputBuffer(""), authState(AUTH_DISCONNECTED) {}
+	: fd_client(fd), nickname(""), username(""), host(""), inputBuffer(""), authState(AUTH_DISCONNECTED), alive(true), lastPongTime(std::time(NULL)) {}
 
 // Destructor
 Client::~Client() {}
@@ -92,6 +92,26 @@ AuthState   Client::getAuthState()
 bool    Client::checkAuthComplete()
 {
 	return (authState == AUTH_COMPLETE);
+}
+
+void Client::markAlive()
+{
+	alive = true;
+}
+
+void Client::updateLastPongTime()
+{
+	lastPongTime = std::time(NULL);
+}
+
+bool Client::isAlive()
+{
+	return (alive);
+}
+
+std::time_t Client::getLastPongTime()
+{
+	return (lastPongTime);
 }
 
 void Client::addChannel(const std::string &channelName) {
