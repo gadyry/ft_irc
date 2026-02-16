@@ -10,14 +10,7 @@ void    Server::signalHandler(int sig)
 	Server::g_signalReceived = 1;
 }
 
-Server::Server()
-{
-	// handleCommand["NICK"] = &Server::_cmdNick;
-	// handleCommand["USER"] = &Server::_cmdUser;
-	// handleCommand["JOIN"] = &Server::_cmdJoin;
-	// handleCommand["PRIVMSG"] = &Server::_cmdPrivmsg;
-	// handleCommand["QUIT"] = &Server::_cmdQuit;
-}
+Server::Server() {}
 
 Server::Server(u_short port, std::string password) : port(port), password(password), servername("irc.myserver.com")
 {
