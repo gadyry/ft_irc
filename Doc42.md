@@ -107,13 +107,6 @@ Example:
 
 ### Connecting with an IRC Client
 
-Using **irssi**:
-
-```bash
-irssi
-/connect 127.0.0.1 6667 secret123
-```
-
 Using **nc** (netcat) for testing:
 
 ```bash
