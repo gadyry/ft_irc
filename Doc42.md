@@ -580,12 +580,15 @@ TIME    USER                SERVER              BOT                 COMMANDS
 - [The Linux `socket()` man page](https://man7.org/linux/man-pages/man2/socket.2.html)
 - [The Linux `fcntl()` man page](https://man7.org/linux/man-pages/man2/fcntl.2.html)
 - [Modern IRC Documentation](https://modern.ircdocs.horse/)
+- [The linux programming Interface](https://broman.dev/download/The%20Linux%20Programming%20Interface.pdf)
 
 ### AI Usage
 
-AI tools (ChatGPT, GitHub Copilot) were used in the following areas:
+AI tools (ChatGP, DeepSeek) were used in the following areas:
 
-- **Research and learning**: understanding kernel-level socket internals, TCP 3-way handshake mechanics, and `poll()` event-driven architecture (as documented in the project's README.md deep-dive notes)
+- **Research and learning**: AI was used to deepen our understanding of the concepts covered in *The Linux Programming Interface* by Michael Kerrisk — particularly around Unix socket internals, file descriptor management, the TCP 3-way handshake, `poll()`-based event-driven architecture, and non-blocking I/O with `fcntl()`. The deep-dive notes in the project's README.md were produced with AI assistance to clarify and expand on what we learned from the book.
 - **Documentation**: assisting with the creation of technical reference material (sequence diagrams, class diagrams, use-case diagrams found in ClassDiag.md)
-- **Debugging**: identifying edge cases in IRC protocol parsing and non-blocking I/O handling
-- **Code was written by the team members** — AI was not used to generate the core implementation
+- **Bot database design**: AI helped evaluate the best approach for the MovieBot's data storage — comparing options like SQLite, JSON, and flat CSV files. We chose CSV as the most lightweight and dependency-free solution fitting the C++98 constraint, and AI assisted in structuring the data model (movies and quotes linked by ID).
+- **Design thinking**: AI was used as a sounding board to think outside the box — exploring different approaches, questioning assumptions, and refining our architectural choices before writing code.
+- **Critical thinking and self-assessment**: We regularly asked AI to quiz us with targeted questions on the topics we were studying (sockets, TCP, `poll()`, IRC protocol, etc.) to test our understanding, identify gaps in our knowledge, and develop a stronger critical sense rather than passively consuming information.
+- **Code was written by the team members** — AI was not used to generate the code implementation, only for formatting print messages and generating the IRC numeric reply header macros
