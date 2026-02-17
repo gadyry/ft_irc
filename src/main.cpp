@@ -1,10 +1,3 @@
-/*
-    => Read RFC (RFC 1459 / 2812) (only sections about commands:
-            NICK, USER, JOIN, PRIVMSG, PART, QUIT, etc.)
-
-    => Create a minimal Server class that binds and listens on a port.
-*/
-
 #include <iostream>
 #include "../includes/Server.hpp"
 #include "../includes/Client.hpp"
