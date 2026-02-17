@@ -26,7 +26,7 @@ void log(LogLevel level, const std::string &msg)
 			std::cout << C_MAGENTA << "[DISCONNECT] " << C_RESET << C_MAGENTA << msg << C_RESET << std::endl;
 			break;
 		case BOT:
-			std::cout << C_GREEN << "[BOT] " << C_RESET << msg << std::endl;  // <-- added only
+			std::cout << C_GREEN << "[BOT] " << C_RESET << msg << std::endl;
 			break;
 	}
 }
