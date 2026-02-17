@@ -1,5 +1,4 @@
 //hello world hh
-
 #pragma once
 
 # include <sys/socket.h>
@@ -33,7 +32,7 @@ class Channel
     Channel(std::string name);
     ~Channel();
         
-        //getters : 
+    //getters : 
     std::string ch_getName() const;
     std::string ch_getTopic() const;
     std::string getUserList();
@@ -71,16 +70,7 @@ class Channel
     void addadmiin(Client *client);
     void removeadmiin(Client *client);
     bool isadmiin(Client *client);
-    /*core channell
-        adding/removing members 
-    */
 
-    /*
-        ivited to channells..
-    */
-   // broadcast msg in channell
-    void broadcast(const std::string& message);
-
-
+    void    broadcast(const std::string& message);
     void    sendToMembers(Client* client, std::string& msg);
 };

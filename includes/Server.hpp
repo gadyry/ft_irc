@@ -20,9 +20,6 @@ private :
 	std::map<int, Client*> clients;
 	std::map<std::string, Channel*> ch_channels;
 
-	// typedef void (Server::*handleCommand)(Client*);
-	// std::map<std::string, handleCommand> __commands; // the best & clean way to handle cmds , <<if, else == prostutation>>
-
 	// methods: 
 	void    addClient();
 	void    recieveData(int fdClient);
