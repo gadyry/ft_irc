@@ -3,6 +3,7 @@
 ```cpp
 /*
     ✔ How a socket is created inside the kernel
+    ✔ Why use Sockets instead of Pipes?
     ✔ What memory structures are allocated
     ✔ How ports are chosen
     ✔ How TCP performs the 3-Way Handshake
