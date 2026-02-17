@@ -64,7 +64,7 @@ void	MovieBot::connectToServer()
 	for(size_t i = 0; i < AuthCmds.size(); i++)
 	{
 		if (send(socketBot, AuthCmds[i].c_str(), AuthCmds[i].length(), 0) == -1)
-			throw std::runtime_error("failed to send cmd");
+			LOG(ERROR, "failed to send cmd");
 	}
 }
 
