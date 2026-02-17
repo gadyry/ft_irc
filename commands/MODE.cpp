@@ -32,6 +32,7 @@ void   Server::_cmdMode(Client* client, std::vector<std::string>& tokens) {
     std::string modeFlags = tokens[2];
     bool adding = true;
     std::string execModes = "";
+    size_t  Kidx = 3;
     for (size_t i = 0; i < modeFlags.size(); i++) {
         char mode = modeFlags[i];
         if (mode == '+') {
@@ -52,9 +53,51 @@ void   Server::_cmdMode(Client* client, std::vector<std::string>& tokens) {
             channel->setTopicAdmOnly(adding);
             execModes += "t";
         }
-        // future flags heeere 
-        /*
-        */
+        else if (mode == 'k') {
+            if (adding) {
+                if (Kidx < tokens.size()) {
+                    std::string key = tokens[Kidx++];
+                    channel->setPassKey(key);
+                    execModes += "k " + key + " ";
+                }
+            }
+            else {
+                channel->setPassKey("");
+                execModes += "k";
+            }
+        }
+        else if (mode == 'l') {
+            if (adding) {
+                if (Kidx < tokens.size()) {
+                    int limit = std::atoi(tokens[Kidx++].c_str());
+                    if (limit > 0) {
+                        channel->setLimitUser(static_cast<size_t>(limit));
+                        execModes += "l " + tokens[Kidx - 1] + " ";
+                    }
+                }
+            }
+            else {
+                channel->setLimitUser(0);
+                execModes += "l";
+            }
+        }
+        else if (mode == 'o') {
+            if (Kidx < tokens.size()) {
+                std::string Nnick = tokens[Kidx++];
+                Client *TClient = channel->getMemberName(Nnick);
+                if (TClient) {
+                    if (adding)
+                        channel->addadmiin(TClient);
+                    else
+                        channel->removeadmiin(TClient);
+                    execModes += "o " + Nnick + " ";
+                }
+                else {
+                    std::string ermsg = ERR_USERNOTINCHANNEL(client->getNickname(), Nnick, target);
+                    send(client->getFdClient(), ermsg.c_str(), ermsg.length(), 0);
+                }
+            }
+        }
         else {
             
         }

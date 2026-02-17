@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
-# include <algorithm> // for std::find(...) overriding we need it in linux !!
+# include <algorithm>
 #include "Client.hpp"
 
 class Client;
@@ -47,6 +47,7 @@ class Channel
     bool        isTopicAdmOnly() const;
     std::string getPassKey() const;
     size_t      getLimitUser() const;
+    size_t      getMemSize() const;
 
     // Setters for Mode command
     void setInviteOnly(bool val);

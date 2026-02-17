@@ -20,19 +20,20 @@ RM = rm -rf
 
 all : $(NAME)
 
+
+$(NAME) : $(OBJ)
+	$(CPP) $(CPPFLAGS) -o $(NAME) $(OBJ)
+
 %.o : %.cpp $(HDR)
 	$(CPP) $(CPPFLAGS) -c $< -o $@
+
+$(BONUS_NAME) : $(BONUS_OBJ)
+	$(CPP) $(CPPFLAGS) -o $(BONUS_NAME) $(BONUS_OBJ)
 
 bonus/%.o : bonus/%.cpp $(BONUS_HDR)
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 bonus : $(BONUS_NAME)
-
-$(BONUS_NAME) : $(BONUS_OBJ)
-	$(CPP) $(CPPFLAGS) -o $(BONUS_NAME) $(BONUS_OBJ)
-
-$(NAME) : $(OBJ)
-	$(CPP) $(CPPFLAGS) -o $(NAME) $(OBJ)
 
 clean :
 	$(RM) $(OBJ) $(BONUS_OBJ)
