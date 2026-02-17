@@ -17,8 +17,8 @@ private :
 	int         serv_fd;
 	std::string	servername;
 	std::vector<struct pollfd> fds_sentinels;
-	std::map<int, Client*> clients; // for me the best choise using object not std::string
-	std::map<std::string, Channel*> ch_channels; // channel shit 2.0
+	std::map<int, Client*> clients;
+	std::map<std::string, Channel*> ch_channels;
 
 	// typedef void (Server::*handleCommand)(Client*);
 	// std::map<std::string, handleCommand> __commands; // the best & clean way to handle cmds , <<if, else == prostutation>>

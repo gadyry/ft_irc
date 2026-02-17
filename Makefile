@@ -19,21 +19,21 @@ BONUS_HDR = includes/MovieBot.hpp includes/IrcCommon.hpp
 RM = rm -rf
 
 all : $(NAME)
-
+bonus : $(BONUS_NAME)
 
 $(NAME) : $(OBJ)
 	$(CPP) $(CPPFLAGS) -o $(NAME) $(OBJ)
 
-%.o : %.cpp $(HDR)
-	$(CPP) $(CPPFLAGS) -c $< -o $@
-
 $(BONUS_NAME) : $(BONUS_OBJ)
 	$(CPP) $(CPPFLAGS) -o $(BONUS_NAME) $(BONUS_OBJ)
+
+
+%.o : %.cpp $(HDR)
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 bonus/%.o : bonus/%.cpp $(BONUS_HDR)
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-bonus : $(BONUS_NAME)
 
 clean :
 	$(RM) $(OBJ) $(BONUS_OBJ)
@@ -41,4 +41,4 @@ clean :
 fclean : clean
 	$(RM) $(NAME) $(BONUS_NAME)
 
-re : fclean all
+re : fclean all                         
