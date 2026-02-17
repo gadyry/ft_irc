@@ -8,30 +8,39 @@ SRC = src/main.cpp src/Server.cpp src/Client.cpp commands/PASS.cpp commands/hand
 		commands/KICK.cpp commands/MODE.cpp commands/PRIVMSG.cpp commands/INVITE.cpp commands/TOPIC.cpp \
 		src/IrcCommon.cpp
 
+OBJ = $(SRC:.cpp=.o)
+
 BONUS_SRC = bonus/main.cpp bonus/MovieBot.cpp bonus/botCommands.cpp bonus/dataBaseHandling.cpp src/IrcCommon.cpp
 
-OBJ = $(SRC:.cpp=.o)
 BONUS_OBJ = $(BONUS_SRC:.cpp=.o)
 
-all: $(NAME)
+HDR = includes/Channel.hpp includes/Client.hpp includes/IrcCommon.hpp \
+		includes/IrcReplies.hpp includes/Server.hpp
 
-bonus: $(BONUS_NAME)
+BONUS_HDR = includes/MovieBot.hpp includes/IrcCommon.hpp
 
-$(NAME): $(OBJ)
-	$(CPP) $(CPPFLAGS) -o $(NAME) $(OBJ)
+RM = rm -rf
 
-$(BONUS_NAME): $(BONUS_OBJ)
-	$(CPP) $(CPPFLAGS) -o $(BONUS_NAME) $(BONUS_OBJ)
+all : $(NAME)
 
-%.o: %.cpp
+%.o : %.cpp $(HDR)
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-clean:
-	rm -f $(OBJ) $(BONUS_OBJ)
+bonus/%.o : bonus/%.cpp $(BONUS_HDR)
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-fclean: clean
-	rm -f $(NAME) $(BONUS_NAME)
+bonus : $(BONUS_NAME)
 
-re: fclean all
+$(BONUS_NAME) : $(BONUS_OBJ)
+	$(CPP) $(CPPFLAGS) -o $(BONUS_NAME) $(BONUS_OBJ)
 
-.PHONY: all bonus clean fclean re
+$(NAME) : $(OBJ)
+	$(CPP) $(CPPFLAGS) -o $(NAME) $(OBJ)
+
+clean :
+	$(RM) $(OBJ) $(BONUS_OBJ)
+
+fclean : clean
+	$(RM) $(NAME) $(BONUS_NAME)
+
+re : fclean all
