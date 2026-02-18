@@ -218,6 +218,12 @@ void    Server::recieveData(int fdClient)
 	}
 
 	clients[fdClient]->setInputBuffer(clients[fdClient]->getInputBuffer() + std::string(buffer, bytes));
+	if (clients[fdClient]->getInputBuffer().size() > MAX_BUFFER_SIZE)
+	{
+		LOG(ERROR, "Client fd=" << fdClient << " exceeded max buffer size, disconnecting");
+		removeClient(fdClient);
+		return;
+	}
 	processCmds(fdClient);
 }
 

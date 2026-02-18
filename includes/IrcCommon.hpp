@@ -22,6 +22,7 @@
 # include <ctime>
 
 # define BUFFER_SIZE 512
+# define MAX_BUFFER_SIZE 4096
 
 # define C_RESET   "\033[0m"
 # define C_BOLD    "\033[1m"
