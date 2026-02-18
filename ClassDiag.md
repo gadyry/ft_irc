@@ -725,3 +725,17 @@ TIME    USER                SERVER              BOT                 COMMANDS
 │       │                   │                   │                   │
 ▼       ▼                   ▼                   ▼                   ▼
 ```
+
+## Where does the 3-way handshake exist in ft_irc
+
+```
+Client side                      Server side
+
+socket()                         socket()
+connect()  ── SYN ───────────▶  bind()
+           ◀─ SYN+ACK ───────   listen()
+ACK ─────────────────────────▶  accept() returns client_fd
+
+Now IRC protocol starts:
+PASS / NICK / USER / JOIN / PRIVMSG ...
+```

@@ -285,7 +285,7 @@ Client A                IRC Server              Channel               Client B
   |                          |                      |                      |
   |                          |<-[Member list]-------|                      |
   |                          |                      |                      |
-  |                          |--[Broadcast msg]-------------------->------>|
+  |                          |--[Broadcast msg]--------------------------->|
   |                          |                      |                      |
   |                          |                      |   <-(2) :A PRIVMSG...|
   |                          |                      |                      |
@@ -321,7 +321,7 @@ Operator              IRC Server              Channel               Kicked User
   |                          |                      |                      |
   |                          |--[Remove user]------>|                      |
   |                          |                      |                      |
-  |                          |--[Broadcast KICK]---------------->--------->|
+  |                          |--[Broadcast KICK]-------------------------->|
   |                          |                      |                      |
   |<---(2) :op KICK #ch user-|                      | <-(3) :op KICK...    |
   |                          |                      |                      |
@@ -380,7 +380,7 @@ Operator              IRC Server        Invited User        Channel
   |                          |                 |                 |
   |                          |-[Check mode]------------------->  |
   |                          |                 |                 |
-  |                          |<-[Invite-only]------------------|  |
+  |                          |<-[Invite-only]--------------------|
   |                          |                 |                 |
   |                          |-(2) :op INVITE->|                 |
   |                          |                 |                 |
