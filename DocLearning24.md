@@ -119,16 +119,155 @@ means:
 
 ---
 
-## Common Protocol Numbers
-Common Protocol Numbers for socket()
-Constant	Number	Use Case
-0	0	Default: Tells the OS to choose the correct protocol for the type (e.g., TCP for SOCK_STREAM).
-IPPROTO_ICMP	1	Used with SOCK_RAW for ping and error messages.
-IPPROTO_IGMP	2	Used for multicast group management.
-IPPROTO_TCP	6	Used with SOCK_STREAM (or SOCK_RAW to build custom TCP).
-IPPROTO_UDP	17	Used with SOCK_DGRAM (or SOCK_RAW to build custom UDP).
-IPPROTO_RAW	255	Used with SOCK_RAW to tell the kernel you will provide the entire IP header yourself.
+# Common Protocol Numbers for `socket()`
 
+## Protocol Constants Reference
+
+| Constant | Number | Use Case |
+|----------|--------|----------|
+| `0` (Default) | `0` | Tells the OS to choose the correct protocol for the `type` (e.g., TCP for `SOCK_STREAM`). |
+| `IPPROTO_ICMP` | `1` | Used with `SOCK_RAW` for ping and error messages (Internet Control Message Protocol). |
+| `IPPROTO_IGMP` | `2` | Used for multicast group management (Internet Group Management Protocol). |
+| `IPPROTO_TCP` | `6` | Used with `SOCK_STREAM` (or `SOCK_RAW` to build custom TCP implementations). |
+| `IPPROTO_UDP` | `17` | Used with `SOCK_DGRAM` (or `SOCK_RAW` to build custom UDP implementations). |
+| `IPPROTO_RAW` | `255` | Used with `SOCK_RAW` to tell the kernel you will provide the entire IP header yourself. |
+
+---
+
+## Detailed Explanations
+
+### Default Protocol (0)
+```c
+int sock = socket(AF_INET, SOCK_STREAM, 0);  // 0 = TCP (for SOCK_STREAM)
+int sock = socket(AF_INET, SOCK_DGRAM, 0);   // 0 = UDP (for SOCK_DGRAM)
+```
+The kernel automatically selects the appropriate protocol based on the socket type.
+
+### ICMP (Protocol 1)
+```c
+int sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+// Used for: ping, traceroute, error messages
+```
+
+### IGMP (Protocol 2)
+```c
+int sock = socket(AF_INET, SOCK_RAW, IPPROTO_IGMP);
+// Used for: multicast group management
+```
+
+### TCP (Protocol 6)
+```c
+// Standard way - protocol 0 is sufficient
+int sock = socket(AF_INET, SOCK_STREAM, 0);
+
+// Or explicit
+int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+// Raw TCP (custom implementation)
+int sock = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
+```
+
+### UDP (Protocol 17)
+```c
+// Standard way - protocol 0 is sufficient
+int sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+// Or explicit
+int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+// Raw UDP (custom implementation)
+int sock = socket(AF_INET, SOCK_RAW, IPPROTO_UDP);
+```
+
+### Raw IP (Protocol 255)
+```c
+int sock = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+// You must construct the entire IP header yourself
+// Including: version, header length, type of service, total length,
+//            identification, flags, fragment offset, TTL, protocol, etc.
+```
+
+---
+
+## Socket Type vs Protocol Relationship
+
+| Socket Type | Best Protocol | Use Case |
+|-------------|---------------|----------|
+| `SOCK_STREAM` | `0` (auto → TCP) or `IPPROTO_TCP` | Reliable, ordered, connection-oriented data (TCP) |
+| `SOCK_DGRAM` | `0` (auto → UDP) or `IPPROTO_UDP` | Unreliable, unordered, connectionless data (UDP) |
+| `SOCK_RAW` | `IPPROTO_ICMP` \| `IPPROTO_TCP` \| `IPPROTO_UDP` \| `IPPROTO_RAW` | Access to raw network protocols |
+
+---
+
+## Common Usage Examples
+
+### For Your ft_irc Project
+
+```c
+// TCP Server Socket (Recommended)
+int listen_sock = socket(AF_INET, SOCK_STREAM, 0);
+// or explicitly
+int listen_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+// TCP Client Socket (Recommended)
+int client_sock = socket(AF_INET, SOCK_STREAM, 0);
+// or explicitly
+int client_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+```
+
+### Why Use `0` Instead of `IPPROTO_TCP`?
+
+```c
+socket(AF_INET, SOCK_STREAM, 0)        // Preferred - cleaner
+socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)  // Also works - explicit
+
+// Both are equivalent for standard use cases.
+// Use 0 when: standard protocol, cleaner code
+// Use IPPROTO_* when: code clarity matters, documenting intent
+```
+
+---
+
+## Protocol Number Reference (Full List)
+
+| Number | Name | Constant |
+|--------|------|----------|
+| 0 | Reserved | (reserved) |
+| 1 | ICMP | `IPPROTO_ICMP` |
+| 2 | IGMP | `IPPROTO_IGMP` |
+| 3 | GGP | `IPPROTO_GGP` |
+| 4 | IP | `IPPROTO_IP` |
+| 6 | TCP | `IPPROTO_TCP` |
+| 17 | UDP | `IPPROTO_UDP` |
+| 41 | IPv6 | `IPPROTO_IPV6` |
+| 47 | GRE | `IPPROTO_GRE` |
+| 50 | ESP | `IPPROTO_ESP` |
+| 51 | AH | `IPPROTO_AH` |
+| 255 | Raw IP | `IPPROTO_RAW` |
+
+---
+
+## Key Points
+
+✅ **For TCP/UDP Sockets:**
+- Use protocol `0` and let the kernel decide
+- Or use `IPPROTO_TCP` / `IPPROTO_UDP` for clarity
+
+✅ **For Raw Sockets:**
+- Specify the protocol explicitly
+- Requires elevated privileges (usually root)
+- Must handle protocol details yourself
+
+✅ **For ft_irc:**
+```c
+// This is all you need
+socket(AF_INET, SOCK_STREAM, 0)
+
+// Or if you want to be explicit about TCP
+socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
+```
+
+Both work identically for your IRC server implementation.
 ## 4️⃣ Why passing `0` is the CORRECT choice in ft_irc
 
 For **ft_irc**:
