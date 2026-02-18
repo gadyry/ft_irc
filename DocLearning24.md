@@ -119,6 +119,16 @@ means:
 
 ---
 
+## Common Protocol Numbers
+Common Protocol Numbers for socket()
+Constant	Number	Use Case
+0	0	Default: Tells the OS to choose the correct protocol for the type (e.g., TCP for SOCK_STREAM).
+IPPROTO_ICMP	1	Used with SOCK_RAW for ping and error messages.
+IPPROTO_IGMP	2	Used for multicast group management.
+IPPROTO_TCP	6	Used with SOCK_STREAM (or SOCK_RAW to build custom TCP).
+IPPROTO_UDP	17	Used with SOCK_DGRAM (or SOCK_RAW to build custom UDP).
+IPPROTO_RAW	255	Used with SOCK_RAW to tell the kernel you will provide the entire IP header yourself.
+
 ## 4️⃣ Why passing `0` is the CORRECT choice in ft_irc
 
 For **ft_irc**:
