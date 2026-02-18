@@ -3,7 +3,6 @@
 # include "../includes/IrcReplies.hpp"
 # include "../includes/Channel.hpp"
 
-
 void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& tokens)
 {
     if (tokens.size() < 2)
