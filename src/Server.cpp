@@ -99,6 +99,13 @@ void    Server::removeClient(int fd)
 	std::map<int, Client*>::iterator it = clients.find(fd);
 	if (it != clients.end())
 	{
+		std::set<std::string> channels = it->second->getJoinedChannels();
+		for (std::set<std::string>::iterator itChan = channels.begin(); itChan != channels.end(); ++itChan)
+		{
+			Channel *channel = getChannel(*itChan);
+            if (channel)
+                channel->removeMember(it->second);
+        }
 		delete it->second;
 		clients.erase(it);
 	}
