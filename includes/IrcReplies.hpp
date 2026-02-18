@@ -236,4 +236,7 @@
 // Asterisk for unregistered clients
 #define UNREGISTERED_NICK "*"
 
+#define ERR_UNKNOWNMODE(nick, modechar) \
+  (std::string(SERVERPREFIX) + " 472 " + (nick) + " " + (modechar) + " :is unknown mode char to me" + POSTFIX)
+
 #endif // IRCREPLIES_HPP
