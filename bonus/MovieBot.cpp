@@ -109,7 +109,7 @@ void	MovieBot::dealWithPrivMsg(std::string& prefix, std::vector<std::string>& ar
 		response = handleHelp();
 	else if (cmd == "suggest" || cmd == "recommend")
 		response = handleSuggest();
-	// else if (cmd == "add") // this cmd I can changing it, because feeha lmachakil dzeb
+	// else if (cmd == "add")
 	// 	response = handleAdd(cmdArgs, sender);
 	else if (cmd == "info")
 		response = handleInfo(cmdArgs);

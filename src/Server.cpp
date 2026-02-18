@@ -50,6 +50,7 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
 	signal(SIGINT, Server::signalHandler);
 	signal(SIGTERM, Server::signalHandler);
 	signal(SIGPIPE, SIG_IGN);
+	signal(SIGTSTP, SIG_IGN);
 }
 
 void	Server::addClient()
@@ -217,7 +218,7 @@ void	Server::executeServ()
 {
 	while (!Server::g_signalReceived)
 	{
-		if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
+		if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1)
 		{
 			if (errno == EINTR)
 				continue;
