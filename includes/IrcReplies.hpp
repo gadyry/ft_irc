@@ -231,3 +231,6 @@
 #define UNREGISTERED_NICK "*"
 
 #endif // IRCREPLIES_HPP
+
+#define ERR_UNKNOWNMODE(nick, modechar) \
+  (std::string(SERVERPREFIX) + " 472 " + (nick) + " " + (modechar) + " :is unknown mode char to me" + POSTFIX)
