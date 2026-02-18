@@ -308,7 +308,73 @@ Client A                IRC Server              Client B
   |                          |                      |
 ```
 
-### 5. Operator Kick User Flow
+### 5. DCC File Transfer Flow (How LimeChat File Transfer Works)
+
+When an IRC client like LimeChat initiates a "file transfer," it uses **DCC (Direct Client-to-Client)** — a mechanism built on top of `PRIVMSG`. The server **never touches the actual file**; it only relays a negotiation message. The real transfer happens peer-to-peer.
+
+```
+Alice (LimeChat)          IRC Server (ft_irc)           Bob (LimeChat)
+  │                              │                              │
+  │  ┌─────────────────────────────────────────────────────┐    │
+  │  │ PHASE 1: DCC Request (travels through the server)   │    │
+  │  └─────────────────────────────────────────────────────┘    │
+  │                              │                              │
+  │  PRIVMSG Bob :\x01DCC SEND photo.jpg 3232235777 5000 48231\x01
+  │─────────────────────────────>│                              │
+  │                              │                              │
+  │                              │  _handlePrivmsg()            │
+  │                              │  ┌──────────────────┐        │
+  │                              │  │ tokens[0]=PRIVMSG│        │
+  │                              │  │ tokens[1]=Bob    │        │
+  │                              │  │ tokens[2..]=msg  │        │
+  │                              │  │                  │        │
+  │                              │  │ Server does NOT  │        │
+  │                              │  │ parse the \x01   │        │
+  │                              │  │ DCC content.     │        │
+  │                              │  │ It's just text.  │        │
+  │                              │  └──────────────────┘        │
+  │                              │                              │
+  │                              │  :alice!~a@host PRIVMSG Bob  │
+  │                              │  :\x01DCC SEND photo.jpg ... │
+  │                              │─────────────────────────────>│
+  │                              │                              │
+  │                              │                              │  Bob's LimeChat
+  │                              │                              │  parses \x01DCC:
+  │                              │                              │  ┌──────────────┐
+  │                              │                              │  │ file: photo  │
+  │                              │                              │  │ IP: Alice's  │
+  │                              │                              │  │ port: 5000   │
+  │                              │                              │  │ size: 48231  │
+  │                              │                              │  └──────────────┘
+  │                              │                              │
+  │  ┌─────────────────────────────────────────────────────┐    │
+  │  │ PHASE 2: Direct Transfer (server is NOT involved)   │    │
+  │  └─────────────────────────────────────────────────────┘    │
+  │                              │                              │
+  │  Alice opens TCP port 5000   │                              │
+  │  and waits for Bob           │                              │
+  │◄════════════════════════════════════════════════════════════╡
+  │         Bob connects directly to Alice's IP:5000            │
+  │                              │                              │
+  │═══════════ photo.jpg bytes (48231 B) ══════════════════════>│
+  │         Direct peer-to-peer transfer                        │
+  │         Server never sees these bytes                       │
+  │                              │                              │
+  │◄════════════════════════════════════════════════════════════╡
+  │         Transfer complete, TCP connection closed            │
+  │                              │                              │
+```
+
+**Key takeaway**: The server's `PRIVMSG` handler ([PRIVMSG.cpp](commands/PRIVMSG.cpp)) treats the DCC message as opaque text — it just calls `send()` to forward it to Bob. The `\x01` delimiters and DCC parameters are parsed entirely by the **clients** (LimeChat), not by the server. The actual file data flows directly between Alice and Bob over a separate TCP connection that never passes through the server.
+
+| Phase | What happens | Server's role |
+|-------|-------------|----------------|
+| **1. DCC Request** | Alice sends `PRIVMSG Bob :\x01DCC SEND ...\x01` | Relays it via `_handlePrivmsg()` — treats it as plain text |
+| **2. File Transfer** | Bob connects directly to Alice's IP:port | **None** — server is completely bypassed |
+
+---
+
+### 6. Operator Kick User Flow
 
 ```
 Operator              IRC Server              Channel               Kicked User
@@ -329,7 +395,7 @@ Operator              IRC Server              Channel               Kicked User
   |                          |                      |                      |
 ```
 
-### 6. Set Channel Mode Flow
+### 7. Set Channel Mode Flow
 
 ```
 Operator              IRC Server              Channel
@@ -350,7 +416,7 @@ Operator              IRC Server              Channel
   |                          |                      |
 ```
 
-### 7. Disconnect Flow
+### 8. Disconnect Flow
 
 ```
 Client                  IRC Server              Channel
@@ -369,7 +435,7 @@ Client                  IRC Server              Channel
   |                          |                      |
 ```
 
-### 8. Invite User to Channel Flow
+### 9. Invite User to Channel Flow
 
 ```
 Operator              IRC Server        Invited User        Channel
