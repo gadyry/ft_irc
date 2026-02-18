@@ -18,7 +18,7 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
 	int                 camus = 1;
 	struct pollfd       newPollFd;
 
-  this->serv_fd = socket(PF_INET, SOCK_STREAM, 0);
+	this->serv_fd = socket(PF_INET, SOCK_STREAM, 0);
 	if (serv_fd < 0)
 		throw std::runtime_error("socket() failed");
 
