@@ -84,18 +84,32 @@ void	Server::addClient()
 void    Server::removeClient(int fd)
 {
 	std::map<int, Client*>::iterator it = clients.find(fd);
-	if (it != clients.end())
-	{
-		std::set<std::string> channels = it->second->getJoinedChannels();
-		for (std::set<std::string>::iterator itChan = channels.begin(); itChan != channels.end(); ++itChan)
-		{
-			Channel *channel = getChannel(*itChan);
-            if (channel)
-                channel->removeMember(it->second);
+    if (it != clients.end()) {
+        Client* clientLeaving = it->second;
+        std::set<std::string> joinedChannels = clientLeaving->getJoinedChannels();
+        for (std::set<std::string>::iterator itChan = joinedChannels.begin(); itChan != joinedChannels.end(); ++itChan) {
+            Channel *channel = getChannel(*itChan);
+            if (channel) {
+                std::string quitMsg = ":" + clientLeaving->getNickname() + " QUIT :Client exited\r\n";
+                channel->broadcast(quitMsg);
+                channel->removeMember(clientLeaving);
+                if (channel->getMemSize() == 0) {
+                    ch_channels.erase(channel->ch_getName());
+                    delete channel;
+                }
+                else if (channel->getAdmins().empty()) {
+                    Client* newOp = channel->getFirstMember();
+                    if (newOp) {
+                        channel->addadmiin(newOp);
+                        std::string modeMsg = ":IRCServer MODE " + channel->ch_getName() + " +o " + newOp->getNickname() + "\r\n";
+                        channel->broadcast(modeMsg);
+                    }
+                }
+            }
         }
-		delete it->second;
-		clients.erase(it);
-	}
+        delete clientLeaving;
+        clients.erase(it);
+    }
 
 	for(size_t i = 0; i <fds_sentinels.size(); i++)
 	{

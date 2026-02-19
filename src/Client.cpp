@@ -102,7 +102,8 @@ void Client::removeChannel(const std::string &channelName) {
 	joinedChannels.erase(channelName);
 }
 
-bool Client::isInChannel(const std::string &channelName) {
+bool Client::isInChannel(const std::string &channelName)
+{
 	return joinedChannels.find(channelName) != joinedChannels.end();
 }
 
