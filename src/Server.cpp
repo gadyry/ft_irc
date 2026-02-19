@@ -2,9 +2,9 @@
 # include "../includes/Client.hpp"
 # include "../includes/IrcCommon.hpp"
 
-int Server::g_signalReceived = 0;
+int	Server::g_signalReceived = 0;
 
-void    Server::signalHandler(int sig)
+void	Server::signalHandler(int sig)
 {
 	(void)sig;
 	Server::g_signalReceived = 1;
