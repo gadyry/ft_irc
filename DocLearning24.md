@@ -708,6 +708,7 @@ This design allows **multiple address families** through one API.
 
 ---
 
+---
 Think of setsockopt as a Settings Menu for your network connection. To change a setting, the computer needs to know three specific things: What category? What specific setting? And what is the new value?
 
 ```md
@@ -743,6 +744,7 @@ When you run that line, you are saying to the Kernel:
 ## The `bind()`, `listen()`, `accept()` Sequence (Deep Internal Breakdown)
 
 Now that you understand how sockets are created and how IPv4 addresses are represented, here is what happens next.
+---
 
 ---
 
