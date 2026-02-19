@@ -49,5 +49,20 @@ void Server::_cmdKick(Client *client, std::vector<std::string> &tokens) {
     std::string kickBroad = RPL_KICK(kickedmsg, CHanL, banned, reason);
     channel->broadcast(kickBroad);
     channel->removeMember(Toban);
+    if (channel->getMemSize() == 0) {
+        LOG(INFO, "Channel " << CHanL << " is empty after kick. Deleting.");
+        ch_channels.erase(CHanL);
+        delete channel;
+        return; 
+    }
+    if (channel->getAdmins().empty()) {
+        Client* newOp = channel->getFirstMember();
+        if (newOp) {
+            channel->addadmiin(newOp);
+            std::string modeMsg = ":IRCServer MODE " + CHanL + " +o " + newOp->getNickname() + "\r\n";
+            channel->broadcast(modeMsg);
+            LOG(INFO, "New operator assigned: " << newOp->getNickname() << " in " << CHanL);
+        }
+    }
     LOG(INFO, client->getNickname() << " kicked " << banned << " from " << CHanL);
 }

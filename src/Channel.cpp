@@ -83,8 +83,18 @@ Client* Channel::getMemberName(std::string nick) {
     return NULL;
 }
 
+const std::vector<Client*> &Channel::getAdmins() const {
+    return ch_admiins;
+}
+
 size_t  Channel::getMemSize() const {
     return ch_members.size();
+}
+
+Client* Channel::getFirstMember() {
+    if (ch_members.empty())
+        return NULL;
+    return ch_members[0];
 }
 
 bool Channel::isInviteOnly() const {
