@@ -43,7 +43,6 @@ void Server::_cmdMode(Client* client, std::vector<std::string>& tokens) {
             currentSign = c;
             continue;
         }
-
         if (c == 'i' || c == 't' || c == 'k' || c == 'l' || c == 'o') {
             bool requiresArg = false;
             if (c == 'k' && currentSign == '+')
@@ -104,7 +103,6 @@ void Server::_cmdMode(Client* client, std::vector<std::string>& tokens) {
             modeString += c;
             if (requiresArg && !arg.empty())
                 modeArgs.push_back(arg);
-
         }
         else {
             std::string err = ERR_UNKNOWNMODE(client->getNickname(), std::string(1, c));
@@ -113,7 +111,7 @@ void Server::_cmdMode(Client* client, std::vector<std::string>& tokens) {
     }
     if (!modeString.empty()) {
         std::string broadcastMsg = ":" + client->getNickname() + "!" + client->getUsername() +
-                                   "@" + client->getHost() + " MODE " + target + " " + modeString;
+            "@" + client->getHost() + " MODE " + target + " " + modeString;
         for (size_t i = 0; i < modeArgs.size(); ++i)
             broadcastMsg += " " + modeArgs[i];
         broadcastMsg += "\r\n";

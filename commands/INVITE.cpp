@@ -45,8 +45,8 @@ void Server::_cmdInvite(Client *client, std::vector<std::string> &tokens) {
     }
 
     channel->addInvite(invitedUser);
-    std::string inviteMsg = ":" + client->getNickname() + "!" + client->getUsername() + 
-                            "@" + client->getHost() + " INVITE " + invitedUser + " :" + chName + "\r\n";
+    std::string inviteMsg = ":" + client->getNickname() + "!" + client->getUsername() +
+        "@" + client->getHost() + " INVITE " + invitedUser + " :" + chName + "\r\n";
     send(TRclient->getFdClient(), inviteMsg.c_str(), inviteMsg.length(), 0);
 
     std::string notifyUser = RPL_INVITING(client->getNickname(), invitedUser, chName);
