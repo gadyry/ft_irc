@@ -62,9 +62,8 @@ void	Server::addClient()
 	int acpt = accept(this->serv_fd, (struct sockaddr*)&addr_client, &address_len);
 	if (acpt == -1)
 	{
-		if (errno == EAGAIN || errno == EWOULDBLOCK)
-			return;
-		throw std::runtime_error("accept() failed");
+		LOG(ERROR, "failed accept()");
+		return;
 	}
 
 	newPoll.fd = acpt;
@@ -84,32 +83,32 @@ void	Server::addClient()
 void    Server::removeClient(int fd)
 {
 	std::map<int, Client*>::iterator it = clients.find(fd);
-    if (it != clients.end()) {
-        Client* clientLeaving = it->second;
-        std::set<std::string> joinedChannels = clientLeaving->getJoinedChannels();
-        for (std::set<std::string>::iterator itChan = joinedChannels.begin(); itChan != joinedChannels.end(); ++itChan) {
-            Channel *channel = getChannel(*itChan);
-            if (channel) {
-                std::string quitMsg = ":" + clientLeaving->getNickname() + " QUIT :Client exited\r\n";
-                channel->broadcast(quitMsg);
-                channel->removeMember(clientLeaving);
-                if (channel->getMemSize() == 0) {
-                    ch_channels.erase(channel->ch_getName());
-                    delete channel;
-                }
-                else if (channel->getAdmins().empty()) {
-                    Client* newOp = channel->getFirstMember();
-                    if (newOp) {
-                        channel->addadmiin(newOp);
-                        std::string modeMsg = ":IRCServer MODE " + channel->ch_getName() + " +o " + newOp->getNickname() + "\r\n";
-                        channel->broadcast(modeMsg);
-                    }
-                }
-            }
-        }
-        delete clientLeaving;
-        clients.erase(it);
-    }
+	if (it != clients.end()) {
+		Client* clientLeaving = it->second;
+		std::set<std::string> joinedChannels = clientLeaving->getJoinedChannels();
+		for (std::set<std::string>::iterator itChan = joinedChannels.begin(); itChan != joinedChannels.end(); ++itChan) {
+			Channel *channel = getChannel(*itChan);
+			if (channel) {
+				std::string quitMsg = ":" + clientLeaving->getNickname() + " QUIT :Client exited\r\n";
+				channel->broadcast(quitMsg);
+				channel->removeMember(clientLeaving);
+				if (channel->getMemSize() == 0) {
+					ch_channels.erase(channel->ch_getName());
+					delete channel;
+				}
+				else if (channel->getAdmins().empty()) {
+					Client* newOp = channel->getFirstMember();
+					if (newOp) {
+						channel->addadmiin(newOp);
+						std::string modeMsg = ":IRCServer MODE " + channel->ch_getName() + " +o " + newOp->getNickname() + "\r\n";
+						channel->broadcast(modeMsg);
+					}
+				}
+			}
+		}
+		delete clientLeaving;
+		clients.erase(it);
+	}
 
 	for(size_t i = 0; i <fds_sentinels.size(); i++)
 	{
@@ -245,12 +244,8 @@ void	Server::executeServ()
 {
 	while (!Server::g_signalReceived)
 	{
-		if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1)
-		{
-			if (errno == EINTR)
-				continue;
-			throw std::runtime_error("poll() failed");
-		}
+		if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 && !Server::g_signalReceived)
+			throw std::runtime_error("poll() failed, shutting down");
 
 		for (size_t i = 0; i < fds_sentinels.size(); i++)
 		{
