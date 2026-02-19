@@ -18,7 +18,7 @@ class Channel
     std::string     ch_name;
     std::string     ch_topic;
 
-    // channel members and shit
+    // channel members
     std::vector<Client*>        ch_members;
     std::vector<Client*>        ch_admiins;
     std::vector<std::string>    ch_invited;
@@ -32,8 +32,7 @@ class Channel
     public:
     Channel(std::string name);
     ~Channel();
-        
-        //getters : 
+
     std::string ch_getName() const;
     std::string ch_getTopic() const;
     std::string getUserList();

@@ -15,18 +15,13 @@ typedef struct	s_Movies
 	std::string		director;
 	std::string		plot;
 
-	// std::string	searchKey; // We can used for (lowercase title for fast lookup)
 }	t_Movies;
 
 typedef struct	s_Quote
 {
 	unsigned short	movieId;
 	std::string		text;
-
-	// std::string	addedBy;
-	// std::time_t	timestamp;
 }	t_Quote;
-
 
 class MovieBot
 {
@@ -47,6 +42,7 @@ private:
 	// methods :
 	void	connectToServer();
 	void	sendPrivMsg(std::string& target, std::string& message);
+
 	void	dealWithPrivMsg(std::string& prefix, std::vector<std::string>& args);
 	void	processMsg(std::string& fullMsg);
 	void	handleMessage();
@@ -60,20 +56,16 @@ private:
 	// std::string handleAdd(std::vector<std::string>& args, std::string& sender);
 	std::string handleInfo(std::vector<std::string>& args);
 
-	// leoading data from data base
-
+	// loading data from data base
 	void	loadMovies(std::string db_movies);
 	void	loadQuotes(std::string db_quotes);
 
 public:
 	// Constractor && Distractor:
-		MovieBot();
-		MovieBot(std::string host, u_short port, std::string password);
-		~MovieBot();
+	MovieBot();
+	MovieBot(std::string host, u_short port, std::string password);
+	~MovieBot();
 
-	// Setters && Getters
-
-	// methods helper
 	void    executeMovieBot();
 };
 
