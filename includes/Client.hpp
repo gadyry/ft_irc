@@ -62,6 +62,7 @@ public:
     void removeChannel(const std::string &channelName);
     bool isInChannel(const std::string &channelName);
 	std::set<std::string> getJoinedChannels();
+
 };
 
 #endif
