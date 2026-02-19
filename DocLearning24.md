@@ -708,12 +708,11 @@ This design allows **multiple address families** through one API.
 
 ---
 
-Gemini a dit
 Think of setsockopt as a Settings Menu for your network connection. To change a setting, the computer needs to know three specific things: What category? What specific setting? And what is the new value?
 
-Here is the breakdown of those three parts in plain English:
 
-1. SOL_SOCKET (The Category / Level)
+
+## 1. SOL_SOCKET (The Category / Level)
 Network settings are organized into layers (like tabs in a settings window).
 
 SOL_SOCKET is the "General" tab. It contains settings that apply to all sockets, no matter if they are for the internet (TCP/IP) or internal Unix files.
@@ -722,14 +721,14 @@ The alternative: If you wanted to change something specific to the internet prot
 
 Analogy: If you are fixing a car, SOL_SOCKET is like looking at the "General Body" of the car (doors, lights), whereas IPPROTO_TCP would be looking specifically "Under the Hood" at the engine.
 
-2. SO_REUSEADDR (The Specific Setting / Option Name)
+## 2. SO_REUSEADDR (The Specific Setting / Option Name)
 This is the specific "checkbox" inside the General tab.
 
 Normally, when you close a program, the Operating System "locks" the port for about 1-2 minutes (to make sure no late data packets arrive).
 
 By using SO_REUSEADDR, you are telling the OS: "If I restart this program, let me use the port immediately. Don't make me wait."
 
-3. &camus (The Value / Toggle)
+## 3. &camus (The Value / Toggle)
 Since this is written in the C language, there isn't a simple "On/Off" button. Instead, we use an integer.
 
 int camus = 1;: In the world of programming, 1 usually means True (On) and 0 means False (Off).
