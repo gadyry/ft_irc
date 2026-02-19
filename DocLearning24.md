@@ -710,8 +710,7 @@ This design allows **multiple address families** through one API.
 
 Think of setsockopt as a Settings Menu for your network connection. To change a setting, the computer needs to know three specific things: What category? What specific setting? And what is the new value?
 
-
-
+```md
 ## 1. SOL_SOCKET (The Category / Level)
 Network settings are organized into layers (like tabs in a settings window).
 
@@ -739,6 +738,7 @@ Putting it all together:
 When you run that line, you are saying to the Kernel:
 
 "Hey, look at the General Socket settings (SOL_SOCKET) for my server. Find the Reuse Address setting (SO_REUSEADDR) and Turn it On (&camus, which is 1)."
+```
 
 ## The `bind()`, `listen()`, `accept()` Sequence (Deep Internal Breakdown)
 
