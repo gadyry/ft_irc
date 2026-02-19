@@ -26,17 +26,11 @@ void    Server::_handlePrivmsg(Client* senderCl, std::vector<std::string>& token
         else
             msg += " " + tokens[i];
     }
-    /* 
-        8=============>
-        Grammer of full msg : :nick!user@host PRIVMSG <receiver> :<text>
-        [':' <prefix> <SPACE> ] <command> <params> <CRLF> 
-        2.3.1 Message format in 'pseudo' BNF
-    */
+
     std::string target = tokens[1];
     std::string prefix = CLIENT_PREFIX(senderCl->getNickname(), senderCl->getUsername(), senderCl->getHost());
     std::string fullmsg = RPL_PRIVMSG(prefix, target, msg);
 
-    // 8====> channel usage:
     if (target[0] == '#')
     {
         Channel* channel = getChannel(target);

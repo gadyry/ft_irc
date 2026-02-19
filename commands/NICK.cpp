@@ -2,21 +2,10 @@
 # include "../includes/Client.hpp"
 # include "../includes/IrcReplies.hpp"
 
-/*
-    =============== We don't need to handle it ===============
-    ERR_NICKCOLLISION – “Returned by the server to a client when the client’s desired 
-    nickname is temporarily unavailable because of a nick collision.”
-    8=> This situation only happens in an IRC network with multiple servers.
-*/
 
-// void    Server::completeRegistration(Client* client)
-// {
-//     // TODO : implement this part !!
-// }
 
 bool    Server::existNickname(std::string& nickname)
 {
-    // TODO: check If nickname is already in server nickname map
     std::map<int, Client*>::iterator it;
 
     for(it = clients.begin(); it != clients.end(); it++)
@@ -50,7 +39,6 @@ bool    nickIsValid(std::string& nickname)
     return (true);
 }
 
-/* === nickname = ( letter / special ) *8( letter / digit / special / "-" ) ===*/
 void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
 {
     if (tokens.empty()) return;
@@ -65,7 +53,7 @@ void    Server::_cmdNick(Client* client, std::vector<std::string>& tokens)
 
     if (!nickIsValid(nickname))
     {
-        sendError(client, ERR_ERRONEUSNICKNAME(client->getNickname(), nickname));// Badnick WTF ??
+        sendError(client, ERR_ERRONEUSNICKNAME(client->getNickname(), nickname));
         return;
     }
 

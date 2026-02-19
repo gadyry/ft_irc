@@ -58,6 +58,7 @@ private :
 	void _cmdInvite(Client *client, std::vector<std::string> &tokens);
 
 	void    _handleQuit(Client* client);
+	void	_cmdPingPong(Client* client, std::vector<std::string>& tokens);
 	//channel
 	Channel* getChannel(const std::string& name);
 	Client* getClientName(std::string nick);

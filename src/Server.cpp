@@ -10,14 +10,7 @@ void    Server::signalHandler(int sig)
 	Server::g_signalReceived = 1;
 }
 
-Server::Server()
-{
-	// handleCommand["NICK"] = &Server::_cmdNick;
-	// handleCommand["USER"] = &Server::_cmdUser;
-	// handleCommand["JOIN"] = &Server::_cmdJoin;
-	// handleCommand["PRIVMSG"] = &Server::_cmdPrivmsg;
-	// handleCommand["QUIT"] = &Server::_cmdQuit;
-}
+Server::Server() {}
 
 Server::Server(u_short port, std::string password) : port(port), password(password), servername("irc.myserver.com")
 {
@@ -29,7 +22,6 @@ Server::Server(u_short port, std::string password) : port(port), password(passwo
 	if (serv_fd < 0)
 		throw std::runtime_error("socket() failed");
 
-	// std::memset(&addr_serv, 0, sizeof(addr_serv));
 	addr_serv.sin_family = PF_INET;
 	addr_serv.sin_port = htons(this->port);
 	addr_serv.sin_addr.s_addr = INADDR_ANY;
@@ -73,12 +65,6 @@ void	Server::addClient()
 			return;
 		throw std::runtime_error("accept() failed");
 	}
-
-	// if (fcntl(acpt, F_SETFL, O_NONBLOCK) == -1)
-	// {
-	//     close(acpt);
-	//     throw std::runtime_error("fcntl(O_NONBLOCK) failed");
-	// }
 
 	newPoll.fd = acpt;
 	newPoll.events = POLLIN;
@@ -138,7 +124,7 @@ void    Server::removeClient(int fd)
 void    Server::sendError(Client* client, const std::string& msg)
 {
 	if (send(client->getFdClient(), msg.c_str(), msg.length(), 0) == -1)
-		throw std::runtime_error("send() failed");
+		LOG(ERROR, "send() failed");
 }
 
 std::vector<std::string> split_or(const std::string& str)
@@ -158,7 +144,8 @@ void    Server::_regestrationIsValid(Client* client)
 	if (client->checkAuthComplete())
 	{
 		std::string welcome = RPL_WELCOME(client->getNickname());
-		send(client->getFdClient(), welcome.c_str(), welcome.length(), 0);
+		if (send(client->getFdClient(), welcome.c_str(), welcome.length(), 0) == -1)
+			LOG(ERROR, "send() failed");
 	}
 }
 
@@ -168,23 +155,10 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 	if (tokens.empty()) return;
 
 	std::string cmd = tokens[0];
-	if (cmd == "PING")
+	if (cmd == "PONG" || cmd == "PING")
 	{
-		std::string token = "";
-		size_t spacePos = fullCmd.find(' ');
-		if (spacePos != std::string::npos)
-		{
-			token = fullCmd.substr(spacePos + 1);
-			if (!token.empty() && token[0] == ':')
-				token = token.substr(1);
-		}
-
-		std::string pongMsg = RPL_PONG(servername, token);
-		if (send(client->getFdClient(), pongMsg.c_str(), pongMsg.length(), 0) < 0)
-			LOG(ERROR, "send() failed for PONG");
-
-		LOG(INFO, "Responded to PING with token '" << token << "'");
-		return;
+			this->_cmdPingPong(client, tokens);
+			return;
 	}
 
 	if (cmd == "QUIT")
@@ -267,7 +241,7 @@ void	Server::executeServ()
 		if (poll(&fds_sentinels[0], fds_sentinels.size(), 0) == -1 )
 		{
 			if (errno == EINTR)
-				continue;  // Interrupted by signal, try again
+				continue;
 			throw std::runtime_error("poll() failed");
 		}
 
