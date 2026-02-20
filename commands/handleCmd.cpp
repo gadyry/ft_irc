@@ -74,7 +74,7 @@ void Server::_handleCmd(Client* client, std::vector<std::string>& tokens)
 		}
 		else
 		{
-			this->sendError(client, ERR_NOTREGISTERED()); return;
+			this->sendError(client, ERR_UNKNOWNCOMMAND(client->getNickname(), cmd)); return;
 		}
 	}
 }
