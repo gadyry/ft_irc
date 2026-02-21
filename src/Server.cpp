@@ -155,6 +155,9 @@ void	Server::_handleLine(Client* client, std::string& fullCmd)
 	if (tokens.empty()) return;
 
 	std::string cmd = tokens[0];
+
+	for (size_t i = 0; i < cmd.size(); i++)
+		cmd[i] = std::toupper(cmd[i]);
 	if (cmd == "PONG" || cmd == "PING")
 	{
 			this->_cmdPingPong(client, tokens);
